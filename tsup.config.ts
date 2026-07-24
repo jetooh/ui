@@ -7,5 +7,5 @@ export default defineConfig({
   dts: true,
   clean: true,
   minify: false,
-  external: ['react', 'react-dom', 'lucide-react'],
+  external: ['react', 'react-dom', 'lucide-react', '@base-ui/react'],
 });
