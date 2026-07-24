@@ -1,6 +1,10 @@
 import * as React from 'react';
 import { ReactNode } from 'react';
 import { Avatar as Avatar$1 } from '@base-ui/react/avatar';
+import * as class_variance_authority_types from 'class-variance-authority/types';
+import { Button as Button$1 } from '@base-ui/react/button';
+import { VariantProps } from 'class-variance-authority';
+import { useRender } from '@base-ui/react/use-render';
 import { ClassValue } from 'clsx';
 
 interface ModalProps {
@@ -35,6 +39,17 @@ declare function AvatarBadge({ className, ...props }: React.ComponentProps<'span
 declare function AvatarGroup({ className, ...props }: React.ComponentProps<'div'>): React.JSX.Element;
 declare function AvatarGroupCount({ className, ...props }: React.ComponentProps<'div'>): React.JSX.Element;
 
+declare const buttonVariants: (props?: ({
+    variant?: "link" | "default" | "outline" | "secondary" | "ghost" | "destructive" | null | undefined;
+    size?: "sm" | "lg" | "default" | "xs" | "icon" | "icon-xs" | "icon-sm" | "icon-lg" | null | undefined;
+} & class_variance_authority_types.ClassProp) | undefined) => string;
+declare function Button({ className, variant, size, ...props }: Button$1.Props & VariantProps<typeof buttonVariants>): React.JSX.Element;
+
+declare const badgeVariants: (props?: ({
+    variant?: "link" | "default" | "outline" | "secondary" | "ghost" | "destructive" | null | undefined;
+} & class_variance_authority_types.ClassProp) | undefined) => string;
+declare function Badge({ className, variant, render, ...props }: useRender.ComponentProps<"span"> & VariantProps<typeof badgeVariants>): React.ReactElement<any, string | React.JSXElementConstructor<any>>;
+
 declare function cn(...inputs: ClassValue[]): string;
 
-export { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Modal, type ModalProps, cn };
+export { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, Button, Modal, type ModalProps, badgeVariants, buttonVariants, cn };
