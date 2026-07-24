@@ -233,6 +233,149 @@ function Badge({
     }
   });
 }
+
+// src/components/Card.tsx
+import { jsx as jsx4 } from "react/jsx-runtime";
+function Card({
+  className,
+  size = "default",
+  ...props
+}) {
+  return /* @__PURE__ */ jsx4(
+    "div",
+    {
+      "data-slot": "card",
+      "data-size": size,
+      className: cn(
+        "group/card flex flex-col gap-4 overflow-hidden rounded-xl bg-card py-4 text-sm text-card-foreground border border-gray-100 has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
+        className
+      ),
+      ...props
+    }
+  );
+}
+function CardHeader({ className, ...props }) {
+  return /* @__PURE__ */ jsx4(
+    "div",
+    {
+      "data-slot": "card-header",
+      className: cn(
+        "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-xl px-4 group-data-[size=sm]/card:px-3 has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-4 group-data-[size=sm]/card:[.border-b]:pb-3",
+        className
+      ),
+      ...props
+    }
+  );
+}
+function CardTitle({ className, ...props }) {
+  return /* @__PURE__ */ jsx4(
+    "div",
+    {
+      "data-slot": "card-title",
+      className: cn(
+        "font-heading text-base leading-snug font-medium group-data-[size=sm]/card:text-sm",
+        className
+      ),
+      ...props
+    }
+  );
+}
+function CardDescription({ className, ...props }) {
+  return /* @__PURE__ */ jsx4(
+    "div",
+    {
+      "data-slot": "card-description",
+      className: cn("text-sm text-muted-foreground", className),
+      ...props
+    }
+  );
+}
+function CardAction({ className, ...props }) {
+  return /* @__PURE__ */ jsx4(
+    "div",
+    {
+      "data-slot": "card-action",
+      className: cn(
+        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
+        className
+      ),
+      ...props
+    }
+  );
+}
+function CardContent({ className, ...props }) {
+  return /* @__PURE__ */ jsx4(
+    "div",
+    {
+      "data-slot": "card-content",
+      className: cn("px-4 group-data-[size=sm]/card:px-3", className),
+      ...props
+    }
+  );
+}
+function CardFooter({ className, ...props }) {
+  return /* @__PURE__ */ jsx4(
+    "div",
+    {
+      "data-slot": "card-footer",
+      className: cn(
+        "flex items-center rounded-b-xl border-t bg-muted/50 p-4 group-data-[size=sm]/card:p-3",
+        className
+      ),
+      ...props
+    }
+  );
+}
+
+// src/components/Skeleton.tsx
+import { jsx as jsx5, jsxs as jsxs2 } from "react/jsx-runtime";
+function Skeleton({ className, ...props }) {
+  return /* @__PURE__ */ jsx5(
+    "div",
+    {
+      className: cn("animate-pulse rounded-lg bg-gray-200/60", className),
+      ...props
+    }
+  );
+}
+function SkeletonKpiCard() {
+  return /* @__PURE__ */ jsx5("div", { className: "flex flex-col gap-4 rounded-xl bg-card py-4 px-4 ring-1 ring-foreground/10", children: /* @__PURE__ */ jsxs2("div", { className: "flex items-start justify-between", children: [
+    /* @__PURE__ */ jsxs2("div", { className: "flex flex-col gap-2", children: [
+      /* @__PURE__ */ jsx5(Skeleton, { className: "h-3 w-24" }),
+      /* @__PURE__ */ jsx5(Skeleton, { className: "h-7 w-20" })
+    ] }),
+    /* @__PURE__ */ jsx5(Skeleton, { className: "h-10 w-10 rounded-lg" })
+  ] }) });
+}
+var COL_WIDTHS = [120, 90, 140, 80, 110, 100, 130, 95];
+function SkeletonTableRow({ cols = 5 }) {
+  return /* @__PURE__ */ jsxs2("div", { className: "flex items-center gap-4 px-4 py-3 border-b border-gray-100 last:border-0", children: [
+    /* @__PURE__ */ jsx5(Skeleton, { className: "h-9 w-9 rounded-lg shrink-0" }),
+    /* @__PURE__ */ jsx5("div", { className: "flex-1 flex items-center gap-8", children: Array.from({ length: cols }).map((_, i) => /* @__PURE__ */ jsx5(Skeleton, { className: "h-4 flex-1", style: { maxWidth: `${COL_WIDTHS[i % COL_WIDTHS.length]}px` } }, i)) })
+  ] });
+}
+function SkeletonTable({ rows = 5, cols = 5 }) {
+  return /* @__PURE__ */ jsxs2("div", { className: "rounded-xl bg-card ring-1 ring-foreground/10 overflow-hidden", children: [
+    /* @__PURE__ */ jsxs2("div", { className: "flex items-center justify-between px-4 py-4 border-b border-gray-100", children: [
+      /* @__PURE__ */ jsxs2("div", { className: "flex items-center gap-2", children: [
+        /* @__PURE__ */ jsx5(Skeleton, { className: "h-4 w-4 rounded" }),
+        /* @__PURE__ */ jsx5(Skeleton, { className: "h-4 w-24" })
+      ] }),
+      /* @__PURE__ */ jsx5(Skeleton, { className: "h-8 w-28 rounded-lg" })
+    ] }),
+    Array.from({ length: rows }).map((_, i) => /* @__PURE__ */ jsx5(SkeletonTableRow, { cols }, i))
+  ] });
+}
+function Loading() {
+  return /* @__PURE__ */ jsxs2("div", { className: "px-4 py-4 sm:p-6 sm:pb-8 lg:p-8 lg:pb-10 space-y-6", children: [
+    /* @__PURE__ */ jsx5("div", { className: "grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4", children: Array.from({ length: 4 }).map((_, i) => /* @__PURE__ */ jsx5(SkeletonKpiCard, {}, i)) }),
+    /* @__PURE__ */ jsx5(SkeletonTable, {})
+  ] });
+}
+var SkeletonPage = Loading;
+function TabLoading() {
+  return /* @__PURE__ */ jsx5("div", { className: "flex items-center justify-center py-16", children: /* @__PURE__ */ jsx5("span", { className: "inline-block h-6 w-6 animate-spin rounded-full border-2 border-roxo border-t-transparent" }) });
+}
 export {
   Avatar,
   AvatarBadge,
@@ -242,7 +385,21 @@ export {
   AvatarImage,
   Badge,
   Button,
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  Loading,
   Modal,
+  Skeleton,
+  SkeletonKpiCard,
+  SkeletonPage,
+  SkeletonTable,
+  SkeletonTableRow,
+  TabLoading,
   badgeVariants,
   buttonVariants,
   cn

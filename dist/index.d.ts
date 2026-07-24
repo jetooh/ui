@@ -50,6 +50,29 @@ declare const badgeVariants: (props?: ({
 } & class_variance_authority_types.ClassProp) | undefined) => string;
 declare function Badge({ className, variant, render, ...props }: useRender.ComponentProps<"span"> & VariantProps<typeof badgeVariants>): React.ReactElement<any, string | React.JSXElementConstructor<any>>;
 
+declare function Card({ className, size, ...props }: React.ComponentProps<"div"> & {
+    size?: "default" | "sm";
+}): React.JSX.Element;
+declare function CardHeader({ className, ...props }: React.ComponentProps<"div">): React.JSX.Element;
+declare function CardTitle({ className, ...props }: React.ComponentProps<"div">): React.JSX.Element;
+declare function CardDescription({ className, ...props }: React.ComponentProps<"div">): React.JSX.Element;
+declare function CardAction({ className, ...props }: React.ComponentProps<"div">): React.JSX.Element;
+declare function CardContent({ className, ...props }: React.ComponentProps<"div">): React.JSX.Element;
+declare function CardFooter({ className, ...props }: React.ComponentProps<"div">): React.JSX.Element;
+
+declare function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>): React.JSX.Element;
+declare function SkeletonKpiCard(): React.JSX.Element;
+declare function SkeletonTableRow({ cols }: {
+    cols?: number;
+}): React.JSX.Element;
+declare function SkeletonTable({ rows, cols }: {
+    rows?: number;
+    cols?: number;
+}): React.JSX.Element;
+declare function Loading(): React.JSX.Element;
+declare const SkeletonPage: typeof Loading;
+declare function TabLoading(): React.JSX.Element;
+
 declare function cn(...inputs: ClassValue[]): string;
 
-export { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, Button, Modal, type ModalProps, badgeVariants, buttonVariants, cn };
+export { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Loading, Modal, type ModalProps, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, TabLoading, badgeVariants, buttonVariants, cn };
