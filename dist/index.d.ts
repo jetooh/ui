@@ -173,6 +173,18 @@ interface StatusDotProps {
 }
 declare function StatusDot({ color, pulse, size, className }: StatusDotProps): React.JSX.Element;
 
+interface EmptyStateProps {
+    icon: LucideIcon;
+    title: string;
+    description?: string;
+    actionLabel?: string;
+    onAction?: () => void;
+}
+declare function EmptyState({ icon: Icon, title, description, actionLabel, onAction }: EmptyStateProps): React.JSX.Element;
+declare function SearchEmptyState({ query }: {
+    query: string;
+}): React.JSX.Element;
+
 declare function cn(...inputs: ClassValue[]): string;
 
-export { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, KpiCard, type KpiCardProps, KpiGrid, Loading, Modal, type ModalProps, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, StatusDot, type StatusDotProps, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, badgeVariants, buttonVariants, cn, toast, useToast };
+export { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, EmptyState, type EmptyStateProps, KpiCard, type KpiCardProps, KpiGrid, Loading, Modal, type ModalProps, SearchEmptyState, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, StatusDot, type StatusDotProps, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, badgeVariants, buttonVariants, cn, toast, useToast };

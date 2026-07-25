@@ -667,6 +667,39 @@ function StatusDot({ color, pulse = false, size = "md", className }) {
     /* @__PURE__ */ jsx9("span", { className: cn("relative inline-flex rounded-full", s, color) })
   ] });
 }
+
+// src/components/EmptyState.tsx
+import { jsx as jsx10, jsxs as jsxs6 } from "react/jsx-runtime";
+function EmptyState({ icon: Icon, title, description, actionLabel, onAction }) {
+  return /* @__PURE__ */ jsxs6("div", { className: "flex flex-col items-center justify-center px-4 py-16 text-center", children: [
+    /* @__PURE__ */ jsx10("div", { className: "mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 text-gray-300", children: /* @__PURE__ */ jsx10(Icon, { size: 28, strokeWidth: 1.5, "aria-hidden": "true" }) }),
+    /* @__PURE__ */ jsx10("h3", { className: "mb-1 text-[15px] font-semibold text-preto", children: title }),
+    description && /* @__PURE__ */ jsx10("p", { className: "mb-5 max-w-sm text-[13px] text-gray-400", children: description }),
+    actionLabel && onAction && /* @__PURE__ */ jsx10(
+      Button,
+      {
+        size: "default",
+        className: "gap-2 bg-roxo px-5 text-[13px] font-semibold text-branco hover:bg-roxo-hover",
+        onClick: onAction,
+        children: actionLabel
+      }
+    )
+  ] });
+}
+function SearchEmptyState({ query }) {
+  return /* @__PURE__ */ jsxs6("div", { className: "flex flex-col items-center justify-center px-4 py-12", children: [
+    /* @__PURE__ */ jsx10("div", { className: "mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100 text-gray-300", children: /* @__PURE__ */ jsxs6("svg", { width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round", children: [
+      /* @__PURE__ */ jsx10("circle", { cx: "11", cy: "11", r: "8" }),
+      /* @__PURE__ */ jsx10("path", { d: "m21 21-4.3-4.3" })
+    ] }) }),
+    /* @__PURE__ */ jsx10("h3", { className: "mb-1 text-[14px] font-semibold text-preto", children: "Nenhum resultado encontrado" }),
+    /* @__PURE__ */ jsxs6("p", { className: "text-center text-[13px] text-gray-400", children: [
+      'Nenhum resultado para "',
+      query,
+      '". Tente outro termo.'
+    ] })
+  ] });
+}
 export {
   Avatar,
   AvatarBadge,
@@ -683,10 +716,12 @@ export {
   CardFooter,
   CardHeader,
   CardTitle,
+  EmptyState,
   KpiCard,
   KpiGrid,
   Loading,
   Modal,
+  SearchEmptyState,
   Skeleton,
   SkeletonKpiCard,
   SkeletonPage,
