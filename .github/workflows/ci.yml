@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Testes
+        run: npm test
+      - name: Build (dist)
+        run: npm run build
+      # Falha se o dist commitado estiver desatualizado (fonte única: o dist
+      # tem que refletir o src, senão as apps consomem código velho).
+      - name: dist commitado está atualizado?
+        run: |
+          if ! git diff --quiet -- dist; then
+            echo "::error::dist/ desatualizado — rode 'npm run build' e commite o dist."
+            git --no-pager diff --stat -- dist
+            exit 1
+          fi
