@@ -248,6 +248,38 @@ interface PageFrameProps {
 }
 declare function PageFrame({ rail, mobileHeader, extras, header, mobileTitle, footer, mobileBottomNav, children, mainId, contentAreaClassName, fullBleed, contentKey, }: PageFrameProps): React.JSX.Element;
 
+interface BottomNavItem {
+    id: string;
+    label: string;
+    icon: LucideIcon;
+}
+interface AppBottomNavProps {
+    items: BottomNavItem[];
+    activeId: string;
+    onNavigate: (id: string) => void;
+}
+declare const AppBottomNav: React.NamedExoticComponent<AppBottomNavProps>;
+
+interface AppMobileHeaderProps {
+    /** Se fornecido, mostra o botão de hambúrguer à esquerda do logo. */
+    onMenuToggle?: () => void;
+    logoSrc?: string;
+    /** Ações extras à esquerda do menu do usuário (busca, sino…). */
+    actions?: ReactNode;
+    /** Menu do usuário (avatar + Sair) — normalmente <UserMenu/>. */
+    userMenu: ReactNode;
+}
+declare function AppMobileHeader({ onMenuToggle, logoSrc, actions, userMenu }: AppMobileHeaderProps): React.JSX.Element;
+
+interface UserMenuProps {
+    name?: string;
+    avatarUrl?: string;
+    /** Iniciais para o fallback do avatar (ex.: "AJ"). */
+    initials: string;
+    onLogout: () => void;
+}
+declare function UserMenu({ name, avatarUrl, initials, onLogout }: UserMenuProps): React.JSX.Element;
+
 interface EmptyStateProps {
     icon: LucideIcon;
     title: string;
@@ -343,4 +375,4 @@ declare const AlertDialogCancel: React.ForwardRefExoticComponent<Omit<AlertDialo
 
 declare function cn(...inputs: ClassValue[]): string;
 
-export { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, AppFooter, AppRail, type AppRailProps, Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, ConfirmDialog, type ConfirmDialogProps, ContentHeader, type ContentHeaderProps, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, EmptyState, type EmptyStateProps, Input, type InputProps, KpiCard, type KpiCardProps, KpiGrid, Label, Loading, Modal, type ModalProps, PageFrame, type PageFrameProps, type RailItem, SearchEmptyState, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, Separator, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, StatusDot, type StatusDotProps, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, badgeVariants, buttonVariants, cn, toast, useToast };
+export { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, AppBottomNav, type AppBottomNavProps, AppFooter, AppMobileHeader, type AppMobileHeaderProps, AppRail, type AppRailProps, Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, type BottomNavItem, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, ConfirmDialog, type ConfirmDialogProps, ContentHeader, type ContentHeaderProps, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, EmptyState, type EmptyStateProps, Input, type InputProps, KpiCard, type KpiCardProps, KpiGrid, Label, Loading, Modal, type ModalProps, PageFrame, type PageFrameProps, type RailItem, SearchEmptyState, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, Separator, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, StatusDot, type StatusDotProps, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, UserMenu, type UserMenuProps, badgeVariants, buttonVariants, cn, toast, useToast };
