@@ -29,15 +29,12 @@ function Modal({ open, onClose, title, description, children, footer, size = "md
         card?.focus();
         return;
       }
-      const first = f[0];
-      const last = f[f.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
+      e.preventDefault();
+      const idx = f.indexOf(document.activeElement);
+      let next;
+      if (e.shiftKey) next = idx <= 0 ? f[f.length - 1] : f[idx - 1];
+      else next = idx === -1 || idx === f.length - 1 ? f[0] : f[idx + 1];
+      next.focus();
     };
     window.addEventListener("keydown", onKey);
     return () => {

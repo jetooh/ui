@@ -62,15 +62,14 @@ export function Modal({ open, onClose, title, description, children, footer, siz
         card?.focus();
         return;
       }
-      const first = f[0];
-      const last = f[f.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
+      // Trap robusto: trata TODO Tab (preventDefault + move explícito com
+      // wraparound) — assim o foco nunca escapa do modal.
+      e.preventDefault();
+      const idx = f.indexOf(document.activeElement as HTMLElement);
+      let next: HTMLElement;
+      if (e.shiftKey) next = idx <= 0 ? f[f.length - 1] : f[idx - 1];
+      else next = idx === -1 || idx === f.length - 1 ? f[0] : f[idx + 1];
+      next.focus();
     };
     window.addEventListener('keydown', onKey);
     return () => {
