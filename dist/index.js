@@ -437,7 +437,7 @@ function KpiCard({
       trend && /* @__PURE__ */ jsxs3(
         "span",
         {
-          className: `flex items-center gap-1 text-xs font-medium ${trendUp ? "text-verde-dark" : "text-red-500"}`,
+          className: `flex items-center gap-1 text-xs font-medium ${trendUp ? "text-verde-dark" : "text-red-600"}`,
           children: [
             trendUp ? /* @__PURE__ */ jsx6(ArrowUpRight, { size: 12, strokeWidth: 2 }) : /* @__PURE__ */ jsx6(ArrowDownRight, { size: 12, strokeWidth: 2 }),
             trend

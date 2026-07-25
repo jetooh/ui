@@ -37,7 +37,7 @@ export function KpiCard({
           <span className="text-2xl font-bold tracking-tight text-preto">{value}</span>
           {trend && (
             <span
-              className={`flex items-center gap-1 text-xs font-medium ${trendUp ? "text-verde-dark" : "text-red-500"}`}
+              className={`flex items-center gap-1 text-xs font-medium ${trendUp ? "text-verde-dark" : "text-red-600"}`}
             >
               {trendUp ? (
                 <ArrowUpRight size={12} strokeWidth={2} />
