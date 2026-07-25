@@ -700,6 +700,43 @@ function SearchEmptyState({ query }) {
     ] })
   ] });
 }
+
+// src/components/Input.tsx
+import * as React2 from "react";
+import { jsx as jsx11 } from "react/jsx-runtime";
+var Input = React2.forwardRef(({ className, type, ...props }, ref) => {
+  return /* @__PURE__ */ jsx11(
+    "input",
+    {
+      type,
+      className: cn(
+        "flex w-full rounded-lg border border-gray-200 bg-branco px-3 py-2 text-[14px] text-preto outline-hidden transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50",
+        className
+      ),
+      ref,
+      ...props
+    }
+  );
+});
+Input.displayName = "Input";
+
+// src/components/Label.tsx
+import * as React3 from "react";
+import { jsx as jsx12 } from "react/jsx-runtime";
+var Label = React3.forwardRef(
+  ({ className, ...props }, ref) => /* @__PURE__ */ jsx12(
+    "label",
+    {
+      ref,
+      className: cn(
+        "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+        className
+      ),
+      ...props
+    }
+  )
+);
+Label.displayName = "Label";
 export {
   Avatar,
   AvatarBadge,
@@ -717,8 +754,10 @@ export {
   CardHeader,
   CardTitle,
   EmptyState,
+  Input,
   KpiCard,
   KpiGrid,
+  Label,
   Loading,
   Modal,
   SearchEmptyState,

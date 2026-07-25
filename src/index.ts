@@ -22,4 +22,7 @@ export { StatusDot } from './components/StatusDot';
 export type { StatusDotProps } from './components/StatusDot';
 export { EmptyState, SearchEmptyState } from './components/EmptyState';
 export type { EmptyStateProps } from './components/EmptyState';
+export { Input } from './components/Input';
+export type { InputProps } from './components/Input';
+export { Label } from './components/Label';
 export { cn } from './lib/cn';
