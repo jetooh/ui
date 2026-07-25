@@ -62,6 +62,8 @@ animação `animate-fade-in-up`.
 | `Tooltip` + `TooltipTrigger/Content/Provider` | Tooltip (Base UI). |
 | `DropdownMenu` + subpartes (`Trigger/Content/Item/CheckboxItem/RadioGroup/Separator/Sub…`) | Menu dropdown (Base UI). |
 | `Select` + subpartes (`Trigger/Content/Value/Item/Group/Label/Separator…`) | Select (Radix — `@radix-ui/react-select` é dependency do pacote, instalada transitivamente via git-dep). |
+| `ConfirmDialog` | Diálogo de confirmação (sobre o Modal). Props: `open,title,description,confirmLabel?,cancelLabel?,destructive?,loading?,onConfirm,onClose`. Controlado. |
+| `AlertDialog` + subpartes (`Trigger/Content/Header/Title/Description/Footer/Action/Cancel`) | Alert dialog composicional (Radix — dep do pacote, transitiva). |
 | `cn` | `clsx` + `tailwind-merge`. |
 
 ## Como adicionar/alterar um componente
