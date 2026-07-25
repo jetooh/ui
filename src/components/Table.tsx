@@ -6,7 +6,11 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
     <div
       data-slot="table-container"
-      className="relative w-full overflow-x-auto"
+      // Foco por teclado: a região com scroll horizontal precisa ser focável
+      // para quem navega só com teclado conseguir rolá-la (WCAG 2.1.1).
+      tabIndex={0}
+      role="group"
+      className="relative w-full overflow-x-auto outline-none"
     >
       <table
         data-slot="table"

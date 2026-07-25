@@ -475,7 +475,9 @@ function Table({ className, ...props }) {
     "div",
     {
       "data-slot": "table-container",
-      className: "relative w-full overflow-x-auto",
+      tabIndex: 0,
+      role: "group",
+      className: "relative w-full overflow-x-auto outline-none",
       children: /* @__PURE__ */ jsx7(
         "table",
         {
