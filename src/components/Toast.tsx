@@ -138,7 +138,7 @@ export function Toaster() {
           <button
             onClick={() => dismiss(t.id)}
             aria-label="Fechar notificação"
-            className="ml-1 shrink-0 text-gray-400 transition-colors hover:text-preto"
+            className="ml-1 shrink-0 text-gray-500 transition-colors hover:text-preto"
           >
             <X size={14} strokeWidth={2} />
           </button>

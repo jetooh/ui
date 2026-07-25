@@ -70,7 +70,7 @@ function Modal({ open, onClose, title, description, children, footer, size = "md
                     type: "button",
                     onClick: onClose,
                     "aria-label": "Fechar",
-                    className: "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-preto",
+                    className: "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-preto",
                     children: /* @__PURE__ */ jsx(X, { size: 16, strokeWidth: 1.5 })
                   }
                 )
@@ -685,7 +685,7 @@ function Toaster() {
                 {
                   onClick: () => dismiss(t.id),
                   "aria-label": "Fechar notifica\xE7\xE3o",
-                  className: "ml-1 shrink-0 text-gray-400 transition-colors hover:text-preto",
+                  className: "ml-1 shrink-0 text-gray-500 transition-colors hover:text-preto",
                   children: /* @__PURE__ */ jsx8(X2, { size: 14, strokeWidth: 2 })
                 }
               )
