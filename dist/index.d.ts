@@ -5,6 +5,7 @@ import * as class_variance_authority_types from 'class-variance-authority/types'
 import { Button as Button$1 } from '@base-ui/react/button';
 import { VariantProps } from 'class-variance-authority';
 import { useRender } from '@base-ui/react/use-render';
+import { LucideIcon } from 'lucide-react';
 import { ClassValue } from 'clsx';
 
 interface ModalProps {
@@ -73,6 +74,23 @@ declare function Loading(): React.JSX.Element;
 declare const SkeletonPage: typeof Loading;
 declare function TabLoading(): React.JSX.Element;
 
+interface KpiCardProps {
+    label: string;
+    value: ReactNode;
+    icon: LucideIcon;
+    iconBg?: string;
+    iconColor?: string;
+    trend?: string | null;
+    trendUp?: boolean;
+    hint?: string;
+}
+declare function KpiCard({ label, value, icon: Icon, iconBg, iconColor, trend, trendUp, hint, }: KpiCardProps): React.JSX.Element;
+declare function KpiGrid({ children, className, cols, }: {
+    children: ReactNode;
+    className?: string;
+    cols?: 3 | 4 | 5;
+}): React.JSX.Element;
+
 declare function cn(...inputs: ClassValue[]): string;
 
-export { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Loading, Modal, type ModalProps, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, TabLoading, badgeVariants, buttonVariants, cn };
+export { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, KpiCard, type KpiCardProps, KpiGrid, Loading, Modal, type ModalProps, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, TabLoading, badgeVariants, buttonVariants, cn };

@@ -376,6 +376,57 @@ var SkeletonPage = Loading;
 function TabLoading() {
   return /* @__PURE__ */ jsx5("div", { className: "flex items-center justify-center py-16", children: /* @__PURE__ */ jsx5("span", { className: "inline-block h-6 w-6 animate-spin rounded-full border-2 border-roxo border-t-transparent" }) });
 }
+
+// src/components/KpiCard.tsx
+import { ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { jsx as jsx6, jsxs as jsxs3 } from "react/jsx-runtime";
+function KpiCard({
+  label,
+  value,
+  icon: Icon,
+  iconBg = "bg-roxo/10",
+  iconColor = "text-roxo",
+  trend,
+  trendUp,
+  hint
+}) {
+  return /* @__PURE__ */ jsx6(Card, { className: "gap-0", children: /* @__PURE__ */ jsxs3(CardHeader, { className: "flex flex-row items-start justify-between", children: [
+    /* @__PURE__ */ jsxs3("div", { className: "flex flex-col gap-1", children: [
+      /* @__PURE__ */ jsx6("span", { className: "text-xs font-medium uppercase tracking-wider text-gray-500", children: label }),
+      /* @__PURE__ */ jsx6("span", { className: "text-2xl font-bold tracking-tight text-preto", children: value }),
+      trend && /* @__PURE__ */ jsxs3(
+        "span",
+        {
+          className: `flex items-center gap-1 text-xs font-medium ${trendUp ? "text-verde-dark" : "text-red-500"}`,
+          children: [
+            trendUp ? /* @__PURE__ */ jsx6(ArrowUpRight, { size: 12, strokeWidth: 2 }) : /* @__PURE__ */ jsx6(ArrowDownRight, { size: 12, strokeWidth: 2 }),
+            trend
+          ]
+        }
+      ),
+      hint && /* @__PURE__ */ jsx6("span", { className: "text-xs text-gray-400", children: hint })
+    ] }),
+    /* @__PURE__ */ jsx6(
+      "div",
+      {
+        className: `flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${iconBg} ${iconColor}`,
+        children: /* @__PURE__ */ jsx6(Icon, { size: 20, strokeWidth: 1.5 })
+      }
+    )
+  ] }) });
+}
+var LG_COLS = {
+  3: "lg:grid-cols-3",
+  4: "lg:grid-cols-4",
+  5: "lg:grid-cols-5"
+};
+function KpiGrid({
+  children,
+  className,
+  cols = 4
+}) {
+  return /* @__PURE__ */ jsx6("div", { className: `grid grid-cols-2 gap-2.5 sm:gap-4 ${LG_COLS[cols]} ${className ?? ""}`, children });
+}
 export {
   Avatar,
   AvatarBadge,
@@ -392,6 +443,8 @@ export {
   CardFooter,
   CardHeader,
   CardTitle,
+  KpiCard,
+  KpiGrid,
   Loading,
   Modal,
   Skeleton,
