@@ -18,4 +18,6 @@ export {
 } from './components/Table';
 export { toast, useToast, Toaster } from './components/Toast';
 export type { ToastOptions } from './components/Toast';
+export { StatusDot } from './components/StatusDot';
+export type { StatusDotProps } from './components/StatusDot';
 export { cn } from './lib/cn';

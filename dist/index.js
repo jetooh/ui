@@ -656,6 +656,17 @@ function Toaster() {
     document.body
   );
 }
+
+// src/components/StatusDot.tsx
+import { jsx as jsx9, jsxs as jsxs5 } from "react/jsx-runtime";
+var SIZES2 = { sm: "h-1.5 w-1.5", md: "h-2 w-2", lg: "h-2.5 w-2.5" };
+function StatusDot({ color, pulse = false, size = "md", className }) {
+  const s = SIZES2[size];
+  return /* @__PURE__ */ jsxs5("span", { className: cn("relative flex", s, className), children: [
+    pulse && /* @__PURE__ */ jsx9("span", { className: cn("absolute inline-flex h-full w-full animate-ping rounded-full opacity-75", color) }),
+    /* @__PURE__ */ jsx9("span", { className: cn("relative inline-flex rounded-full", s, color) })
+  ] });
+}
 export {
   Avatar,
   AvatarBadge,
@@ -681,6 +692,7 @@ export {
   SkeletonPage,
   SkeletonTable,
   SkeletonTableRow,
+  StatusDot,
   TabLoading,
   Table,
   TableBody,

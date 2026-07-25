@@ -157,6 +157,22 @@ declare function useToast(): {
 };
 declare function Toaster(): React.ReactPortal | null;
 
+declare const SIZES: {
+    readonly sm: "h-1.5 w-1.5";
+    readonly md: "h-2 w-2";
+    readonly lg: "h-2.5 w-2.5";
+};
+interface StatusDotProps {
+    /** Classe de cor de fundo, ex.: "bg-verde", "bg-red-400", "bg-roxo". */
+    color: string;
+    /** Anel pulsante (animate-ping) — use para estados "vivos" (online/ao vivo). */
+    pulse?: boolean;
+    size?: keyof typeof SIZES;
+    /** Extras no wrapper (ex.: "mr-1.5" quando fica antes de um label). */
+    className?: string;
+}
+declare function StatusDot({ color, pulse, size, className }: StatusDotProps): React.JSX.Element;
+
 declare function cn(...inputs: ClassValue[]): string;
 
-export { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, KpiCard, type KpiCardProps, KpiGrid, Loading, Modal, type ModalProps, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, badgeVariants, buttonVariants, cn, toast, useToast };
+export { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, KpiCard, type KpiCardProps, KpiGrid, Loading, Modal, type ModalProps, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, StatusDot, type StatusDotProps, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, badgeVariants, buttonVariants, cn, toast, useToast };
