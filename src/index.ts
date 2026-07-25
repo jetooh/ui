@@ -20,6 +20,8 @@ export { toast, useToast, Toaster } from './components/Toast';
 export type { ToastOptions } from './components/Toast';
 export { StatusDot } from './components/StatusDot';
 export type { StatusDotProps } from './components/StatusDot';
+export { AppRail } from './components/AppRail';
+export type { AppRailProps, RailItem } from './components/AppRail';
 export { EmptyState, SearchEmptyState } from './components/EmptyState';
 export type { EmptyStateProps } from './components/EmptyState';
 export { Input } from './components/Input';

@@ -180,6 +180,28 @@ interface StatusDotProps {
 }
 declare function StatusDot({ color, pulse, size, className }: StatusDotProps): React.JSX.Element;
 
+interface RailItem {
+    id: string;
+    label: string;
+    icon: LucideIcon;
+    /** Contador de notificação (bolinha vermelha). Ausente/0 = sem badge. */
+    badge?: number;
+}
+interface AppRailProps {
+    items: RailItem[];
+    /** Itens de baixo (logs/ajuda etc.) — separados do bloco principal. */
+    bottomItems?: RailItem[];
+    activeId: string;
+    onNavigate: (id: string) => void;
+    onPrefetch?: (id: string) => void;
+    logoSrc?: string;
+    /** Botão "expandir menu" (quando a sidebar secundária está recolhida). */
+    onExpand?: () => void;
+    /** Esconde no mobile (`hidden lg:flex`). Default: sempre visível. */
+    hideOnMobile?: boolean;
+}
+declare const AppRail: React.NamedExoticComponent<AppRailProps>;
+
 interface EmptyStateProps {
     icon: LucideIcon;
     title: string;
@@ -275,4 +297,4 @@ declare const AlertDialogCancel: React.ForwardRefExoticComponent<Omit<AlertDialo
 
 declare function cn(...inputs: ClassValue[]): string;
 
-export { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, ConfirmDialog, type ConfirmDialogProps, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, EmptyState, type EmptyStateProps, Input, type InputProps, KpiCard, type KpiCardProps, KpiGrid, Label, Loading, Modal, type ModalProps, SearchEmptyState, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, Separator, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, StatusDot, type StatusDotProps, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, badgeVariants, buttonVariants, cn, toast, useToast };
+export { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, AppRail, type AppRailProps, Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, ConfirmDialog, type ConfirmDialogProps, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, EmptyState, type EmptyStateProps, Input, type InputProps, KpiCard, type KpiCardProps, KpiGrid, Label, Loading, Modal, type ModalProps, type RailItem, SearchEmptyState, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, Separator, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, StatusDot, type StatusDotProps, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, badgeVariants, buttonVariants, cn, toast, useToast };
