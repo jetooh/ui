@@ -100,6 +100,63 @@ declare function TableHead({ className, ...props }: React.ComponentProps<"th">):
 declare function TableCell({ className, ...props }: React.ComponentProps<"td">): React.JSX.Element;
 declare function TableCaption({ className, ...props }: React.ComponentProps<"caption">): React.JSX.Element;
 
+type ToastVariant = "default" | "destructive" | "success" | "info";
+interface ToastOptions {
+    title?: React.ReactNode;
+    description?: React.ReactNode;
+    variant?: ToastVariant | "outline";
+}
+interface ToastItem {
+    id: string;
+    title?: React.ReactNode;
+    description?: React.ReactNode;
+    variant: ToastVariant;
+}
+declare function baseToast(opts: ToastOptions): {
+    id: string;
+    dismiss: () => void;
+    update: (next: ToastOptions) => void;
+};
+declare const toast: typeof baseToast & {
+    success: (message: React.ReactNode) => {
+        id: string;
+        dismiss: () => void;
+        update: (next: ToastOptions) => void;
+    };
+    error: (message: React.ReactNode) => {
+        id: string;
+        dismiss: () => void;
+        update: (next: ToastOptions) => void;
+    };
+    info: (message: React.ReactNode) => {
+        id: string;
+        dismiss: () => void;
+        update: (next: ToastOptions) => void;
+    };
+};
+declare function useToast(): {
+    toasts: ToastItem[];
+    toast: typeof baseToast & {
+        success: (message: React.ReactNode) => {
+            id: string;
+            dismiss: () => void;
+            update: (next: ToastOptions) => void;
+        };
+        error: (message: React.ReactNode) => {
+            id: string;
+            dismiss: () => void;
+            update: (next: ToastOptions) => void;
+        };
+        info: (message: React.ReactNode) => {
+            id: string;
+            dismiss: () => void;
+            update: (next: ToastOptions) => void;
+        };
+    };
+    dismiss: (id?: string) => void;
+};
+declare function Toaster(): React.ReactPortal | null;
+
 declare function cn(...inputs: ClassValue[]): string;
 
-export { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, KpiCard, type KpiCardProps, KpiGrid, Loading, Modal, type ModalProps, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, badgeVariants, buttonVariants, cn };
+export { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, KpiCard, type KpiCardProps, KpiGrid, Loading, Modal, type ModalProps, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, badgeVariants, buttonVariants, cn, toast, useToast };

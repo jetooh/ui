@@ -532,6 +532,130 @@ function TableCaption({
     }
   );
 }
+
+// src/components/Toast.tsx
+import * as React from "react";
+import { createPortal } from "react-dom";
+import { CheckCircle2, AlertCircle, Info, X as X2 } from "lucide-react";
+import { jsx as jsx8, jsxs as jsxs4 } from "react/jsx-runtime";
+var LIMIT = 5;
+var DURATION = 4500;
+var counter = 0;
+var items = [];
+var listeners = /* @__PURE__ */ new Set();
+var emit = () => {
+  for (const l of listeners) l(items);
+};
+function dismiss(id) {
+  items = items.filter((t) => t.id !== id);
+  emit();
+}
+function normalizeVariant(v) {
+  if (v === "destructive" || v === "success" || v === "info") return v;
+  return "default";
+}
+function baseToast(opts) {
+  const id = String(++counter);
+  const item = {
+    id,
+    title: opts.title,
+    description: opts.description,
+    variant: normalizeVariant(opts.variant)
+  };
+  items = [item, ...items].slice(0, LIMIT);
+  emit();
+  const timer = setTimeout(() => dismiss(id), DURATION);
+  return {
+    id,
+    dismiss: () => {
+      clearTimeout(timer);
+      dismiss(id);
+    },
+    update: (next) => {
+      items = items.map((t) => t.id === id ? { ...t, ...next, variant: normalizeVariant(next.variant) } : t);
+      emit();
+    }
+  };
+}
+var toast = Object.assign(baseToast, {
+  success: (message) => baseToast({ title: message, variant: "success" }),
+  error: (message) => baseToast({ title: message, variant: "destructive" }),
+  info: (message) => baseToast({ title: message, variant: "info" })
+});
+function useToast() {
+  const [list, setList] = React.useState(items);
+  React.useEffect(() => {
+    listeners.add(setList);
+    setList(items);
+    return () => {
+      listeners.delete(setList);
+    };
+  }, []);
+  return {
+    toasts: list,
+    toast,
+    dismiss: (id) => {
+      if (id) dismiss(id);
+      else {
+        items = [];
+        emit();
+      }
+    }
+  };
+}
+var ICON = {
+  success: /* @__PURE__ */ jsx8(CheckCircle2, { size: 16, strokeWidth: 1.75, className: "shrink-0 text-verde" }),
+  destructive: /* @__PURE__ */ jsx8(AlertCircle, { size: 16, strokeWidth: 1.75, className: "shrink-0 text-status-critico" }),
+  info: /* @__PURE__ */ jsx8(Info, { size: 16, strokeWidth: 1.75, className: "shrink-0 text-roxo" }),
+  default: null
+};
+function Toaster() {
+  const [list, setList] = React.useState([]);
+  React.useEffect(() => {
+    listeners.add(setList);
+    setList(items);
+    return () => {
+      listeners.delete(setList);
+    };
+  }, []);
+  if (typeof document === "undefined") return null;
+  return createPortal(
+    /* @__PURE__ */ jsx8(
+      "div",
+      {
+        className: "pointer-events-none fixed bottom-4 right-4 z-[10000] flex max-w-[calc(100vw-2rem)] flex-col gap-2",
+        role: "region",
+        "aria-live": "polite",
+        "aria-label": "Notifica\xE7\xF5es",
+        children: list.map((t) => /* @__PURE__ */ jsxs4(
+          "div",
+          {
+            role: "status",
+            className: "pointer-events-auto flex w-full items-start gap-2 rounded-lg border border-gray-200 bg-branco px-3.5 py-2.5 text-[13px] text-preto shadow-lg",
+            children: [
+              ICON[t.variant],
+              /* @__PURE__ */ jsxs4("div", { className: cn("flex min-w-0 flex-col gap-0.5", !t.description && "justify-center"), children: [
+                t.title && /* @__PURE__ */ jsx8("span", { className: "max-w-xs font-medium leading-snug", children: t.title }),
+                t.description && /* @__PURE__ */ jsx8("span", { className: "max-w-xs text-xs leading-snug text-gray-400", children: t.description })
+              ] }),
+              /* @__PURE__ */ jsx8(
+                "button",
+                {
+                  onClick: () => dismiss(t.id),
+                  "aria-label": "Fechar notifica\xE7\xE3o",
+                  className: "ml-1 shrink-0 text-gray-400 transition-colors hover:text-preto",
+                  children: /* @__PURE__ */ jsx8(X2, { size: 14, strokeWidth: 2 })
+                }
+              )
+            ]
+          },
+          t.id
+        ))
+      }
+    ),
+    document.body
+  );
+}
 export {
   Avatar,
   AvatarBadge,
@@ -566,7 +690,10 @@ export {
   TableHead,
   TableHeader,
   TableRow,
+  Toaster,
   badgeVariants,
   buttonVariants,
-  cn
+  cn,
+  toast,
+  useToast
 };

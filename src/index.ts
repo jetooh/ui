@@ -16,4 +16,6 @@ export type { KpiCardProps } from './components/KpiCard';
 export {
   Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption,
 } from './components/Table';
+export { toast, useToast, Toaster } from './components/Toast';
+export type { ToastOptions } from './components/Toast';
 export { cn } from './lib/cn';
