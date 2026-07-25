@@ -6,6 +6,8 @@ import { Button as Button$1 } from '@base-ui/react/button';
 import { VariantProps } from 'class-variance-authority';
 import { useRender } from '@base-ui/react/use-render';
 import { LucideIcon } from 'lucide-react';
+import { Separator as Separator$1 } from '@base-ui/react/separator';
+import { Tooltip as Tooltip$1 } from '@base-ui/react/tooltip';
 import { ClassValue } from 'clsx';
 
 interface ModalProps {
@@ -190,6 +192,13 @@ declare const Input: React.ForwardRefExoticComponent<InputProps & React.RefAttri
 
 declare const Label: React.ForwardRefExoticComponent<React.LabelHTMLAttributes<HTMLLabelElement> & React.RefAttributes<HTMLLabelElement>>;
 
+declare function Separator({ className, orientation, ...props }: Separator$1.Props): React.JSX.Element;
+
+declare function TooltipProvider({ delay, ...props }: Tooltip$1.Provider.Props): React.JSX.Element;
+declare function Tooltip({ ...props }: Tooltip$1.Root.Props): React.JSX.Element;
+declare function TooltipTrigger({ ...props }: Tooltip$1.Trigger.Props): React.JSX.Element;
+declare function TooltipContent({ className, side, sideOffset, align, alignOffset, children, ...props }: Tooltip$1.Popup.Props & Pick<Tooltip$1.Positioner.Props, "align" | "alignOffset" | "side" | "sideOffset">): React.JSX.Element;
+
 declare function cn(...inputs: ClassValue[]): string;
 
-export { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, EmptyState, type EmptyStateProps, Input, type InputProps, KpiCard, type KpiCardProps, KpiGrid, Label, Loading, Modal, type ModalProps, SearchEmptyState, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, StatusDot, type StatusDotProps, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, badgeVariants, buttonVariants, cn, toast, useToast };
+export { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, EmptyState, type EmptyStateProps, Input, type InputProps, KpiCard, type KpiCardProps, KpiGrid, Label, Loading, Modal, type ModalProps, SearchEmptyState, Separator, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, StatusDot, type StatusDotProps, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, badgeVariants, buttonVariants, cn, toast, useToast };

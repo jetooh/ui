@@ -25,4 +25,6 @@ export type { EmptyStateProps } from './components/EmptyState';
 export { Input } from './components/Input';
 export type { InputProps } from './components/Input';
 export { Label } from './components/Label';
+export { Separator } from './components/Separator';
+export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './components/Tooltip';
 export { cn } from './lib/cn';
