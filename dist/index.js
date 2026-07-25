@@ -339,7 +339,7 @@ function Skeleton({ className, ...props }) {
   );
 }
 function SkeletonKpiCard() {
-  return /* @__PURE__ */ jsx5("div", { className: "flex flex-col gap-4 rounded-xl bg-card py-4 px-4 ring-1 ring-foreground/10", children: /* @__PURE__ */ jsxs2("div", { className: "flex items-start justify-between", children: [
+  return /* @__PURE__ */ jsx5("div", { className: "flex flex-col gap-4 rounded-xl border border-gray-100 bg-card py-4 px-4", children: /* @__PURE__ */ jsxs2("div", { className: "flex items-start justify-between", children: [
     /* @__PURE__ */ jsxs2("div", { className: "flex flex-col gap-2", children: [
       /* @__PURE__ */ jsx5(Skeleton, { className: "h-3 w-24" }),
       /* @__PURE__ */ jsx5(Skeleton, { className: "h-7 w-20" })
@@ -355,7 +355,7 @@ function SkeletonTableRow({ cols = 5 }) {
   ] });
 }
 function SkeletonTable({ rows = 5, cols = 5 }) {
-  return /* @__PURE__ */ jsxs2("div", { className: "rounded-xl bg-card ring-1 ring-foreground/10 overflow-hidden", children: [
+  return /* @__PURE__ */ jsxs2("div", { className: "rounded-xl border border-gray-100 bg-card overflow-hidden", children: [
     /* @__PURE__ */ jsxs2("div", { className: "flex items-center justify-between px-4 py-4 border-b border-gray-100", children: [
       /* @__PURE__ */ jsxs2("div", { className: "flex items-center gap-2", children: [
         /* @__PURE__ */ jsx5(Skeleton, { className: "h-4 w-4 rounded" }),
@@ -937,7 +937,7 @@ function DropdownMenuSubContent({
     DropdownMenuContent,
     {
       "data-slot": "dropdown-menu-sub-content",
-      className: cn("w-auto min-w-[96px] rounded-lg bg-popover p-1 text-popover-foreground shadow-lg ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95", className),
+      className: cn("w-auto min-w-[96px] rounded-lg bg-popover p-1 text-popover-foreground ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95", className),
       align,
       alignOffset,
       side,
@@ -1102,7 +1102,7 @@ var SelectContent = React4.forwardRef(({ className, children, position = "popper
   {
     ref,
     className: cn(
-      "relative z-50 max-h-96 min-w-32 overflow-hidden rounded-xl border border-gray-200 bg-branco text-preto shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+      "relative z-50 max-h-96 min-w-32 overflow-hidden rounded-xl bg-branco text-preto ring-1 ring-foreground/10 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
       position === "popper" && "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
       className
     ),
@@ -1223,7 +1223,7 @@ var AlertDialogOverlay = React5.forwardRef(({ className, ...props }, ref) => /* 
   AlertDialogPrimitive.Overlay,
   {
     className: cn(
-      "fixed inset-0 z-50 bg-preto/40 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "fixed inset-0 z-[9999] bg-preto/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className
     ),
     ...props,
@@ -1238,7 +1238,7 @@ var AlertDialogContent = React5.forwardRef(({ className, ...props }, ref) => /* 
     {
       ref,
       className: cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-gray-200 bg-branco p-6 shadow-xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-xl",
+        "fixed left-[50%] top-[50%] z-[9999] grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 rounded-2xl border border-gray-200 bg-branco p-6 duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]",
         className
       ),
       ...props

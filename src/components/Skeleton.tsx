@@ -12,7 +12,7 @@ function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>)
 
 function SkeletonKpiCard() {
   return (
-    <div className="flex flex-col gap-4 rounded-xl bg-card py-4 px-4 ring-1 ring-foreground/10">
+    <div className="flex flex-col gap-4 rounded-xl border border-gray-100 bg-card py-4 px-4">
       <div className="flex items-start justify-between">
         <div className="flex flex-col gap-2">
           <Skeleton className="h-3 w-24" />
@@ -44,7 +44,7 @@ function SkeletonTableRow({ cols = 5 }: { cols?: number }) {
 
 function SkeletonTable({ rows = 5, cols = 5 }: { rows?: number; cols?: number }) {
   return (
-    <div className="rounded-xl bg-card ring-1 ring-foreground/10 overflow-hidden">
+    <div className="rounded-xl border border-gray-100 bg-card overflow-hidden">
       <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
         <div className="flex items-center gap-2">
           <Skeleton className="h-4 w-4 rounded" />
