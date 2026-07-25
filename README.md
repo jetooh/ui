@@ -56,6 +56,8 @@ animação `animate-fade-in-up`.
 | `toast` + `useToast` + `Toaster` | Toast **superset** (sem Radix): `toast.success/error/info(msg)` (imperativo) **e** `toast({title,description,variant})` (objeto shadcn). Monte `<Toaster/>` uma vez no root. |
 | `StatusDot` | Indicador de status (bolinha + pulso opcional). Props: `color` (classe bg-*), `pulse?`, `size?`(sm/md/lg), `className?`. A lógica de cor/pulse fica no app. |
 | `EmptyState` + `SearchEmptyState` | Estado vazio (ícone em caixa + título + descrição + CTA roxo opcional). Props: `icon,title,description?,actionLabel?,onAction?`. `SearchEmptyState` = "nenhum resultado" de busca. |
+| `Input` | Campo de formulário (rounded-lg, borda gray-200, foco roxo). `<input>` puro. |
+| `Label` | Rótulo de formulário (`<label>` puro, sem Radix). |
 | `cn` | `clsx` + `tailwind-merge`. |
 
 ## Como adicionar/alterar um componente
