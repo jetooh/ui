@@ -383,7 +383,7 @@ import { jsx as jsx6, jsxs as jsxs3 } from "react/jsx-runtime";
 function KpiCard({
   label,
   value,
-  icon: Icon,
+  icon: Icon2,
   iconBg = "bg-roxo/10",
   iconColor = "text-roxo",
   trend,
@@ -410,7 +410,7 @@ function KpiCard({
       "div",
       {
         className: `flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${iconBg} ${iconColor}`,
-        children: /* @__PURE__ */ jsx6(Icon, { size: 20, strokeWidth: 1.5 })
+        children: /* @__PURE__ */ jsx6(Icon2, { size: 20, strokeWidth: 1.5 })
       }
     )
   ] }) });
@@ -670,9 +670,9 @@ function StatusDot({ color, pulse = false, size = "md", className }) {
 
 // src/components/EmptyState.tsx
 import { jsx as jsx10, jsxs as jsxs6 } from "react/jsx-runtime";
-function EmptyState({ icon: Icon, title, description, actionLabel, onAction }) {
+function EmptyState({ icon: Icon2, title, description, actionLabel, onAction }) {
   return /* @__PURE__ */ jsxs6("div", { className: "flex flex-col items-center justify-center px-4 py-16 text-center", children: [
-    /* @__PURE__ */ jsx10("div", { className: "mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 text-gray-300", children: /* @__PURE__ */ jsx10(Icon, { size: 28, strokeWidth: 1.5, "aria-hidden": "true" }) }),
+    /* @__PURE__ */ jsx10("div", { className: "mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 text-gray-300", children: /* @__PURE__ */ jsx10(Icon2, { size: 28, strokeWidth: 1.5, "aria-hidden": "true" }) }),
     /* @__PURE__ */ jsx10("h3", { className: "mb-1 text-[15px] font-semibold text-preto", children: title }),
     description && /* @__PURE__ */ jsx10("p", { className: "mb-5 max-w-sm text-[13px] text-gray-400", children: description }),
     actionLabel && onAction && /* @__PURE__ */ jsx10(
@@ -817,6 +817,348 @@ function TooltipContent({
     }
   ) });
 }
+
+// src/components/DropdownMenu.tsx
+import { Menu as MenuPrimitive } from "@base-ui/react/menu";
+import { ChevronRight as ChevronRightIcon, Check as CheckIcon } from "lucide-react";
+import { jsx as jsx15, jsxs as jsxs8 } from "react/jsx-runtime";
+function DropdownMenu({ ...props }) {
+  return /* @__PURE__ */ jsx15(MenuPrimitive.Root, { "data-slot": "dropdown-menu", ...props });
+}
+function DropdownMenuPortal({ ...props }) {
+  return /* @__PURE__ */ jsx15(MenuPrimitive.Portal, { "data-slot": "dropdown-menu-portal", ...props });
+}
+function DropdownMenuTrigger({ ...props }) {
+  return /* @__PURE__ */ jsx15(MenuPrimitive.Trigger, { "data-slot": "dropdown-menu-trigger", ...props });
+}
+function DropdownMenuContent({
+  align = "start",
+  alignOffset = 0,
+  side = "bottom",
+  sideOffset = 4,
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsx15(MenuPrimitive.Portal, { children: /* @__PURE__ */ jsx15(
+    MenuPrimitive.Positioner,
+    {
+      className: "isolate z-50 outline-none",
+      align,
+      alignOffset,
+      side,
+      sideOffset,
+      children: /* @__PURE__ */ jsx15(
+        MenuPrimitive.Popup,
+        {
+          "data-slot": "dropdown-menu-content",
+          className: cn("z-50 max-h-(--available-height) w-(--anchor-width) min-w-32 origin-(--transform-origin) overflow-x-hidden overflow-y-auto rounded-lg bg-popover p-1 text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:overflow-hidden data-closed:fade-out-0 data-closed:zoom-out-95", className),
+          ...props
+        }
+      )
+    }
+  ) });
+}
+function DropdownMenuGroup({ ...props }) {
+  return /* @__PURE__ */ jsx15(MenuPrimitive.Group, { "data-slot": "dropdown-menu-group", ...props });
+}
+function DropdownMenuLabel({
+  className,
+  inset,
+  ...props
+}) {
+  return /* @__PURE__ */ jsx15(
+    MenuPrimitive.GroupLabel,
+    {
+      "data-slot": "dropdown-menu-label",
+      "data-inset": inset,
+      className: cn(
+        "px-1.5 py-1 text-xs font-medium text-muted-foreground data-inset:pl-7",
+        className
+      ),
+      ...props
+    }
+  );
+}
+function DropdownMenuItem({
+  className,
+  inset,
+  variant = "default",
+  ...props
+}) {
+  return /* @__PURE__ */ jsx15(
+    MenuPrimitive.Item,
+    {
+      "data-slot": "dropdown-menu-item",
+      "data-inset": inset,
+      "data-variant": variant,
+      className: cn(
+        "group/dropdown-menu-item relative flex cursor-default items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-7 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-[variant=destructive]:*:[svg]:text-destructive",
+        className
+      ),
+      ...props
+    }
+  );
+}
+function DropdownMenuSub({ ...props }) {
+  return /* @__PURE__ */ jsx15(MenuPrimitive.SubmenuRoot, { "data-slot": "dropdown-menu-sub", ...props });
+}
+function DropdownMenuSubTrigger({
+  className,
+  inset,
+  children,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxs8(
+    MenuPrimitive.SubmenuTrigger,
+    {
+      "data-slot": "dropdown-menu-sub-trigger",
+      "data-inset": inset,
+      className: cn(
+        "flex cursor-default items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-7 data-popup-open:bg-accent data-popup-open:text-accent-foreground data-open:bg-accent data-open:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      ),
+      ...props,
+      children: [
+        children,
+        /* @__PURE__ */ jsx15(ChevronRightIcon, { className: "ml-auto" })
+      ]
+    }
+  );
+}
+function DropdownMenuSubContent({
+  align = "start",
+  alignOffset = -3,
+  side = "right",
+  sideOffset = 0,
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsx15(
+    DropdownMenuContent,
+    {
+      "data-slot": "dropdown-menu-sub-content",
+      className: cn("w-auto min-w-[96px] rounded-lg bg-popover p-1 text-popover-foreground shadow-lg ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95", className),
+      align,
+      alignOffset,
+      side,
+      sideOffset,
+      ...props
+    }
+  );
+}
+function DropdownMenuCheckboxItem({
+  className,
+  children,
+  checked,
+  inset,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxs8(
+    MenuPrimitive.CheckboxItem,
+    {
+      "data-slot": "dropdown-menu-checkbox-item",
+      "data-inset": inset,
+      className: cn(
+        "relative flex cursor-default items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-7 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      ),
+      checked,
+      ...props,
+      children: [
+        /* @__PURE__ */ jsx15(
+          "span",
+          {
+            className: "pointer-events-none absolute right-2 flex items-center justify-center",
+            "data-slot": "dropdown-menu-checkbox-item-indicator",
+            children: /* @__PURE__ */ jsx15(MenuPrimitive.CheckboxItemIndicator, { children: /* @__PURE__ */ jsx15(
+              CheckIcon,
+              {}
+            ) })
+          }
+        ),
+        children
+      ]
+    }
+  );
+}
+function DropdownMenuRadioGroup({ ...props }) {
+  return /* @__PURE__ */ jsx15(
+    MenuPrimitive.RadioGroup,
+    {
+      "data-slot": "dropdown-menu-radio-group",
+      ...props
+    }
+  );
+}
+function DropdownMenuRadioItem({
+  className,
+  children,
+  inset,
+  ...props
+}) {
+  return /* @__PURE__ */ jsxs8(
+    MenuPrimitive.RadioItem,
+    {
+      "data-slot": "dropdown-menu-radio-item",
+      "data-inset": inset,
+      className: cn(
+        "relative flex cursor-default items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-7 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      ),
+      ...props,
+      children: [
+        /* @__PURE__ */ jsx15(
+          "span",
+          {
+            className: "pointer-events-none absolute right-2 flex items-center justify-center",
+            "data-slot": "dropdown-menu-radio-item-indicator",
+            children: /* @__PURE__ */ jsx15(MenuPrimitive.RadioItemIndicator, { children: /* @__PURE__ */ jsx15(
+              CheckIcon,
+              {}
+            ) })
+          }
+        ),
+        children
+      ]
+    }
+  );
+}
+function DropdownMenuSeparator({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsx15(
+    MenuPrimitive.Separator,
+    {
+      "data-slot": "dropdown-menu-separator",
+      className: cn("-mx-1 my-1 h-px bg-border", className),
+      ...props
+    }
+  );
+}
+function DropdownMenuShortcut({
+  className,
+  ...props
+}) {
+  return /* @__PURE__ */ jsx15(
+    "span",
+    {
+      "data-slot": "dropdown-menu-shortcut",
+      className: cn(
+        "ml-auto text-xs tracking-widest text-muted-foreground group-focus/dropdown-menu-item:text-accent-foreground",
+        className
+      ),
+      ...props
+    }
+  );
+}
+
+// src/components/Select.tsx
+import * as React4 from "react";
+import * as SelectPrimitive from "@radix-ui/react-select";
+import { Check, ChevronDown, ChevronUp } from "lucide-react";
+import { jsx as jsx16, jsxs as jsxs9 } from "react/jsx-runtime";
+var Select = SelectPrimitive.Root;
+var SelectGroup = SelectPrimitive.Group;
+var SelectValue = SelectPrimitive.Value;
+var SelectTrigger = React4.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ jsxs9(
+  SelectPrimitive.Trigger,
+  {
+    ref,
+    className: cn(
+      "flex w-full items-center justify-between rounded-lg border border-gray-200 bg-branco px-3 py-2 text-[14px] text-preto outline-hidden transition-colors placeholder:text-gray-400 focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+      className
+    ),
+    ...props,
+    children: [
+      children,
+      /* @__PURE__ */ jsx16(SelectPrimitive.Icon, { asChild: true, children: /* @__PURE__ */ jsx16(ChevronDown, { className: "h-4 w-4 opacity-50" }) })
+    ]
+  }
+));
+SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
+var SelectScrollUpButton = React4.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx16(
+  SelectPrimitive.ScrollUpButton,
+  {
+    ref,
+    className: cn("flex cursor-default items-center justify-center py-1", className),
+    ...props,
+    children: /* @__PURE__ */ jsx16(ChevronUp, { className: "h-4 w-4" })
+  }
+));
+SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
+var SelectScrollDownButton = React4.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx16(
+  SelectPrimitive.ScrollDownButton,
+  {
+    ref,
+    className: cn("flex cursor-default items-center justify-center py-1", className),
+    ...props,
+    children: /* @__PURE__ */ jsx16(ChevronDown, { className: "h-4 w-4" })
+  }
+));
+SelectScrollDownButton.displayName = SelectPrimitive.ScrollDownButton.displayName;
+var SelectContent = React4.forwardRef(({ className, children, position = "popper", ...props }, ref) => /* @__PURE__ */ jsx16(SelectPrimitive.Portal, { children: /* @__PURE__ */ jsxs9(
+  SelectPrimitive.Content,
+  {
+    ref,
+    className: cn(
+      "relative z-50 max-h-96 min-w-32 overflow-hidden rounded-xl border border-gray-200 bg-branco text-preto shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+      position === "popper" && "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
+      className
+    ),
+    position,
+    ...props,
+    children: [
+      /* @__PURE__ */ jsx16(SelectScrollUpButton, {}),
+      /* @__PURE__ */ jsx16(
+        SelectPrimitive.Viewport,
+        {
+          className: cn(
+            "p-1",
+            position === "popper" && "h-(--radix-select-trigger-height) w-full min-w-(--radix-select-trigger-width)"
+          ),
+          children
+        }
+      ),
+      /* @__PURE__ */ jsx16(SelectScrollDownButton, {})
+    ]
+  }
+) }));
+SelectContent.displayName = SelectPrimitive.Content.displayName;
+var SelectLabel = React4.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx16(
+  SelectPrimitive.Label,
+  {
+    ref,
+    className: cn("py-1.5 pl-8 pr-2 text-[10px] font-semibold uppercase tracking-wider text-gray-400", className),
+    ...props
+  }
+));
+SelectLabel.displayName = SelectPrimitive.Label.displayName;
+var SelectItem = React4.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ jsxs9(
+  SelectPrimitive.Item,
+  {
+    ref,
+    className: cn(
+      "relative flex w-full cursor-default select-none items-center rounded-md py-1.5 pl-8 pr-2 text-[13px] text-gray-600 outline-hidden transition-colors focus:bg-gray-50 focus:text-preto data-disabled:pointer-events-none data-disabled:opacity-50",
+      className
+    ),
+    ...props,
+    children: [
+      /* @__PURE__ */ jsx16("span", { className: "absolute left-2 flex h-3.5 w-3.5 items-center justify-center", children: /* @__PURE__ */ jsx16(SelectPrimitive.ItemIndicator, { children: /* @__PURE__ */ jsx16(Check, { className: "h-4 w-4" }) }) }),
+      /* @__PURE__ */ jsx16(SelectPrimitive.ItemText, { children })
+    ]
+  }
+));
+SelectItem.displayName = SelectPrimitive.Item.displayName;
+var SelectSeparator = React4.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx16(
+  SelectPrimitive.Separator,
+  {
+    ref,
+    className: cn("-mx-1 my-1 h-px bg-muted", className),
+    ...props
+  }
+));
+SelectSeparator.displayName = SelectPrimitive.Separator.displayName;
 export {
   Avatar,
   AvatarBadge,
@@ -833,6 +1175,21 @@ export {
   CardFooter,
   CardHeader,
   CardTitle,
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
   EmptyState,
   Input,
   KpiCard,
@@ -841,6 +1198,16 @@ export {
   Loading,
   Modal,
   SearchEmptyState,
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectScrollDownButton,
+  SelectScrollUpButton,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
   Separator,
   Skeleton,
   SkeletonKpiCard,

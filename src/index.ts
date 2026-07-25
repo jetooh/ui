@@ -27,4 +27,14 @@ export type { InputProps } from './components/Input';
 export { Label } from './components/Label';
 export { Separator } from './components/Separator';
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './components/Tooltip';
+export {
+  DropdownMenu, DropdownMenuPortal, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuGroup,
+  DropdownMenuLabel, DropdownMenuItem, DropdownMenuCheckboxItem, DropdownMenuRadioGroup,
+  DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub,
+  DropdownMenuSubTrigger, DropdownMenuSubContent,
+} from './components/DropdownMenu';
+export {
+  Select, SelectGroup, SelectValue, SelectTrigger, SelectContent, SelectLabel, SelectItem,
+  SelectSeparator, SelectScrollUpButton, SelectScrollDownButton,
+} from './components/Select';
 export { cn } from './lib/cn';
