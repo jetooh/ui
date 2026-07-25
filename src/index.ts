@@ -37,4 +37,11 @@ export {
   Select, SelectGroup, SelectValue, SelectTrigger, SelectContent, SelectLabel, SelectItem,
   SelectSeparator, SelectScrollUpButton, SelectScrollDownButton,
 } from './components/Select';
+export { ConfirmDialog } from './components/ConfirmDialog';
+export type { ConfirmDialogProps } from './components/ConfirmDialog';
+export {
+  AlertDialog, AlertDialogPortal, AlertDialogOverlay, AlertDialogTrigger, AlertDialogContent,
+  AlertDialogHeader, AlertDialogFooter, AlertDialogTitle, AlertDialogDescription,
+  AlertDialogAction, AlertDialogCancel,
+} from './components/AlertDialog';
 export { cn } from './lib/cn';

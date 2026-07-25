@@ -1159,7 +1159,159 @@ var SelectSeparator = React4.forwardRef(({ className, ...props }, ref) => /* @__
   }
 ));
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName;
+
+// src/components/ConfirmDialog.tsx
+import { Loader2 } from "lucide-react";
+import { Fragment, jsx as jsx17, jsxs as jsxs10 } from "react/jsx-runtime";
+function ConfirmDialog({
+  open,
+  title,
+  description,
+  confirmLabel = "Confirmar",
+  cancelLabel = "Cancelar",
+  destructive = false,
+  loading = false,
+  onConfirm,
+  onClose
+}) {
+  return /* @__PURE__ */ jsxs10(
+    Modal,
+    {
+      open,
+      onClose,
+      footer: /* @__PURE__ */ jsxs10(Fragment, { children: [
+        /* @__PURE__ */ jsx17(
+          Button,
+          {
+            variant: "outline",
+            size: "default",
+            onClick: onClose,
+            className: "border-gray-200 px-4 text-[13px] font-medium text-gray-600 hover:border-gray-300 hover:text-preto",
+            children: cancelLabel
+          }
+        ),
+        /* @__PURE__ */ jsxs10(
+          Button,
+          {
+            size: "default",
+            onClick: onConfirm,
+            disabled: loading,
+            className: `gap-2 px-5 text-[13px] font-semibold text-branco disabled:opacity-50 ${destructive ? "bg-status-critico hover:bg-status-critico/90" : "bg-roxo hover:bg-roxo-hover"}`,
+            children: [
+              loading && /* @__PURE__ */ jsx17(Loader2, { size: 14, className: "animate-spin" }),
+              confirmLabel
+            ]
+          }
+        )
+      ] }),
+      children: [
+        /* @__PURE__ */ jsx17("h2", { className: "text-[15px] font-semibold text-preto", children: title }),
+        /* @__PURE__ */ jsx17("div", { className: "mt-1 text-[13px] text-gray-500", children: description })
+      ]
+    }
+  );
+}
+
+// src/components/AlertDialog.tsx
+import * as React5 from "react";
+import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
+import { jsx as jsx18, jsxs as jsxs11 } from "react/jsx-runtime";
+var AlertDialog = AlertDialogPrimitive.Root;
+var AlertDialogTrigger = AlertDialogPrimitive.Trigger;
+var AlertDialogPortal = AlertDialogPrimitive.Portal;
+var AlertDialogOverlay = React5.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx18(
+  AlertDialogPrimitive.Overlay,
+  {
+    className: cn(
+      "fixed inset-0 z-50 bg-preto/40 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      className
+    ),
+    ...props,
+    ref
+  }
+));
+AlertDialogOverlay.displayName = AlertDialogPrimitive.Overlay.displayName;
+var AlertDialogContent = React5.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsxs11(AlertDialogPortal, { children: [
+  /* @__PURE__ */ jsx18(AlertDialogOverlay, {}),
+  /* @__PURE__ */ jsx18(
+    AlertDialogPrimitive.Content,
+    {
+      ref,
+      className: cn(
+        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-gray-200 bg-branco p-6 shadow-xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-xl",
+        className
+      ),
+      ...props
+    }
+  )
+] }));
+AlertDialogContent.displayName = AlertDialogPrimitive.Content.displayName;
+var AlertDialogHeader = ({ className, ...props }) => /* @__PURE__ */ jsx18("div", { className: cn("flex flex-col space-y-2 text-center sm:text-left", className), ...props });
+AlertDialogHeader.displayName = "AlertDialogHeader";
+var AlertDialogFooter = ({ className, ...props }) => /* @__PURE__ */ jsx18(
+  "div",
+  {
+    className: cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2", className),
+    ...props
+  }
+);
+AlertDialogFooter.displayName = "AlertDialogFooter";
+var AlertDialogTitle = React5.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx18(
+  AlertDialogPrimitive.Title,
+  {
+    ref,
+    className: cn("text-[15px] font-semibold text-preto", className),
+    ...props
+  }
+));
+AlertDialogTitle.displayName = AlertDialogPrimitive.Title.displayName;
+var AlertDialogDescription = React5.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx18(
+  AlertDialogPrimitive.Description,
+  {
+    ref,
+    className: cn("text-[13px] text-gray-500", className),
+    ...props
+  }
+));
+AlertDialogDescription.displayName = AlertDialogPrimitive.Description.displayName;
+var AlertDialogAction = React5.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx18(
+  AlertDialogPrimitive.Action,
+  {
+    ref,
+    className: cn(
+      buttonVariants(),
+      "bg-roxo px-4 text-[13px] font-semibold text-branco hover:bg-roxo-hover",
+      className
+    ),
+    ...props
+  }
+));
+AlertDialogAction.displayName = AlertDialogPrimitive.Action.displayName;
+var AlertDialogCancel = React5.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx18(
+  AlertDialogPrimitive.Cancel,
+  {
+    ref,
+    className: cn(
+      buttonVariants({ variant: "outline" }),
+      "mt-2 border-gray-200 px-4 text-[13px] font-medium text-gray-600 hover:border-gray-300 hover:text-preto sm:mt-0",
+      className
+    ),
+    ...props
+  }
+));
+AlertDialogCancel.displayName = AlertDialogPrimitive.Cancel.displayName;
 export {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  AlertDialogPortal,
+  AlertDialogTitle,
+  AlertDialogTrigger,
   Avatar,
   AvatarBadge,
   AvatarFallback,
@@ -1175,6 +1327,7 @@ export {
   CardFooter,
   CardHeader,
   CardTitle,
+  ConfirmDialog,
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
