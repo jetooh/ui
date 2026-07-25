@@ -1,48 +1,91 @@
 // src/components/Modal.tsx
 import { X } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useId, useRef } from "react";
 import { jsx, jsxs } from "react/jsx-runtime";
 var SIZES = { sm: "max-w-sm", md: "max-w-md", lg: "max-w-lg" };
+var FOCUSABLE = 'a[href],button:not([disabled]),textarea:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
 function Modal({ open, onClose, title, description, children, footer, size = "md" }) {
+  const cardRef = useRef(null);
+  const titleId = useId();
+  const descId = useId();
   useEffect(() => {
     if (!open) return;
+    const prevActive = document.activeElement;
+    const card = cardRef.current;
+    const getFocusable = () => card ? Array.from(card.querySelectorAll(FOCUSABLE)).filter(
+      (el) => el.offsetWidth > 0 || el.offsetHeight > 0 || el === document.activeElement
+    ) : [];
+    const focusables = getFocusable();
+    (focusables[0] ?? card)?.focus();
     const onKey = (e) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const f = getFocusable();
+      if (f.length === 0) {
+        e.preventDefault();
+        card?.focus();
+        return;
+      }
+      const first = f[0];
+      const last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      prevActive?.focus?.();
+    };
   }, [open, onClose]);
   if (!open) return null;
-  return /* @__PURE__ */ jsxs("div", { className: "fixed inset-0 z-[9999] flex items-center justify-center", role: "dialog", "aria-modal": "true", children: [
-    /* @__PURE__ */ jsx("div", { className: "absolute inset-0 bg-preto/40 backdrop-blur-sm", onClick: onClose }),
-    /* @__PURE__ */ jsx(
-      "div",
-      {
-        className: `relative z-10 mx-4 w-full ${SIZES[size]} animate-fade-in-up`,
-        style: { animationDuration: "0.2s" },
-        children: /* @__PURE__ */ jsxs("div", { className: "rounded-2xl border border-gray-200 bg-branco", children: [
-          title != null && /* @__PURE__ */ jsxs("div", { className: "flex items-start justify-between gap-3 border-b border-gray-100 px-6 py-4", children: [
-            /* @__PURE__ */ jsxs("div", { className: "min-w-0", children: [
-              /* @__PURE__ */ jsx("h3", { className: "text-[15px] font-semibold text-preto", children: title }),
-              description != null && /* @__PURE__ */ jsx("p", { className: "mt-0.5 text-[12.5px] leading-relaxed text-gray-400", children: description })
-            ] }),
-            /* @__PURE__ */ jsx(
-              "button",
-              {
-                type: "button",
-                onClick: onClose,
-                "aria-label": "Fechar",
-                className: "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-preto",
-                children: /* @__PURE__ */ jsx(X, { size: 16, strokeWidth: 1.5 })
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsx("div", { className: "px-6 py-5", children }),
-          footer != null && /* @__PURE__ */ jsx("div", { className: "flex items-center justify-end gap-2 border-t border-gray-100 px-6 py-4", children: footer })
-        ] })
-      }
-    )
-  ] });
+  return /* @__PURE__ */ jsxs(
+    "div",
+    {
+      className: "fixed inset-0 z-[9999] flex items-center justify-center",
+      role: "dialog",
+      "aria-modal": "true",
+      "aria-labelledby": title != null ? titleId : void 0,
+      "aria-describedby": description != null ? descId : void 0,
+      children: [
+        /* @__PURE__ */ jsx("div", { className: "absolute inset-0 bg-preto/40 backdrop-blur-sm", onClick: onClose }),
+        /* @__PURE__ */ jsx(
+          "div",
+          {
+            className: `relative z-10 mx-4 w-full ${SIZES[size]} animate-fade-in-up`,
+            style: { animationDuration: "0.2s" },
+            children: /* @__PURE__ */ jsxs("div", { ref: cardRef, tabIndex: -1, className: "rounded-2xl border border-gray-200 bg-branco outline-none", children: [
+              title != null && /* @__PURE__ */ jsxs("div", { className: "flex items-start justify-between gap-3 border-b border-gray-100 px-6 py-4", children: [
+                /* @__PURE__ */ jsxs("div", { className: "min-w-0", children: [
+                  /* @__PURE__ */ jsx("h3", { id: titleId, className: "text-[15px] font-semibold text-preto", children: title }),
+                  description != null && /* @__PURE__ */ jsx("p", { id: descId, className: "mt-0.5 text-[12.5px] leading-relaxed text-gray-500", children: description })
+                ] }),
+                /* @__PURE__ */ jsx(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: onClose,
+                    "aria-label": "Fechar",
+                    className: "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-preto",
+                    children: /* @__PURE__ */ jsx(X, { size: 16, strokeWidth: 1.5 })
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsx("div", { className: "px-6 py-5", children }),
+              footer != null && /* @__PURE__ */ jsx("div", { className: "flex items-center justify-end gap-2 border-t border-gray-100 px-6 py-4", children: footer })
+            ] })
+          }
+        )
+      ]
+    }
+  );
 }
 
 // src/components/Avatar.tsx
@@ -404,7 +447,7 @@ function KpiCard({
           ]
         }
       ),
-      hint && /* @__PURE__ */ jsx6("span", { className: "text-xs text-gray-400", children: hint })
+      hint && /* @__PURE__ */ jsx6("span", { className: "text-xs text-gray-500", children: hint })
     ] }),
     /* @__PURE__ */ jsx6(
       "div",
@@ -630,13 +673,13 @@ function Toaster() {
         children: list.map((t) => /* @__PURE__ */ jsxs4(
           "div",
           {
-            role: "status",
+            role: t.variant === "destructive" ? "alert" : "status",
             className: "pointer-events-auto flex w-full items-start gap-2 rounded-lg border border-gray-200 bg-branco px-3.5 py-2.5 text-[13px] text-preto shadow-lg",
             children: [
               ICON[t.variant],
               /* @__PURE__ */ jsxs4("div", { className: cn("flex min-w-0 flex-col gap-0.5", !t.description && "justify-center"), children: [
                 t.title && /* @__PURE__ */ jsx8("span", { className: "max-w-xs font-medium leading-snug", children: t.title }),
-                t.description && /* @__PURE__ */ jsx8("span", { className: "max-w-xs text-xs leading-snug text-gray-400", children: t.description })
+                t.description && /* @__PURE__ */ jsx8("span", { className: "max-w-xs text-xs leading-snug text-gray-500", children: t.description })
               ] }),
               /* @__PURE__ */ jsx8(
                 "button",
@@ -674,7 +717,7 @@ function EmptyState({ icon: Icon2, title, description, actionLabel, onAction }) 
   return /* @__PURE__ */ jsxs6("div", { className: "flex flex-col items-center justify-center px-4 py-16 text-center", children: [
     /* @__PURE__ */ jsx10("div", { className: "mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 text-gray-300", children: /* @__PURE__ */ jsx10(Icon2, { size: 28, strokeWidth: 1.5, "aria-hidden": "true" }) }),
     /* @__PURE__ */ jsx10("h3", { className: "mb-1 text-[15px] font-semibold text-preto", children: title }),
-    description && /* @__PURE__ */ jsx10("p", { className: "mb-5 max-w-sm text-[13px] text-gray-400", children: description }),
+    description && /* @__PURE__ */ jsx10("p", { className: "mb-5 max-w-sm text-[13px] text-gray-500", children: description }),
     actionLabel && onAction && /* @__PURE__ */ jsx10(
       Button,
       {
@@ -693,7 +736,7 @@ function SearchEmptyState({ query }) {
       /* @__PURE__ */ jsx10("path", { d: "m21 21-4.3-4.3" })
     ] }) }),
     /* @__PURE__ */ jsx10("h3", { className: "mb-1 text-[14px] font-semibold text-preto", children: "Nenhum resultado encontrado" }),
-    /* @__PURE__ */ jsxs6("p", { className: "text-center text-[13px] text-gray-400", children: [
+    /* @__PURE__ */ jsxs6("p", { className: "text-center text-[13px] text-gray-500", children: [
       'Nenhum resultado para "',
       query,
       '". Tente outro termo.'
@@ -1129,7 +1172,7 @@ var SelectLabel = React4.forwardRef(({ className, ...props }, ref) => /* @__PURE
   SelectPrimitive.Label,
   {
     ref,
-    className: cn("py-1.5 pl-8 pr-2 text-[10px] font-semibold uppercase tracking-wider text-gray-400", className),
+    className: cn("py-1.5 pl-8 pr-2 text-[10px] font-semibold uppercase tracking-wider text-gray-500", className),
     ...props
   }
 ));

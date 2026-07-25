@@ -19,7 +19,7 @@ export function EmptyState({ icon: Icon, title, description, actionLabel, onActi
         <Icon size={28} strokeWidth={1.5} aria-hidden="true" />
       </div>
       <h3 className="mb-1 text-[15px] font-semibold text-preto">{title}</h3>
-      {description && <p className="mb-5 max-w-sm text-[13px] text-gray-400">{description}</p>}
+      {description && <p className="mb-5 max-w-sm text-[13px] text-gray-500">{description}</p>}
       {actionLabel && onAction && (
         <Button
           size="default"
@@ -43,7 +43,7 @@ export function SearchEmptyState({ query }: { query: string }) {
         </svg>
       </div>
       <h3 className="mb-1 text-[14px] font-semibold text-preto">Nenhum resultado encontrado</h3>
-      <p className="text-center text-[13px] text-gray-400">
+      <p className="text-center text-[13px] text-gray-500">
         Nenhum resultado para &quot;{query}&quot;. Tente outro termo.
       </p>
     </div>

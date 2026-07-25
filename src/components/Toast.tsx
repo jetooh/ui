@@ -127,13 +127,13 @@ export function Toaster() {
       {list.map((t) => (
         <div
           key={t.id}
-          role="status"
+          role={t.variant === "destructive" ? "alert" : "status"}
           className="pointer-events-auto flex w-full items-start gap-2 rounded-lg border border-gray-200 bg-branco px-3.5 py-2.5 text-[13px] text-preto shadow-lg"
         >
           {ICON[t.variant]}
           <div className={cn("flex min-w-0 flex-col gap-0.5", !t.description && "justify-center")}>
             {t.title && <span className="max-w-xs font-medium leading-snug">{t.title}</span>}
-            {t.description && <span className="max-w-xs text-xs leading-snug text-gray-400">{t.description}</span>}
+            {t.description && <span className="max-w-xs text-xs leading-snug text-gray-500">{t.description}</span>}
           </div>
           <button
             onClick={() => dismiss(t.id)}

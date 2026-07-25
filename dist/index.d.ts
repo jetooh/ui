@@ -32,7 +32,9 @@ interface ModalProps {
  * `rounded-2xl` com borda cinza e SEM sombra (régua flat), entrada
  * `animate-fade-in-up` (0.2s). Esc e clique no overlay fecham.
  *
- * Fonte ÚNICA: mudou aqui → muda em todo app que consome @jetooh/ui.
+ * A11y (WCAG 2.4.3/4.1.2): ao abrir, foca o primeiro elemento e PRENDE o foco
+ * (Tab/Shift+Tab ciclam dentro); ao fechar, devolve o foco ao gatilho; título
+ * ligado via `aria-labelledby`. Fonte ÚNICA: mudou aqui → muda em todo app.
  */
 declare function Modal({ open, onClose, title, description, children, footer, size }: ModalProps): React.JSX.Element | null;
 

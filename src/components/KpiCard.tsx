@@ -47,7 +47,7 @@ export function KpiCard({
               {trend}
             </span>
           )}
-          {hint && <span className="text-xs text-gray-400">{hint}</span>}
+          {hint && <span className="text-xs text-gray-500">{hint}</span>}
         </div>
         <div
           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${iconBg} ${iconColor}`}
