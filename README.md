@@ -54,6 +54,7 @@ animação `animate-fade-in-up`.
 | `KpiCard` + `KpiGrid` | Card de estatística do painel (label/valor/ícone/trend/hint) + grid responsivo. |
 | `Table` + `TableHeader/Body/Footer/Row/Head/Cell/Caption` | Tabela. |
 | `toast` + `useToast` + `Toaster` | Toast **superset** (sem Radix): `toast.success/error/info(msg)` (imperativo) **e** `toast({title,description,variant})` (objeto shadcn). Monte `<Toaster/>` uma vez no root. |
+| `StatusDot` | Indicador de status (bolinha + pulso opcional). Props: `color` (classe bg-*), `pulse?`, `size?`(sm/md/lg), `className?`. A lógica de cor/pulse fica no app. |
 | `cn` | `clsx` + `tailwind-merge`. |
 
 ## Como adicionar/alterar um componente
