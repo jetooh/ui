@@ -91,6 +91,15 @@ declare function KpiGrid({ children, className, cols, }: {
     cols?: 3 | 4 | 5;
 }): React.JSX.Element;
 
+declare function Table({ className, ...props }: React.ComponentProps<"table">): React.JSX.Element;
+declare function TableHeader({ className, ...props }: React.ComponentProps<"thead">): React.JSX.Element;
+declare function TableBody({ className, ...props }: React.ComponentProps<"tbody">): React.JSX.Element;
+declare function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">): React.JSX.Element;
+declare function TableRow({ className, ...props }: React.ComponentProps<"tr">): React.JSX.Element;
+declare function TableHead({ className, ...props }: React.ComponentProps<"th">): React.JSX.Element;
+declare function TableCell({ className, ...props }: React.ComponentProps<"td">): React.JSX.Element;
+declare function TableCaption({ className, ...props }: React.ComponentProps<"caption">): React.JSX.Element;
+
 declare function cn(...inputs: ClassValue[]): string;
 
-export { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, KpiCard, type KpiCardProps, KpiGrid, Loading, Modal, type ModalProps, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, TabLoading, badgeVariants, buttonVariants, cn };
+export { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, KpiCard, type KpiCardProps, KpiGrid, Loading, Modal, type ModalProps, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, badgeVariants, buttonVariants, cn };

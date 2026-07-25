@@ -13,4 +13,7 @@ export {
 } from './components/Skeleton';
 export { KpiCard, KpiGrid } from './components/KpiCard';
 export type { KpiCardProps } from './components/KpiCard';
+export {
+  Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption,
+} from './components/Table';
 export { cn } from './lib/cn';
