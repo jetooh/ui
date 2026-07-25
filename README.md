@@ -58,6 +58,10 @@ animação `animate-fade-in-up`.
 | `EmptyState` + `SearchEmptyState` | Estado vazio (ícone em caixa + título + descrição + CTA roxo opcional). Props: `icon,title,description?,actionLabel?,onAction?`. `SearchEmptyState` = "nenhum resultado" de busca. |
 | `Input` | Campo de formulário (rounded-lg, borda gray-200, foco roxo). `<input>` puro. |
 | `Label` | Rótulo de formulário (`<label>` puro, sem Radix). |
+| `Separator` | Divisória (Base UI). |
+| `Tooltip` + `TooltipTrigger/Content/Provider` | Tooltip (Base UI). |
+| `DropdownMenu` + subpartes (`Trigger/Content/Item/CheckboxItem/RadioGroup/Separator/Sub…`) | Menu dropdown (Base UI). |
+| `Select` + subpartes (`Trigger/Content/Value/Item/Group/Label/Separator…`) | Select (Radix — `@radix-ui/react-select` é dependency do pacote, instalada transitivamente via git-dep). |
 | `cn` | `clsx` + `tailwind-merge`. |
 
 ## Como adicionar/alterar um componente
