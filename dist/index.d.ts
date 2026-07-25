@@ -202,6 +202,23 @@ interface AppRailProps {
 }
 declare const AppRail: React.NamedExoticComponent<AppRailProps>;
 
+interface ContentHeaderProps {
+    /** Ícone do módulo — vai na caixa roxa (rounded-xl bg-roxo/10 text-roxo). */
+    icon: LucideIcon;
+    /** Título do módulo (ex.: "Dispositivos"). */
+    moduleTitle: string;
+    /** Segmento após o "·" (ex.: "Detalhe" em páginas de detalhe). */
+    subTitle?: string;
+    /** Linha pequena cinza abaixo do título. */
+    description?: string;
+    /** Substitui TODO o bloco da esquerda (para headers de detalhe customizados). */
+    customLeft?: ReactNode;
+    /** Ações à direita (busca, notificações, avatar, status) — `flex items-center gap-3`. */
+    children?: ReactNode;
+    className?: string;
+}
+declare function ContentHeader({ icon: Icon, moduleTitle, subTitle, description, customLeft, children, className, }: ContentHeaderProps): React.JSX.Element;
+
 interface EmptyStateProps {
     icon: LucideIcon;
     title: string;
@@ -297,4 +314,4 @@ declare const AlertDialogCancel: React.ForwardRefExoticComponent<Omit<AlertDialo
 
 declare function cn(...inputs: ClassValue[]): string;
 
-export { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, AppRail, type AppRailProps, Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, ConfirmDialog, type ConfirmDialogProps, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, EmptyState, type EmptyStateProps, Input, type InputProps, KpiCard, type KpiCardProps, KpiGrid, Label, Loading, Modal, type ModalProps, type RailItem, SearchEmptyState, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, Separator, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, StatusDot, type StatusDotProps, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, badgeVariants, buttonVariants, cn, toast, useToast };
+export { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, AppRail, type AppRailProps, Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, ConfirmDialog, type ConfirmDialogProps, ContentHeader, type ContentHeaderProps, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, EmptyState, type EmptyStateProps, Input, type InputProps, KpiCard, type KpiCardProps, KpiGrid, Label, Loading, Modal, type ModalProps, type RailItem, SearchEmptyState, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, Separator, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, StatusDot, type StatusDotProps, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, badgeVariants, buttonVariants, cn, toast, useToast };

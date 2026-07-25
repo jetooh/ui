@@ -22,6 +22,8 @@ export { StatusDot } from './components/StatusDot';
 export type { StatusDotProps } from './components/StatusDot';
 export { AppRail } from './components/AppRail';
 export type { AppRailProps, RailItem } from './components/AppRail';
+export { ContentHeader } from './components/ContentHeader';
+export type { ContentHeaderProps } from './components/ContentHeader';
 export { EmptyState, SearchEmptyState } from './components/EmptyState';
 export type { EmptyStateProps } from './components/EmptyState';
 export { Input } from './components/Input';
