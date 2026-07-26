@@ -59,7 +59,9 @@ export const AppRail = memo(function AppRail({
           {item.badge > 9 ? "9+" : item.badge}
         </span>
       )}
-      <span className="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1.5 text-[11px] font-medium text-white opacity-0 shadow-lg transition-opacity group-hover/rail-item:opacity-100">
+      {/* bg-rail-bg (escuro nos 2 temas), NÃO bg-gray-900 — gray-900 inverte no
+          dark (#F9FAFB) e o text-white sumiria (branco no branco). */}
+      <span className="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-rail-bg px-2.5 py-1.5 text-[11px] font-medium text-white opacity-0 shadow-lg transition-opacity group-hover/rail-item:opacity-100">
         {item.label}
       </span>
     </button>

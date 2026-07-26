@@ -738,7 +738,7 @@ var AppRail = memo(function AppRail2({
       children: [
         /* @__PURE__ */ jsx10(item.icon, { size: 20, strokeWidth: 1.5 }),
         item.badge != null && item.badge > 0 && /* @__PURE__ */ jsx10("span", { className: "absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold leading-none text-white ring-2 ring-rail-bg", children: item.badge > 9 ? "9+" : item.badge }),
-        /* @__PURE__ */ jsx10("span", { className: "pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1.5 text-[11px] font-medium text-white opacity-0 shadow-lg transition-opacity group-hover/rail-item:opacity-100", children: item.label })
+        /* @__PURE__ */ jsx10("span", { className: "pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-rail-bg px-2.5 py-1.5 text-[11px] font-medium text-white opacity-0 shadow-lg transition-opacity group-hover/rail-item:opacity-100", children: item.label })
       ]
     },
     item.id
