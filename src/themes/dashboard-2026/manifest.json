@@ -1,0 +1,26 @@
+{
+  "id": "dashboard-2026",
+  "name": "Dashboard2026",
+  "description": "Tema de painel administrativo (SaaS) do ecossistema JETOOH: rail lateral escuro + card branco com respiro, roxo de marca, tipografia Plus Jakarta Sans, radius 0.625rem, modo claro + escuro. É o PRIMEIRO tema do design system; outros temas podem coexistir no mesmo pacote (ver ui/THEMES.md).",
+  "status": "active",
+  "ruler": "platform",
+  "consumers": ["platform", "devices"],
+  "package": "@jetooh/ui",
+  "tokens": "./tokens.json",
+  "casca": [
+    "AppRail", "ContentHeader", "AppFooter", "PageFrame",
+    "AppBottomNav", "AppMobileHeader", "UserMenu"
+  ],
+  "components": [
+    "Modal", "Avatar", "Button", "Badge", "Card", "Skeleton", "KpiCard", "Table",
+    "Toast", "StatusDot", "EmptyState", "Input", "Label", "Separator", "Tooltip",
+    "DropdownMenu", "Select", "ConfirmDialog", "AlertDialog"
+  ],
+  "cssContract": {
+    "nota": "Todo app consumidor DEVE definir estes tokens no seu index.css, em modo CLARO e ESCURO, com os valores do tokens.json (régua = platform). O checador scripts/token-drift.mjs valida claro+escuro contra o tokens.json e falha se divergir. O @source do pacote gera as utilities no CSS de cada app.",
+    "colorsClaro": "colors do tokens.json",
+    "colorsEscuro": "colorsDark do tokens.json",
+    "radius": "radius do tokens.json (base --radius=0.625rem)",
+    "tokensNaoMedidos": "usados só via variante hover: (rail-icon-hover*, text-gray-400) e red default do Tailwind ficam fora do checador (classe bare não existe)"
+  }
+}
