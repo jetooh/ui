@@ -20,6 +20,14 @@ export { toast, useToast, Toaster } from './components/Toast';
 export type { ToastOptions } from './components/Toast';
 export { StatusDot } from './components/StatusDot';
 export type { StatusDotProps } from './components/StatusDot';
+export { StatusBadge, DeviceStatusBadge, deviceStatusMeta } from './components/StatusBadge';
+export type { StatusBadgeProps, StatusVariant, DeviceStatus, DeviceStatusBadgeProps } from './components/StatusBadge';
+export { Switch } from './components/Switch';
+export type { SwitchProps } from './components/Switch';
+export {
+  DateRangePicker, PRESETS, computePreset, comparisonRange, defaultRange,
+} from './components/DateRangePicker';
+export type { DateRangePickerProps, RangeValue, Compare } from './components/DateRangePicker';
 export { AppRail } from './components/AppRail';
 export type { AppRailProps, RailItem } from './components/AppRail';
 export { ContentHeader } from './components/ContentHeader';
@@ -32,7 +40,7 @@ export type { AppBottomNavProps, BottomNavItem } from './components/AppBottomNav
 export { AppMobileHeader } from './components/AppMobileHeader';
 export type { AppMobileHeaderProps } from './components/AppMobileHeader';
 export { UserMenu } from './components/UserMenu';
-export type { UserMenuProps } from './components/UserMenu';
+export type { UserMenuProps, UserMenuItem } from './components/UserMenu';
 export { EmptyState, SearchEmptyState } from './components/EmptyState';
 export type { EmptyStateProps } from './components/EmptyState';
 export { Input } from './components/Input';

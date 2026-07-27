@@ -20,4 +20,28 @@ describe('UserMenu', () => {
     fireEvent.click(sair);
     expect(onLogout).toHaveBeenCalledTimes(1);
   });
+
+  it('modo rico: mostra nome+email, itens e o toggle de tema', () => {
+    const onToggleTheme = vi.fn();
+    const onAccount = vi.fn();
+    render(
+      <UserMenu
+        name="Ana Jetooh"
+        email="ana@jetooh.com"
+        initials="AJ"
+        items={[{ label: 'Configurações', onClick: onAccount }]}
+        isDark={false}
+        onToggleTheme={onToggleTheme}
+        onLogout={() => {}}
+      />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Menu do usuário' }));
+    expect(screen.getByText('ana@jetooh.com')).toBeInTheDocument();
+    const cfg = screen.getByRole('menuitem', { name: /Configurações/ });
+    fireEvent.click(cfg);
+    expect(onAccount).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole('button', { name: 'Menu do usuário' }));
+    fireEvent.click(screen.getByRole('switch', { name: 'Alternar tema escuro' }));
+    expect(onToggleTheme).toHaveBeenCalledTimes(1);
+  });
 });

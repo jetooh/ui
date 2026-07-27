@@ -186,6 +186,86 @@ interface StatusDotProps {
 }
 declare function StatusDot({ color, pulse, size, className }: StatusDotProps): React.JSX.Element;
 
+type StatusVariant = "online" | "offline" | "pairing" | "warning" | "neutral";
+interface StatusBadgeProps {
+    label: string;
+    /** Variante semântica com tom pronto. Ignorada nos campos que você sobrescrever. */
+    variant?: StatusVariant;
+    /** Sobrescreve a cor do StatusDot (classe bg-*). */
+    color?: string;
+    /** Sobrescreve as classes da pílula (bg/text/border). */
+    pillClassName?: string;
+    /** Sobrescreve o pulso do dot. */
+    pulse?: boolean;
+    size?: "sm" | "md";
+    className?: string;
+}
+declare function StatusBadge({ label, variant, color, pillClassName, pulse, size, className, }: StatusBadgeProps): React.JSX.Element;
+type DeviceStatus = "online" | "offline" | "pairing" | (string & {});
+/**
+ * Mapa canônico de status de device → rótulo PT + variante + pulso.
+ * Centraliza a divergência histórica ("Pareando" vs "Aguardando aparelho"):
+ * rótulo canônico do device = statusLabel do devices ("Pareando").
+ */
+declare function deviceStatusMeta(status: DeviceStatus): {
+    label: string;
+    variant: StatusVariant;
+    pulse: boolean;
+};
+interface DeviceStatusBadgeProps {
+    status: DeviceStatus;
+    size?: "sm" | "md";
+    className?: string;
+}
+/** Badge de status de device pronto: recebe só o status e resolve rótulo/tom. */
+declare function DeviceStatusBadge({ status, size, className }: DeviceStatusBadgeProps): React.JSX.Element;
+
+declare const TRACK: {
+    readonly sm: "h-5 w-9";
+    readonly default: "h-6 w-11";
+};
+interface SwitchProps {
+    /** Estado ligado/desligado (controlado). */
+    checked: boolean;
+    /** Chamado com o novo estado ao alternar. */
+    onCheckedChange: (checked: boolean) => void;
+    disabled?: boolean;
+    size?: keyof typeof TRACK;
+    /** Rótulo acessível (aria-label) — obrigatório quando não há <label> visível. */
+    label?: string;
+    /** Classe de cor do trilho quando ligado (default: primary/roxo). */
+    color?: string;
+    id?: string;
+    className?: string;
+}
+declare function Switch({ checked, onCheckedChange, disabled, size, label, color, id, className, }: SwitchProps): React.JSX.Element;
+
+type Compare = "period" | "year";
+interface RangeValue {
+    preset: string;
+    from: string;
+    to: string;
+    compare: Compare;
+}
+declare const PRESETS: {
+    id: string;
+    label: string;
+}[];
+declare function computePreset(id: string): {
+    from: string;
+    to: string;
+};
+declare function comparisonRange(from: string, to: string, compare: Compare): {
+    from: string;
+    to: string;
+};
+declare function defaultRange(): RangeValue;
+interface DateRangePickerProps {
+    value: RangeValue;
+    onApply: (v: RangeValue) => void;
+}
+declare function DateRangePicker({ value, onApply }: DateRangePickerProps): React.JSX.Element;
+
 interface RailItem {
     id: string;
     label: string;
@@ -277,14 +357,33 @@ interface AppMobileHeaderProps {
 }
 declare function AppMobileHeader({ onMenuToggle, logoSrc, actions, userMenu }: AppMobileHeaderProps): React.JSX.Element;
 
+interface UserMenuItem {
+    label: string;
+    icon?: LucideIcon;
+    /** Ação ao clicar (fecha o menu antes de executar). */
+    onClick?: () => void;
+    /** Alternativa a onClick: navega para um href (link). */
+    href?: string;
+}
 interface UserMenuProps {
     name?: string;
+    email?: string;
     avatarUrl?: string;
     /** Iniciais para o fallback do avatar (ex.: "AJ"). */
     initials: string;
+    /** Itens extras entre o header e o "Sair" (ex.: Minha Conta, Configurações). */
+    items?: UserMenuItem[];
+    /** Atalho: adiciona um item "Minha Conta" (ícone User) que navega para o href. */
+    accountHref?: string;
+    /** Tema atual escuro? Quando `onToggleTheme` existe, mostra o toggle de tema. */
+    isDark?: boolean;
+    /** Alterna o tema claro/escuro. Se ausente, o toggle de tema não aparece. */
+    onToggleTheme?: () => void;
     onLogout: () => void;
+    /** Tamanho do avatar: "sm" (h-8, mobile, default) ou "md" (h-10, header). */
+    avatarSize?: "sm" | "md";
 }
-declare function UserMenu({ name, avatarUrl, initials, onLogout }: UserMenuProps): React.JSX.Element;
+declare function UserMenu({ name, email, avatarUrl, initials, items, accountHref, isDark, onToggleTheme, onLogout, avatarSize, }: UserMenuProps): React.JSX.Element;
 
 interface EmptyStateProps {
     icon: LucideIcon;
@@ -381,4 +480,4 @@ declare const AlertDialogCancel: React.ForwardRefExoticComponent<Omit<AlertDialo
 
 declare function cn(...inputs: ClassValue[]): string;
 
-export { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, AppBottomNav, type AppBottomNavProps, AppFooter, AppMobileHeader, type AppMobileHeaderProps, AppRail, type AppRailProps, Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, type BottomNavItem, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, ConfirmDialog, type ConfirmDialogProps, ContentHeader, type ContentHeaderProps, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, EmptyState, type EmptyStateProps, Input, type InputProps, KpiCard, type KpiCardProps, KpiGrid, Label, Loading, Modal, type ModalProps, PageFrame, type PageFrameProps, type RailItem, SearchEmptyState, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, Separator, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, StatusDot, type StatusDotProps, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, UserMenu, type UserMenuProps, badgeVariants, buttonVariants, cn, toast, useToast };
+export { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, AppBottomNav, type AppBottomNavProps, AppFooter, AppMobileHeader, type AppMobileHeaderProps, AppRail, type AppRailProps, Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, type BottomNavItem, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, type Compare, ConfirmDialog, type ConfirmDialogProps, ContentHeader, type ContentHeaderProps, DateRangePicker, type DateRangePickerProps, type DeviceStatus, DeviceStatusBadge, type DeviceStatusBadgeProps, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, EmptyState, type EmptyStateProps, Input, type InputProps, KpiCard, type KpiCardProps, KpiGrid, Label, Loading, Modal, type ModalProps, PRESETS, PageFrame, type PageFrameProps, type RailItem, type RangeValue, SearchEmptyState, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, Separator, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, StatusBadge, type StatusBadgeProps, StatusDot, type StatusDotProps, type StatusVariant, Switch, type SwitchProps, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, UserMenu, type UserMenuItem, type UserMenuProps, badgeVariants, buttonVariants, cn, comparisonRange, computePreset, defaultRange, deviceStatusMeta, toast, useToast };

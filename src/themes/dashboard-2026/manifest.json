@@ -13,8 +13,9 @@
   ],
   "components": [
     "Modal", "Avatar", "Button", "Badge", "Card", "Skeleton", "KpiCard", "Table",
-    "Toast", "StatusDot", "EmptyState", "Input", "Label", "Separator", "Tooltip",
-    "DropdownMenu", "Select", "ConfirmDialog", "AlertDialog"
+    "Toast", "StatusDot", "StatusBadge", "DeviceStatusBadge", "Switch", "EmptyState",
+    "Input", "Label", "Separator", "Tooltip", "DropdownMenu", "Select", "ConfirmDialog",
+    "AlertDialog", "DateRangePicker"
   ],
   "cssContract": {
     "nota": "Todo app consumidor DEVE definir estes tokens no seu index.css, em modo CLARO e ESCURO, com os valores do tokens.json (régua = platform). O checador scripts/token-drift.mjs valida claro+escuro contra o tokens.json e falha se divergir. O @source do pacote gera as utilities no CSS de cada app.",
