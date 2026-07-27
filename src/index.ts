@@ -58,6 +58,8 @@ export {
   Select, SelectGroup, SelectValue, SelectTrigger, SelectContent, SelectLabel, SelectItem,
   SelectSeparator, SelectScrollUpButton, SelectScrollDownButton,
 } from './components/Select';
+export { NativeSelect } from './components/NativeSelect';
+export type { NativeSelectProps } from './components/NativeSelect';
 export { ConfirmDialog } from './components/ConfirmDialog';
 export type { ConfirmDialogProps } from './components/ConfirmDialog';
 export {
