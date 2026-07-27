@@ -1,5 +1,6 @@
 import { X } from 'lucide-react';
 import { useEffect, useId, useRef, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 
 export interface ModalProps {
   open: boolean;
@@ -29,6 +30,12 @@ const FOCUSABLE =
  * A11y (WCAG 2.4.3/4.1.2): ao abrir, foca o primeiro elemento e PRENDE o foco
  * (Tab/Shift+Tab ciclam dentro); ao fechar, devolve o foco ao gatilho; título
  * ligado via `aria-labelledby`. Fonte ÚNICA: mudou aqui → muda em todo app.
+ *
+ * RUL-10 (full-page): renderizado via `createPortal(..., document.body)` para
+ * que o overlay `fixed inset-0` cubra a VIEWPORT inteira (rail, header, rodapé).
+ * Sem o portal, um ancestral com `transform`/`filter`/`will-change` (ex.: o
+ * wrapper `animate-fade-in-up` da casca) cria containing-block e prende o
+ * `position: fixed` à área de conteúdo. O portal escapa desses ancestrais.
  */
 export function Modal({ open, onClose, title, description, children, footer, size = 'md' }: ModalProps) {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -79,9 +86,10 @@ export function Modal({ open, onClose, title, description, children, footer, siz
     };
   }, [open, onClose]);
 
-  if (!open) return null;
+  // Sem `document` (SSR) não há onde portar; nada a renderizar.
+  if (!open || typeof document === 'undefined') return null;
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center"
       role="dialog"
@@ -119,6 +127,7 @@ export function Modal({ open, onClose, title, description, children, footer, siz
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

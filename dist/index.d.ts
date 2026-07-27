@@ -35,8 +35,14 @@ interface ModalProps {
  * A11y (WCAG 2.4.3/4.1.2): ao abrir, foca o primeiro elemento e PRENDE o foco
  * (Tab/Shift+Tab ciclam dentro); ao fechar, devolve o foco ao gatilho; título
  * ligado via `aria-labelledby`. Fonte ÚNICA: mudou aqui → muda em todo app.
+ *
+ * RUL-10 (full-page): renderizado via `createPortal(..., document.body)` para
+ * que o overlay `fixed inset-0` cubra a VIEWPORT inteira (rail, header, rodapé).
+ * Sem o portal, um ancestral com `transform`/`filter`/`will-change` (ex.: o
+ * wrapper `animate-fade-in-up` da casca) cria containing-block e prende o
+ * `position: fixed` à área de conteúdo. O portal escapa desses ancestrais.
  */
-declare function Modal({ open, onClose, title, description, children, footer, size }: ModalProps): React.JSX.Element | null;
+declare function Modal({ open, onClose, title, description, children, footer, size }: ModalProps): React.ReactPortal | null;
 
 declare function Avatar({ className, size, ...props }: Avatar$1.Root.Props & {
     size?: 'default' | 'sm' | 'lg';
