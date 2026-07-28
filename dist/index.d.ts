@@ -503,6 +503,8 @@ interface SegmentedTabItem<T extends string = string> {
     id: T;
     label: string;
     icon?: LucideIcon;
+    /** Contador opcional (pílula ao lado do rótulo). Omitido/0 = não renderiza. */
+    badge?: number | string;
 }
 interface SegmentedTabsProps<T extends string> {
     items: SegmentedTabItem<T>[];

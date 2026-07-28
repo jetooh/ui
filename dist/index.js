@@ -2143,7 +2143,17 @@ function SegmentedTabs({
             ),
             children: [
               Icon2 && /* @__PURE__ */ jsx31(Icon2, { size: 15, strokeWidth: 1.5 }),
-              it.label
+              it.label,
+              it.badge !== void 0 && it.badge !== 0 && it.badge !== "" && /* @__PURE__ */ jsx31(
+                "span",
+                {
+                  className: cn(
+                    "ml-0.5 inline-flex min-w-[18px] items-center justify-center rounded-full px-1.5 text-[11px] font-semibold leading-none tabular-nums",
+                    active ? "bg-preto/10 text-preto" : "bg-gray-100 text-gray-500"
+                  ),
+                  children: it.badge
+                }
+              )
             ]
           },
           it.id

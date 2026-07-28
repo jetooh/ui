@@ -8,6 +8,8 @@ export interface SegmentedTabItem<T extends string = string> {
   id: T;
   label: string;
   icon?: LucideIcon;
+  /** Contador opcional (pílula ao lado do rótulo). Omitido/0 = não renderiza. */
+  badge?: number | string;
 }
 
 export interface SegmentedTabsProps<T extends string> {
@@ -48,6 +50,16 @@ export function SegmentedTabs<T extends string>({
           >
             {Icon && <Icon size={15} strokeWidth={1.5} />}
             {it.label}
+            {it.badge !== undefined && it.badge !== 0 && it.badge !== '' && (
+              <span
+                className={cn(
+                  'ml-0.5 inline-flex min-w-[18px] items-center justify-center rounded-full px-1.5 text-[11px] font-semibold leading-none tabular-nums',
+                  active ? 'bg-preto/10 text-preto' : 'bg-gray-100 text-gray-500',
+                )}
+              >
+                {it.badge}
+              </span>
+            )}
           </button>
         );
       })}
