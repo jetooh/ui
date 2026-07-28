@@ -2096,6 +2096,85 @@ var AlertDialogCancel = React6.forwardRef(({ className, ...props }, ref) => /* @
   }
 ));
 AlertDialogCancel.displayName = AlertDialogPrimitive.Cancel.displayName;
+
+// src/components/SectionCard.tsx
+import { jsx as jsx30, jsxs as jsxs22 } from "react/jsx-runtime";
+function SectionCard({ icon: Icon2, title, action, children, className, bodyClassName }) {
+  return /* @__PURE__ */ jsxs22(Card, { className: cn("gap-0 overflow-hidden p-0", className), children: [
+    /* @__PURE__ */ jsxs22(CardHeader, { className: "items-center border-b border-gray-100 py-4", children: [
+      /* @__PURE__ */ jsxs22(CardTitle, { className: "flex items-center gap-2 text-preto", children: [
+        Icon2 && /* @__PURE__ */ jsx30(Icon2, { size: 16, strokeWidth: 1.5, className: "text-gray-400" }),
+        title
+      ] }),
+      action && /* @__PURE__ */ jsx30(CardAction, { className: "self-center", children: action })
+    ] }),
+    bodyClassName ? /* @__PURE__ */ jsx30("div", { className: bodyClassName, children }) : children
+  ] });
+}
+
+// src/components/SegmentedTabs.tsx
+import { jsx as jsx31, jsxs as jsxs23 } from "react/jsx-runtime";
+function SegmentedTabs({
+  items: items2,
+  value,
+  onChange,
+  className,
+  ariaLabel
+}) {
+  return /* @__PURE__ */ jsx31(
+    "div",
+    {
+      role: "tablist",
+      "aria-label": ariaLabel,
+      className: cn("inline-flex items-center gap-1 rounded-xl border border-gray-100 bg-branco p-1", className),
+      children: items2.map((it) => {
+        const Icon2 = it.icon;
+        const active = it.id === value;
+        return /* @__PURE__ */ jsxs23(
+          "button",
+          {
+            type: "button",
+            role: "tab",
+            "aria-selected": active,
+            onClick: () => onChange(it.id),
+            className: cn(
+              "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors",
+              active ? "bg-preto/5 text-preto" : "text-gray-500 hover:text-preto"
+            ),
+            children: [
+              Icon2 && /* @__PURE__ */ jsx31(Icon2, { size: 15, strokeWidth: 1.5 }),
+              it.label
+            ]
+          },
+          it.id
+        );
+      })
+    }
+  );
+}
+
+// src/components/DetailHeader.tsx
+import { ArrowLeft } from "lucide-react";
+import { jsx as jsx32, jsxs as jsxs24 } from "react/jsx-runtime";
+function DetailHeader({ onBack, backLabel = "Voltar", title, titleAdornment, status, action }) {
+  return /* @__PURE__ */ jsxs24("div", { className: "flex items-center gap-3", children: [
+    /* @__PURE__ */ jsx32(
+      Button,
+      {
+        variant: "outline",
+        size: "icon",
+        "aria-label": backLabel,
+        className: "h-8 w-8 border-gray-200",
+        onClick: onBack,
+        children: /* @__PURE__ */ jsx32(ArrowLeft, { size: 16, strokeWidth: 1.5 })
+      }
+    ),
+    /* @__PURE__ */ jsx32("h2", { className: "text-base font-bold text-preto", children: title }),
+    titleAdornment,
+    status && /* @__PURE__ */ jsx32(StatusBadge, { label: status.label, variant: status.variant }),
+    action && /* @__PURE__ */ jsx32("div", { className: "ml-auto", children: action })
+  ] });
+}
 export {
   AlertDialog,
   AlertDialogAction,
@@ -2130,6 +2209,7 @@ export {
   ConfirmDialog,
   ContentHeader,
   DateRangePicker,
+  DetailHeader,
   DeviceStatusBadge,
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -2157,6 +2237,8 @@ export {
   PRESETS,
   PageFrame,
   SearchEmptyState,
+  SectionCard,
+  SegmentedTabs,
   Select,
   SelectContent,
   SelectGroup,

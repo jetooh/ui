@@ -486,4 +486,47 @@ declare const AlertDialogCancel: React.ForwardRefExoticComponent<Omit<AlertDialo
 
 declare function cn(...inputs: ClassValue[]): string;
 
-export { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, AppBottomNav, type AppBottomNavProps, AppFooter, AppMobileHeader, type AppMobileHeaderProps, AppRail, type AppRailProps, Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, type BottomNavItem, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, type Compare, ConfirmDialog, type ConfirmDialogProps, ContentHeader, type ContentHeaderProps, DateRangePicker, type DateRangePickerProps, type DeviceStatus, DeviceStatusBadge, type DeviceStatusBadgeProps, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, EmptyState, type EmptyStateProps, Input, type InputProps, KpiCard, type KpiCardProps, KpiGrid, Label, Loading, Modal, type ModalProps, NativeSelect, type NativeSelectProps, PRESETS, PageFrame, type PageFrameProps, type RailItem, type RangeValue, SearchEmptyState, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, Separator, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, StatusBadge, type StatusBadgeProps, StatusDot, type StatusDotProps, type StatusVariant, Switch, type SwitchProps, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, UserMenu, type UserMenuItem, type UserMenuProps, badgeVariants, buttonVariants, cn, comparisonRange, computePreset, defaultRange, deviceStatusMeta, toast, useToast };
+interface SectionCardProps {
+    /** Ícone semântico da seção (mesma coisa → mesmo ícone). */
+    icon?: LucideIcon;
+    title: string;
+    /** Ação à direita do título (ex.: botão "Novo"). */
+    action?: ReactNode;
+    children: ReactNode;
+    className?: string;
+    /** Respiro do corpo. Omitido = corpo rente (tabelas/listas cuidam do próprio). */
+    bodyClassName?: string;
+}
+declare function SectionCard({ icon: Icon, title, action, children, className, bodyClassName }: SectionCardProps): React.JSX.Element;
+
+interface SegmentedTabItem<T extends string = string> {
+    id: T;
+    label: string;
+    icon?: LucideIcon;
+}
+interface SegmentedTabsProps<T extends string> {
+    items: SegmentedTabItem<T>[];
+    value: T;
+    onChange: (id: T) => void;
+    className?: string;
+    ariaLabel?: string;
+}
+declare function SegmentedTabs<T extends string>({ items, value, onChange, className, ariaLabel, }: SegmentedTabsProps<T>): React.JSX.Element;
+
+interface DetailHeaderProps {
+    onBack: () => void;
+    /** aria-label do botão voltar. */
+    backLabel?: string;
+    title: string;
+    /** Adorno após o título (ex.: ISO do país em cinza). */
+    titleAdornment?: ReactNode;
+    status?: {
+        label: string;
+        variant: StatusBadgeProps['variant'];
+    };
+    /** Ação à direita (ex.: bloquear/inativar). */
+    action?: ReactNode;
+}
+declare function DetailHeader({ onBack, backLabel, title, titleAdornment, status, action }: DetailHeaderProps): React.JSX.Element;
+
+export { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, AppBottomNav, type AppBottomNavProps, AppFooter, AppMobileHeader, type AppMobileHeaderProps, AppRail, type AppRailProps, Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, type BottomNavItem, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, type Compare, ConfirmDialog, type ConfirmDialogProps, ContentHeader, type ContentHeaderProps, DateRangePicker, type DateRangePickerProps, DetailHeader, type DetailHeaderProps, type DeviceStatus, DeviceStatusBadge, type DeviceStatusBadgeProps, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, EmptyState, type EmptyStateProps, Input, type InputProps, KpiCard, type KpiCardProps, KpiGrid, Label, Loading, Modal, type ModalProps, NativeSelect, type NativeSelectProps, PRESETS, PageFrame, type PageFrameProps, type RailItem, type RangeValue, SearchEmptyState, SectionCard, type SectionCardProps, type SegmentedTabItem, SegmentedTabs, type SegmentedTabsProps, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, Separator, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, StatusBadge, type StatusBadgeProps, StatusDot, type StatusDotProps, type StatusVariant, Switch, type SwitchProps, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, UserMenu, type UserMenuItem, type UserMenuProps, badgeVariants, buttonVariants, cn, comparisonRange, computePreset, defaultRange, deviceStatusMeta, toast, useToast };

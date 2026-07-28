@@ -68,3 +68,9 @@ export {
   AlertDialogAction, AlertDialogCancel,
 } from './components/AlertDialog';
 export { cn } from './lib/cn';
+export { SectionCard } from './components/SectionCard';
+export type { SectionCardProps } from './components/SectionCard';
+export { SegmentedTabs } from './components/SegmentedTabs';
+export type { SegmentedTabItem, SegmentedTabsProps } from './components/SegmentedTabs';
+export { DetailHeader } from './components/DetailHeader';
+export type { DetailHeaderProps } from './components/DetailHeader';
