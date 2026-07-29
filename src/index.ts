@@ -11,6 +11,7 @@ export {
 export {
   Skeleton, SkeletonKpiCard, SkeletonTableRow, SkeletonTable, SkeletonPage, Loading, TabLoading,
 } from './components/Skeleton';
+export { BrandLoading } from './components/BrandLoading';
 export { KpiCard, KpiGrid } from './components/KpiCard';
 export type { KpiCardProps } from './components/KpiCard';
 export {
