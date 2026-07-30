@@ -46,6 +46,8 @@ export { EmptyState, SearchEmptyState } from './components/EmptyState';
 export type { EmptyStateProps } from './components/EmptyState';
 export { Input } from './components/Input';
 export type { InputProps } from './components/Input';
+export { DateTimeField } from './components/DateTimeField';
+export type { DateTimeFieldProps } from './components/DateTimeField';
 export { Label } from './components/Label';
 export { Separator } from './components/Separator';
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './components/Tooltip';

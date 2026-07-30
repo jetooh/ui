@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import { useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import { jsx, jsxs } from "react/jsx-runtime";
-var SIZES = { sm: "max-w-sm", md: "max-w-md", lg: "max-w-lg" };
+var SIZES = { sm: "max-w-sm", md: "max-w-md", lg: "max-w-lg", xl: "max-w-2xl", "2xl": "max-w-3xl" };
 var FOCUSABLE = 'a[href],button:not([disabled]),textarea:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
 function Modal({ open, onClose, title, description, children, footer, size = "md" }) {
   const cardRef = useRef(null);
@@ -1523,6 +1523,9 @@ var Input = React2.forwardRef(({ className, type, ...props }, ref) => {
 });
 Input.displayName = "Input";
 
+// src/components/DateTimeField.tsx
+import { CalendarClock as CalendarClock2 } from "lucide-react";
+
 // src/components/Label.tsx
 import * as React3 from "react";
 import { jsx as jsx23 } from "react/jsx-runtime";
@@ -1541,15 +1544,69 @@ var Label = React3.forwardRef(
 );
 Label.displayName = "Label";
 
+// src/components/DateTimeField.tsx
+import { jsx as jsx24, jsxs as jsxs17 } from "react/jsx-runtime";
+var pad = (n) => String(n).padStart(2, "0");
+function isoToLocalInput(iso2) {
+  if (!iso2) return "";
+  const d = new Date(iso2);
+  if (Number.isNaN(d.getTime())) return "";
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function localInputToIso(local) {
+  if (!local) return null;
+  const d = new Date(local);
+  return Number.isNaN(d.getTime()) ? null : d.toISOString();
+}
+function DateTimeField({
+  id,
+  label,
+  value,
+  onChange,
+  min,
+  max,
+  disabled,
+  hint,
+  className
+}) {
+  return /* @__PURE__ */ jsxs17("div", { className: cn("space-y-1.5", className), children: [
+    label != null && /* @__PURE__ */ jsx24(Label, { htmlFor: id, children: label }),
+    /* @__PURE__ */ jsxs17("div", { className: "relative", children: [
+      /* @__PURE__ */ jsx24(
+        CalendarClock2,
+        {
+          size: 15,
+          strokeWidth: 1.75,
+          className: "pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+        }
+      ),
+      /* @__PURE__ */ jsx24(
+        Input,
+        {
+          id,
+          type: "datetime-local",
+          value: isoToLocalInput(value),
+          onChange: (e) => onChange(localInputToIso(e.target.value)),
+          min: min ? isoToLocalInput(min) : void 0,
+          max: max ? isoToLocalInput(max) : void 0,
+          disabled,
+          className: "pl-9"
+        }
+      )
+    ] }),
+    hint != null && /* @__PURE__ */ jsx24("p", { className: "text-[12px] text-gray-400", children: hint })
+  ] });
+}
+
 // src/components/Separator.tsx
 import { Separator as SeparatorPrimitive } from "@base-ui/react/separator";
-import { jsx as jsx24 } from "react/jsx-runtime";
+import { jsx as jsx25 } from "react/jsx-runtime";
 function Separator({
   className,
   orientation = "horizontal",
   ...props
 }) {
-  return /* @__PURE__ */ jsx24(
+  return /* @__PURE__ */ jsx25(
     SeparatorPrimitive,
     {
       "data-slot": "separator",
@@ -1565,12 +1622,12 @@ function Separator({
 
 // src/components/Tooltip.tsx
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
-import { jsx as jsx25, jsxs as jsxs17 } from "react/jsx-runtime";
+import { jsx as jsx26, jsxs as jsxs18 } from "react/jsx-runtime";
 function TooltipProvider({
   delay = 0,
   ...props
 }) {
-  return /* @__PURE__ */ jsx25(
+  return /* @__PURE__ */ jsx26(
     TooltipPrimitive.Provider,
     {
       "data-slot": "tooltip-provider",
@@ -1580,10 +1637,10 @@ function TooltipProvider({
   );
 }
 function Tooltip({ ...props }) {
-  return /* @__PURE__ */ jsx25(TooltipPrimitive.Root, { "data-slot": "tooltip", ...props });
+  return /* @__PURE__ */ jsx26(TooltipPrimitive.Root, { "data-slot": "tooltip", ...props });
 }
 function TooltipTrigger({ ...props }) {
-  return /* @__PURE__ */ jsx25(TooltipPrimitive.Trigger, { "data-slot": "tooltip-trigger", ...props });
+  return /* @__PURE__ */ jsx26(TooltipPrimitive.Trigger, { "data-slot": "tooltip-trigger", ...props });
 }
 function TooltipContent({
   className,
@@ -1594,7 +1651,7 @@ function TooltipContent({
   children,
   ...props
 }) {
-  return /* @__PURE__ */ jsx25(TooltipPrimitive.Portal, { children: /* @__PURE__ */ jsx25(
+  return /* @__PURE__ */ jsx26(TooltipPrimitive.Portal, { children: /* @__PURE__ */ jsx26(
     TooltipPrimitive.Positioner,
     {
       align,
@@ -1602,7 +1659,7 @@ function TooltipContent({
       side,
       sideOffset,
       className: "isolate z-50",
-      children: /* @__PURE__ */ jsxs17(
+      children: /* @__PURE__ */ jsxs18(
         TooltipPrimitive.Popup,
         {
           "data-slot": "tooltip-content",
@@ -1613,7 +1670,7 @@ function TooltipContent({
           ...props,
           children: [
             children,
-            /* @__PURE__ */ jsx25(TooltipPrimitive.Arrow, { className: "z-50 size-2.5 translate-y-[calc(-50%-2px)] rotate-45 rounded-[2px] bg-foreground fill-foreground data-[side=bottom]:top-1 data-[side=inline-end]:top-1/2! data-[side=inline-end]:-left-1 data-[side=inline-end]:-translate-y-1/2 data-[side=inline-start]:top-1/2! data-[side=inline-start]:-right-1 data-[side=inline-start]:-translate-y-1/2 data-[side=left]:top-1/2! data-[side=left]:-right-1 data-[side=left]:-translate-y-1/2 data-[side=right]:top-1/2! data-[side=right]:-left-1 data-[side=right]:-translate-y-1/2 data-[side=top]:-bottom-2.5" })
+            /* @__PURE__ */ jsx26(TooltipPrimitive.Arrow, { className: "z-50 size-2.5 translate-y-[calc(-50%-2px)] rotate-45 rounded-[2px] bg-foreground fill-foreground data-[side=bottom]:top-1 data-[side=inline-end]:top-1/2! data-[side=inline-end]:-left-1 data-[side=inline-end]:-translate-y-1/2 data-[side=inline-start]:top-1/2! data-[side=inline-start]:-right-1 data-[side=inline-start]:-translate-y-1/2 data-[side=left]:top-1/2! data-[side=left]:-right-1 data-[side=left]:-translate-y-1/2 data-[side=right]:top-1/2! data-[side=right]:-left-1 data-[side=right]:-translate-y-1/2 data-[side=top]:-bottom-2.5" })
           ]
         }
       )
@@ -1624,15 +1681,15 @@ function TooltipContent({
 // src/components/DropdownMenu.tsx
 import { Menu as MenuPrimitive } from "@base-ui/react/menu";
 import { ChevronRight as ChevronRightIcon, Check as CheckIcon } from "lucide-react";
-import { jsx as jsx26, jsxs as jsxs18 } from "react/jsx-runtime";
+import { jsx as jsx27, jsxs as jsxs19 } from "react/jsx-runtime";
 function DropdownMenu({ ...props }) {
-  return /* @__PURE__ */ jsx26(MenuPrimitive.Root, { "data-slot": "dropdown-menu", ...props });
+  return /* @__PURE__ */ jsx27(MenuPrimitive.Root, { "data-slot": "dropdown-menu", ...props });
 }
 function DropdownMenuPortal({ ...props }) {
-  return /* @__PURE__ */ jsx26(MenuPrimitive.Portal, { "data-slot": "dropdown-menu-portal", ...props });
+  return /* @__PURE__ */ jsx27(MenuPrimitive.Portal, { "data-slot": "dropdown-menu-portal", ...props });
 }
 function DropdownMenuTrigger({ ...props }) {
-  return /* @__PURE__ */ jsx26(MenuPrimitive.Trigger, { "data-slot": "dropdown-menu-trigger", ...props });
+  return /* @__PURE__ */ jsx27(MenuPrimitive.Trigger, { "data-slot": "dropdown-menu-trigger", ...props });
 }
 function DropdownMenuContent({
   align = "start",
@@ -1642,7 +1699,7 @@ function DropdownMenuContent({
   className,
   ...props
 }) {
-  return /* @__PURE__ */ jsx26(MenuPrimitive.Portal, { children: /* @__PURE__ */ jsx26(
+  return /* @__PURE__ */ jsx27(MenuPrimitive.Portal, { children: /* @__PURE__ */ jsx27(
     MenuPrimitive.Positioner,
     {
       className: "isolate z-50 outline-none",
@@ -1650,7 +1707,7 @@ function DropdownMenuContent({
       alignOffset,
       side,
       sideOffset,
-      children: /* @__PURE__ */ jsx26(
+      children: /* @__PURE__ */ jsx27(
         MenuPrimitive.Popup,
         {
           "data-slot": "dropdown-menu-content",
@@ -1662,14 +1719,14 @@ function DropdownMenuContent({
   ) });
 }
 function DropdownMenuGroup({ ...props }) {
-  return /* @__PURE__ */ jsx26(MenuPrimitive.Group, { "data-slot": "dropdown-menu-group", ...props });
+  return /* @__PURE__ */ jsx27(MenuPrimitive.Group, { "data-slot": "dropdown-menu-group", ...props });
 }
 function DropdownMenuLabel({
   className,
   inset,
   ...props
 }) {
-  return /* @__PURE__ */ jsx26(
+  return /* @__PURE__ */ jsx27(
     MenuPrimitive.GroupLabel,
     {
       "data-slot": "dropdown-menu-label",
@@ -1688,7 +1745,7 @@ function DropdownMenuItem({
   variant = "default",
   ...props
 }) {
-  return /* @__PURE__ */ jsx26(
+  return /* @__PURE__ */ jsx27(
     MenuPrimitive.Item,
     {
       "data-slot": "dropdown-menu-item",
@@ -1703,7 +1760,7 @@ function DropdownMenuItem({
   );
 }
 function DropdownMenuSub({ ...props }) {
-  return /* @__PURE__ */ jsx26(MenuPrimitive.SubmenuRoot, { "data-slot": "dropdown-menu-sub", ...props });
+  return /* @__PURE__ */ jsx27(MenuPrimitive.SubmenuRoot, { "data-slot": "dropdown-menu-sub", ...props });
 }
 function DropdownMenuSubTrigger({
   className,
@@ -1711,7 +1768,7 @@ function DropdownMenuSubTrigger({
   children,
   ...props
 }) {
-  return /* @__PURE__ */ jsxs18(
+  return /* @__PURE__ */ jsxs19(
     MenuPrimitive.SubmenuTrigger,
     {
       "data-slot": "dropdown-menu-sub-trigger",
@@ -1723,7 +1780,7 @@ function DropdownMenuSubTrigger({
       ...props,
       children: [
         children,
-        /* @__PURE__ */ jsx26(ChevronRightIcon, { className: "ml-auto" })
+        /* @__PURE__ */ jsx27(ChevronRightIcon, { className: "ml-auto" })
       ]
     }
   );
@@ -1736,7 +1793,7 @@ function DropdownMenuSubContent({
   className,
   ...props
 }) {
-  return /* @__PURE__ */ jsx26(
+  return /* @__PURE__ */ jsx27(
     DropdownMenuContent,
     {
       "data-slot": "dropdown-menu-sub-content",
@@ -1756,7 +1813,7 @@ function DropdownMenuCheckboxItem({
   inset,
   ...props
 }) {
-  return /* @__PURE__ */ jsxs18(
+  return /* @__PURE__ */ jsxs19(
     MenuPrimitive.CheckboxItem,
     {
       "data-slot": "dropdown-menu-checkbox-item",
@@ -1768,12 +1825,12 @@ function DropdownMenuCheckboxItem({
       checked,
       ...props,
       children: [
-        /* @__PURE__ */ jsx26(
+        /* @__PURE__ */ jsx27(
           "span",
           {
             className: "pointer-events-none absolute right-2 flex items-center justify-center",
             "data-slot": "dropdown-menu-checkbox-item-indicator",
-            children: /* @__PURE__ */ jsx26(MenuPrimitive.CheckboxItemIndicator, { children: /* @__PURE__ */ jsx26(
+            children: /* @__PURE__ */ jsx27(MenuPrimitive.CheckboxItemIndicator, { children: /* @__PURE__ */ jsx27(
               CheckIcon,
               {}
             ) })
@@ -1785,7 +1842,7 @@ function DropdownMenuCheckboxItem({
   );
 }
 function DropdownMenuRadioGroup({ ...props }) {
-  return /* @__PURE__ */ jsx26(
+  return /* @__PURE__ */ jsx27(
     MenuPrimitive.RadioGroup,
     {
       "data-slot": "dropdown-menu-radio-group",
@@ -1799,7 +1856,7 @@ function DropdownMenuRadioItem({
   inset,
   ...props
 }) {
-  return /* @__PURE__ */ jsxs18(
+  return /* @__PURE__ */ jsxs19(
     MenuPrimitive.RadioItem,
     {
       "data-slot": "dropdown-menu-radio-item",
@@ -1810,12 +1867,12 @@ function DropdownMenuRadioItem({
       ),
       ...props,
       children: [
-        /* @__PURE__ */ jsx26(
+        /* @__PURE__ */ jsx27(
           "span",
           {
             className: "pointer-events-none absolute right-2 flex items-center justify-center",
             "data-slot": "dropdown-menu-radio-item-indicator",
-            children: /* @__PURE__ */ jsx26(MenuPrimitive.RadioItemIndicator, { children: /* @__PURE__ */ jsx26(
+            children: /* @__PURE__ */ jsx27(MenuPrimitive.RadioItemIndicator, { children: /* @__PURE__ */ jsx27(
               CheckIcon,
               {}
             ) })
@@ -1830,7 +1887,7 @@ function DropdownMenuSeparator({
   className,
   ...props
 }) {
-  return /* @__PURE__ */ jsx26(
+  return /* @__PURE__ */ jsx27(
     MenuPrimitive.Separator,
     {
       "data-slot": "dropdown-menu-separator",
@@ -1843,7 +1900,7 @@ function DropdownMenuShortcut({
   className,
   ...props
 }) {
-  return /* @__PURE__ */ jsx26(
+  return /* @__PURE__ */ jsx27(
     "span",
     {
       "data-slot": "dropdown-menu-shortcut",
@@ -1860,11 +1917,11 @@ function DropdownMenuShortcut({
 import * as React4 from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { Check, ChevronDown as ChevronDown3, ChevronUp } from "lucide-react";
-import { jsx as jsx27, jsxs as jsxs19 } from "react/jsx-runtime";
+import { jsx as jsx28, jsxs as jsxs20 } from "react/jsx-runtime";
 var Select = SelectPrimitive.Root;
 var SelectGroup = SelectPrimitive.Group;
 var SelectValue = SelectPrimitive.Value;
-var SelectTrigger = React4.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ jsxs19(
+var SelectTrigger = React4.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ jsxs20(
   SelectPrimitive.Trigger,
   {
     ref,
@@ -1875,32 +1932,32 @@ var SelectTrigger = React4.forwardRef(({ className, children, ...props }, ref) =
     ...props,
     children: [
       children,
-      /* @__PURE__ */ jsx27(SelectPrimitive.Icon, { asChild: true, children: /* @__PURE__ */ jsx27(ChevronDown3, { className: "h-4 w-4 opacity-50" }) })
+      /* @__PURE__ */ jsx28(SelectPrimitive.Icon, { asChild: true, children: /* @__PURE__ */ jsx28(ChevronDown3, { className: "h-4 w-4 opacity-50" }) })
     ]
   }
 ));
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
-var SelectScrollUpButton = React4.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx27(
+var SelectScrollUpButton = React4.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx28(
   SelectPrimitive.ScrollUpButton,
   {
     ref,
     className: cn("flex cursor-default items-center justify-center py-1", className),
     ...props,
-    children: /* @__PURE__ */ jsx27(ChevronUp, { className: "h-4 w-4" })
+    children: /* @__PURE__ */ jsx28(ChevronUp, { className: "h-4 w-4" })
   }
 ));
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
-var SelectScrollDownButton = React4.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx27(
+var SelectScrollDownButton = React4.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx28(
   SelectPrimitive.ScrollDownButton,
   {
     ref,
     className: cn("flex cursor-default items-center justify-center py-1", className),
     ...props,
-    children: /* @__PURE__ */ jsx27(ChevronDown3, { className: "h-4 w-4" })
+    children: /* @__PURE__ */ jsx28(ChevronDown3, { className: "h-4 w-4" })
   }
 ));
 SelectScrollDownButton.displayName = SelectPrimitive.ScrollDownButton.displayName;
-var SelectContent = React4.forwardRef(({ className, children, position = "popper", ...props }, ref) => /* @__PURE__ */ jsx27(SelectPrimitive.Portal, { children: /* @__PURE__ */ jsxs19(
+var SelectContent = React4.forwardRef(({ className, children, position = "popper", ...props }, ref) => /* @__PURE__ */ jsx28(SelectPrimitive.Portal, { children: /* @__PURE__ */ jsxs20(
   SelectPrimitive.Content,
   {
     ref,
@@ -1912,8 +1969,8 @@ var SelectContent = React4.forwardRef(({ className, children, position = "popper
     position,
     ...props,
     children: [
-      /* @__PURE__ */ jsx27(SelectScrollUpButton, {}),
-      /* @__PURE__ */ jsx27(
+      /* @__PURE__ */ jsx28(SelectScrollUpButton, {}),
+      /* @__PURE__ */ jsx28(
         SelectPrimitive.Viewport,
         {
           className: cn(
@@ -1923,12 +1980,12 @@ var SelectContent = React4.forwardRef(({ className, children, position = "popper
           children
         }
       ),
-      /* @__PURE__ */ jsx27(SelectScrollDownButton, {})
+      /* @__PURE__ */ jsx28(SelectScrollDownButton, {})
     ]
   }
 ) }));
 SelectContent.displayName = SelectPrimitive.Content.displayName;
-var SelectLabel = React4.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx27(
+var SelectLabel = React4.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx28(
   SelectPrimitive.Label,
   {
     ref,
@@ -1937,7 +1994,7 @@ var SelectLabel = React4.forwardRef(({ className, ...props }, ref) => /* @__PURE
   }
 ));
 SelectLabel.displayName = SelectPrimitive.Label.displayName;
-var SelectItem = React4.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ jsxs19(
+var SelectItem = React4.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ jsxs20(
   SelectPrimitive.Item,
   {
     ref,
@@ -1947,13 +2004,13 @@ var SelectItem = React4.forwardRef(({ className, children, ...props }, ref) => /
     ),
     ...props,
     children: [
-      /* @__PURE__ */ jsx27("span", { className: "absolute left-2 flex h-3.5 w-3.5 items-center justify-center", children: /* @__PURE__ */ jsx27(SelectPrimitive.ItemIndicator, { children: /* @__PURE__ */ jsx27(Check, { className: "h-4 w-4" }) }) }),
-      /* @__PURE__ */ jsx27(SelectPrimitive.ItemText, { children })
+      /* @__PURE__ */ jsx28("span", { className: "absolute left-2 flex h-3.5 w-3.5 items-center justify-center", children: /* @__PURE__ */ jsx28(SelectPrimitive.ItemIndicator, { children: /* @__PURE__ */ jsx28(Check, { className: "h-4 w-4" }) }) }),
+      /* @__PURE__ */ jsx28(SelectPrimitive.ItemText, { children })
     ]
   }
 ));
 SelectItem.displayName = SelectPrimitive.Item.displayName;
-var SelectSeparator = React4.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx27(
+var SelectSeparator = React4.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx28(
   SelectPrimitive.Separator,
   {
     ref,
@@ -1966,10 +2023,10 @@ SelectSeparator.displayName = SelectPrimitive.Separator.displayName;
 // src/components/NativeSelect.tsx
 import * as React5 from "react";
 import { ChevronDown as ChevronDown4 } from "lucide-react";
-import { jsx as jsx28, jsxs as jsxs20 } from "react/jsx-runtime";
+import { jsx as jsx29, jsxs as jsxs21 } from "react/jsx-runtime";
 var NativeSelect = React5.forwardRef(
-  ({ className, wrapperClassName, children, ...props }, ref) => /* @__PURE__ */ jsxs20("div", { className: cn("relative", wrapperClassName), children: [
-    /* @__PURE__ */ jsx28(
+  ({ className, wrapperClassName, children, ...props }, ref) => /* @__PURE__ */ jsxs21("div", { className: cn("relative", wrapperClassName), children: [
+    /* @__PURE__ */ jsx29(
       "select",
       {
         ref,
@@ -1981,14 +2038,14 @@ var NativeSelect = React5.forwardRef(
         children
       }
     ),
-    /* @__PURE__ */ jsx28(ChevronDown4, { className: "pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 opacity-50" })
+    /* @__PURE__ */ jsx29(ChevronDown4, { className: "pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 opacity-50" })
   ] })
 );
 NativeSelect.displayName = "NativeSelect";
 
 // src/components/ConfirmDialog.tsx
 import { Loader2 } from "lucide-react";
-import { Fragment as Fragment3, jsx as jsx29, jsxs as jsxs21 } from "react/jsx-runtime";
+import { Fragment as Fragment3, jsx as jsx30, jsxs as jsxs22 } from "react/jsx-runtime";
 function ConfirmDialog({
   open,
   title,
@@ -2000,13 +2057,13 @@ function ConfirmDialog({
   onConfirm,
   onClose
 }) {
-  return /* @__PURE__ */ jsxs21(
+  return /* @__PURE__ */ jsxs22(
     Modal,
     {
       open,
       onClose,
-      footer: /* @__PURE__ */ jsxs21(Fragment3, { children: [
-        /* @__PURE__ */ jsx29(
+      footer: /* @__PURE__ */ jsxs22(Fragment3, { children: [
+        /* @__PURE__ */ jsx30(
           Button,
           {
             variant: "outline",
@@ -2016,7 +2073,7 @@ function ConfirmDialog({
             children: cancelLabel
           }
         ),
-        /* @__PURE__ */ jsxs21(
+        /* @__PURE__ */ jsxs22(
           Button,
           {
             size: "default",
@@ -2024,15 +2081,15 @@ function ConfirmDialog({
             disabled: loading,
             className: `gap-2 px-5 text-[13px] font-semibold text-branco disabled:opacity-50 ${destructive ? "bg-status-critico hover:bg-status-critico/90" : "bg-roxo hover:bg-roxo-hover"}`,
             children: [
-              loading && /* @__PURE__ */ jsx29(Loader2, { size: 14, className: "animate-spin" }),
+              loading && /* @__PURE__ */ jsx30(Loader2, { size: 14, className: "animate-spin" }),
               confirmLabel
             ]
           }
         )
       ] }),
       children: [
-        /* @__PURE__ */ jsx29("h2", { className: "text-[15px] font-semibold text-preto", children: title }),
-        /* @__PURE__ */ jsx29("div", { className: "mt-1 text-[13px] text-gray-500", children: description })
+        /* @__PURE__ */ jsx30("h2", { className: "text-[15px] font-semibold text-preto", children: title }),
+        /* @__PURE__ */ jsx30("div", { className: "mt-1 text-[13px] text-gray-500", children: description })
       ]
     }
   );
@@ -2041,11 +2098,11 @@ function ConfirmDialog({
 // src/components/AlertDialog.tsx
 import * as React6 from "react";
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
-import { jsx as jsx30, jsxs as jsxs22 } from "react/jsx-runtime";
+import { jsx as jsx31, jsxs as jsxs23 } from "react/jsx-runtime";
 var AlertDialog = AlertDialogPrimitive.Root;
 var AlertDialogTrigger = AlertDialogPrimitive.Trigger;
 var AlertDialogPortal = AlertDialogPrimitive.Portal;
-var AlertDialogOverlay = React6.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx30(
+var AlertDialogOverlay = React6.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx31(
   AlertDialogPrimitive.Overlay,
   {
     className: cn(
@@ -2057,9 +2114,9 @@ var AlertDialogOverlay = React6.forwardRef(({ className, ...props }, ref) => /* 
   }
 ));
 AlertDialogOverlay.displayName = AlertDialogPrimitive.Overlay.displayName;
-var AlertDialogContent = React6.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsxs22(AlertDialogPortal, { children: [
-  /* @__PURE__ */ jsx30(AlertDialogOverlay, {}),
-  /* @__PURE__ */ jsx30(
+var AlertDialogContent = React6.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsxs23(AlertDialogPortal, { children: [
+  /* @__PURE__ */ jsx31(AlertDialogOverlay, {}),
+  /* @__PURE__ */ jsx31(
     AlertDialogPrimitive.Content,
     {
       ref,
@@ -2072,9 +2129,9 @@ var AlertDialogContent = React6.forwardRef(({ className, ...props }, ref) => /* 
   )
 ] }));
 AlertDialogContent.displayName = AlertDialogPrimitive.Content.displayName;
-var AlertDialogHeader = ({ className, ...props }) => /* @__PURE__ */ jsx30("div", { className: cn("flex flex-col space-y-2 text-center sm:text-left", className), ...props });
+var AlertDialogHeader = ({ className, ...props }) => /* @__PURE__ */ jsx31("div", { className: cn("flex flex-col space-y-2 text-center sm:text-left", className), ...props });
 AlertDialogHeader.displayName = "AlertDialogHeader";
-var AlertDialogFooter = ({ className, ...props }) => /* @__PURE__ */ jsx30(
+var AlertDialogFooter = ({ className, ...props }) => /* @__PURE__ */ jsx31(
   "div",
   {
     className: cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2", className),
@@ -2082,7 +2139,7 @@ var AlertDialogFooter = ({ className, ...props }) => /* @__PURE__ */ jsx30(
   }
 );
 AlertDialogFooter.displayName = "AlertDialogFooter";
-var AlertDialogTitle = React6.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx30(
+var AlertDialogTitle = React6.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx31(
   AlertDialogPrimitive.Title,
   {
     ref,
@@ -2091,7 +2148,7 @@ var AlertDialogTitle = React6.forwardRef(({ className, ...props }, ref) => /* @_
   }
 ));
 AlertDialogTitle.displayName = AlertDialogPrimitive.Title.displayName;
-var AlertDialogDescription = React6.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx30(
+var AlertDialogDescription = React6.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx31(
   AlertDialogPrimitive.Description,
   {
     ref,
@@ -2100,7 +2157,7 @@ var AlertDialogDescription = React6.forwardRef(({ className, ...props }, ref) =>
   }
 ));
 AlertDialogDescription.displayName = AlertDialogPrimitive.Description.displayName;
-var AlertDialogAction = React6.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx30(
+var AlertDialogAction = React6.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx31(
   AlertDialogPrimitive.Action,
   {
     ref,
@@ -2113,7 +2170,7 @@ var AlertDialogAction = React6.forwardRef(({ className, ...props }, ref) => /* @
   }
 ));
 AlertDialogAction.displayName = AlertDialogPrimitive.Action.displayName;
-var AlertDialogCancel = React6.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx30(
+var AlertDialogCancel = React6.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx31(
   AlertDialogPrimitive.Cancel,
   {
     ref,
@@ -2128,22 +2185,22 @@ var AlertDialogCancel = React6.forwardRef(({ className, ...props }, ref) => /* @
 AlertDialogCancel.displayName = AlertDialogPrimitive.Cancel.displayName;
 
 // src/components/SectionCard.tsx
-import { jsx as jsx31, jsxs as jsxs23 } from "react/jsx-runtime";
+import { jsx as jsx32, jsxs as jsxs24 } from "react/jsx-runtime";
 function SectionCard({ icon: Icon2, title, action, children, className, bodyClassName }) {
-  return /* @__PURE__ */ jsxs23(Card, { className: cn("gap-0 overflow-hidden p-0", className), children: [
-    /* @__PURE__ */ jsxs23(CardHeader, { className: "items-center border-b border-gray-100 py-4", children: [
-      /* @__PURE__ */ jsxs23(CardTitle, { className: "flex items-center gap-2 text-preto", children: [
-        Icon2 && /* @__PURE__ */ jsx31(Icon2, { size: 16, strokeWidth: 1.5, className: "text-gray-400" }),
+  return /* @__PURE__ */ jsxs24(Card, { className: cn("gap-0 overflow-hidden p-0", className), children: [
+    /* @__PURE__ */ jsxs24(CardHeader, { className: "items-center border-b border-gray-100 py-4", children: [
+      /* @__PURE__ */ jsxs24(CardTitle, { className: "flex items-center gap-2 text-preto", children: [
+        Icon2 && /* @__PURE__ */ jsx32(Icon2, { size: 16, strokeWidth: 1.5, className: "text-gray-400" }),
         title
       ] }),
-      action && /* @__PURE__ */ jsx31(CardAction, { className: "self-center", children: action })
+      action && /* @__PURE__ */ jsx32(CardAction, { className: "self-center", children: action })
     ] }),
-    bodyClassName ? /* @__PURE__ */ jsx31("div", { className: bodyClassName, children }) : children
+    bodyClassName ? /* @__PURE__ */ jsx32("div", { className: bodyClassName, children }) : children
   ] });
 }
 
 // src/components/SegmentedTabs.tsx
-import { jsx as jsx32, jsxs as jsxs24 } from "react/jsx-runtime";
+import { jsx as jsx33, jsxs as jsxs25 } from "react/jsx-runtime";
 function SegmentedTabs({
   items: items2,
   value,
@@ -2151,7 +2208,7 @@ function SegmentedTabs({
   className,
   ariaLabel
 }) {
-  return /* @__PURE__ */ jsx32(
+  return /* @__PURE__ */ jsx33(
     "div",
     {
       role: "tablist",
@@ -2160,7 +2217,7 @@ function SegmentedTabs({
       children: items2.map((it) => {
         const Icon2 = it.icon;
         const active = it.id === value;
-        return /* @__PURE__ */ jsxs24(
+        return /* @__PURE__ */ jsxs25(
           "button",
           {
             type: "button",
@@ -2172,9 +2229,9 @@ function SegmentedTabs({
               active ? "bg-preto/5 text-preto" : "text-gray-500 hover:text-preto"
             ),
             children: [
-              Icon2 && /* @__PURE__ */ jsx32(Icon2, { size: 15, strokeWidth: 1.5 }),
+              Icon2 && /* @__PURE__ */ jsx33(Icon2, { size: 15, strokeWidth: 1.5 }),
               it.label,
-              it.badge !== void 0 && it.badge !== 0 && it.badge !== "" && /* @__PURE__ */ jsx32(
+              it.badge !== void 0 && it.badge !== 0 && it.badge !== "" && /* @__PURE__ */ jsx33(
                 "span",
                 {
                   className: cn(
@@ -2195,10 +2252,10 @@ function SegmentedTabs({
 
 // src/components/DetailHeader.tsx
 import { ArrowLeft } from "lucide-react";
-import { jsx as jsx33, jsxs as jsxs25 } from "react/jsx-runtime";
+import { jsx as jsx34, jsxs as jsxs26 } from "react/jsx-runtime";
 function DetailHeader({ onBack, backLabel = "Voltar", title, titleAdornment, status, action }) {
-  return /* @__PURE__ */ jsxs25("div", { className: "flex items-center gap-3", children: [
-    /* @__PURE__ */ jsx33(
+  return /* @__PURE__ */ jsxs26("div", { className: "flex items-center gap-3", children: [
+    /* @__PURE__ */ jsx34(
       Button,
       {
         variant: "outline",
@@ -2206,13 +2263,13 @@ function DetailHeader({ onBack, backLabel = "Voltar", title, titleAdornment, sta
         "aria-label": backLabel,
         className: "h-8 w-8 border-gray-200",
         onClick: onBack,
-        children: /* @__PURE__ */ jsx33(ArrowLeft, { size: 16, strokeWidth: 1.5 })
+        children: /* @__PURE__ */ jsx34(ArrowLeft, { size: 16, strokeWidth: 1.5 })
       }
     ),
-    /* @__PURE__ */ jsx33("h2", { className: "text-base font-bold text-preto", children: title }),
+    /* @__PURE__ */ jsx34("h2", { className: "text-base font-bold text-preto", children: title }),
     titleAdornment,
-    status && /* @__PURE__ */ jsx33(StatusBadge, { label: status.label, variant: status.variant }),
-    action && /* @__PURE__ */ jsx33("div", { className: "ml-auto", children: action })
+    status && /* @__PURE__ */ jsx34(StatusBadge, { label: status.label, variant: status.variant }),
+    action && /* @__PURE__ */ jsx34("div", { className: "ml-auto", children: action })
   ] });
 }
 export {
@@ -2250,6 +2307,7 @@ export {
   ConfirmDialog,
   ContentHeader,
   DateRangePicker,
+  DateTimeField,
   DetailHeader,
   DeviceStatusBadge,
   DropdownMenu,
