@@ -48,7 +48,7 @@ function Modal({ open, onClose, title, description, children, footer, size = "md
     /* @__PURE__ */ jsxs(
       "div",
       {
-        className: "fixed inset-0 z-[9999] flex items-center justify-center",
+        className: "fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4",
         role: "dialog",
         "aria-modal": "true",
         "aria-labelledby": title != null ? titleId : void 0,
@@ -58,28 +58,36 @@ function Modal({ open, onClose, title, description, children, footer, size = "md
           /* @__PURE__ */ jsx(
             "div",
             {
-              className: `relative z-10 mx-4 w-full ${SIZES[size]} animate-fade-in-up`,
+              className: `relative z-10 w-full ${SIZES[size]} animate-fade-in-up`,
               style: { animationDuration: "0.2s" },
-              children: /* @__PURE__ */ jsxs("div", { ref: cardRef, tabIndex: -1, className: "rounded-2xl border border-gray-200 bg-branco outline-none", children: [
-                title != null && /* @__PURE__ */ jsxs("div", { className: "flex items-start justify-between gap-3 border-b border-gray-100 px-6 py-4", children: [
-                  /* @__PURE__ */ jsxs("div", { className: "min-w-0", children: [
-                    /* @__PURE__ */ jsx("h3", { id: titleId, className: "text-[15px] font-semibold text-preto", children: title }),
-                    description != null && /* @__PURE__ */ jsx("p", { id: descId, className: "mt-0.5 text-[12.5px] leading-relaxed text-gray-500", children: description })
-                  ] }),
-                  /* @__PURE__ */ jsx(
-                    "button",
-                    {
-                      type: "button",
-                      onClick: onClose,
-                      "aria-label": "Fechar",
-                      className: "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-preto",
-                      children: /* @__PURE__ */ jsx(X, { size: 16, strokeWidth: 1.5 })
-                    }
-                  )
-                ] }),
-                /* @__PURE__ */ jsx("div", { className: "px-6 py-5", children }),
-                footer != null && /* @__PURE__ */ jsx("div", { className: "flex items-center justify-end gap-2 border-t border-gray-100 px-6 py-4", children: footer })
-              ] })
+              children: /* @__PURE__ */ jsxs(
+                "div",
+                {
+                  ref: cardRef,
+                  tabIndex: -1,
+                  className: "flex max-h-[calc(100dvh-2rem)] w-full flex-col rounded-2xl border border-gray-200 bg-branco outline-none",
+                  children: [
+                    title != null && /* @__PURE__ */ jsxs("div", { className: "flex shrink-0 items-start justify-between gap-3 border-b border-gray-100 px-6 py-4", children: [
+                      /* @__PURE__ */ jsxs("div", { className: "min-w-0", children: [
+                        /* @__PURE__ */ jsx("h3", { id: titleId, className: "text-[15px] font-semibold text-preto", children: title }),
+                        description != null && /* @__PURE__ */ jsx("p", { id: descId, className: "mt-0.5 text-[12.5px] leading-relaxed text-gray-500", children: description })
+                      ] }),
+                      /* @__PURE__ */ jsx(
+                        "button",
+                        {
+                          type: "button",
+                          onClick: onClose,
+                          "aria-label": "Fechar",
+                          className: "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-preto",
+                          children: /* @__PURE__ */ jsx(X, { size: 16, strokeWidth: 1.5 })
+                        }
+                      )
+                    ] }),
+                    /* @__PURE__ */ jsx("div", { className: "min-h-0 overflow-y-auto overscroll-contain px-6 py-5", children }),
+                    footer != null && /* @__PURE__ */ jsx("div", { className: "flex shrink-0 items-center justify-end gap-2 border-t border-gray-100 px-6 py-4", children: footer })
+                  ]
+                }
+              )
             }
           )
         ]

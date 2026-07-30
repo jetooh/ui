@@ -91,7 +91,7 @@ export function Modal({ open, onClose, title, description, children, footer, siz
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center"
+      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby={title != null ? titleId : undefined}
@@ -99,12 +99,26 @@ export function Modal({ open, onClose, title, description, children, footer, siz
     >
       <div className="absolute inset-0 bg-preto/40 backdrop-blur-sm" onClick={onClose} />
       <div
-        className={`relative z-10 mx-4 w-full ${SIZES[size]} animate-fade-in-up`}
+        className={`relative z-10 w-full ${SIZES[size]} animate-fade-in-up`}
         style={{ animationDuration: '0.2s' }}
       >
-        <div ref={cardRef} tabIndex={-1} className="rounded-2xl border border-gray-200 bg-branco outline-none">
+        {/*
+          Card em COLUNA com altura limitada à viewport (`100dvh` — dynamic viewport,
+          desconta a barra de URL do mobile — menos o respiro `p-4` do overlay = 2rem).
+          Cabeçalho e rodapé ficam FIXOS (`shrink-0`) e SÓ o corpo rola
+          (`min-h-0 overflow-y-auto overscroll-contain`). Sem isso, conteúdo mais alto
+          que a tela vazava para fora do modal (o card centralizado transbordava a
+          viewport). `min-h-0` deixa o corpo encolher no flex; SEM `flex-1` para não
+          esticar o corpo (e empurrar o rodapé) em modais curtos. `overscroll-contain`
+          evita que o scroll "vaze" para a página atrás no fim do corpo.
+        */}
+        <div
+          ref={cardRef}
+          tabIndex={-1}
+          className="flex max-h-[calc(100dvh-2rem)] w-full flex-col rounded-2xl border border-gray-200 bg-branco outline-none"
+        >
           {title != null && (
-            <div className="flex items-start justify-between gap-3 border-b border-gray-100 px-6 py-4">
+            <div className="flex shrink-0 items-start justify-between gap-3 border-b border-gray-100 px-6 py-4">
               <div className="min-w-0">
                 <h3 id={titleId} className="text-[15px] font-semibold text-preto">{title}</h3>
                 {description != null && (
@@ -121,9 +135,9 @@ export function Modal({ open, onClose, title, description, children, footer, siz
               </button>
             </div>
           )}
-          <div className="px-6 py-5">{children}</div>
+          <div className="min-h-0 overflow-y-auto overscroll-contain px-6 py-5">{children}</div>
           {footer != null && (
-            <div className="flex items-center justify-end gap-2 border-t border-gray-100 px-6 py-4">{footer}</div>
+            <div className="flex shrink-0 items-center justify-end gap-2 border-t border-gray-100 px-6 py-4">{footer}</div>
           )}
         </div>
       </div>
