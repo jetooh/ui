@@ -31,10 +31,17 @@ export function KpiCard({
     <Card className="gap-0">
       {/* `flex` explícito: o CardHeader base é grid — sem ele o `flex-row` não
           aplica e o ícone cai para baixo do valor (card esticado). */}
-      <CardHeader className="flex flex-row items-start justify-between">
-        <div className="flex flex-col gap-1">
+      {/* `gap-2` + `min-w-0`: sem `min-w-0` a coluna de texto não encolhe no flex
+          e o valor longo (ex.: "R$ 3.482.995,00") era CORTADO pelo
+          `overflow-hidden` do Card em telas estreitas — sumia sem scroll nem
+          reticências. Com `min-w-0` + `break-words` o valor quebra a linha. */}
+      <CardHeader className="flex flex-row items-start justify-between gap-2">
+        <div className="flex min-w-0 flex-col gap-1">
           <span className="text-xs font-medium uppercase tracking-wider text-gray-500">{label}</span>
-          <span className="text-2xl font-bold tracking-tight text-preto">{value}</span>
+          {/* `break-words` é a última barreira: se ainda assim não couber (card
+              muito estreito num grid de 4-5 colunas), o valor QUEBRA a linha em
+              vez de sumir cortado pelo `overflow-hidden` do Card. */}
+          <span className="break-words text-2xl font-bold tracking-tight text-preto">{value}</span>
           {trend && (
             <span
               className={`flex items-center gap-1 text-xs font-medium ${trendUp ? "text-verde-dark" : "text-red-600"}`}
@@ -59,11 +66,14 @@ export function KpiCard({
   )
 }
 
-// Grid responsivo padrão dos KPIs (2 col no mobile; `cols` no desktop, default 4).
-const LG_COLS: Record<3 | 4 | 5, string> = {
-  3: "lg:grid-cols-3",
-  4: "lg:grid-cols-4",
-  5: "lg:grid-cols-5",
+// Grid responsivo padrão dos KPIs: 1 col no celular, 2 no tablet, `cols` a partir
+// de `xl`. O corte final é `xl` (1280) e não `lg` (1024): com a sidebar
+// secundária (298px) sobram ~726px em 1024, e 4-5 colunas ali deixam cada card
+// com ~120px úteis — valor de moeda quebrava em 3 linhas.
+const WIDE_COLS: Record<3 | 4 | 5, string> = {
+  3: "xl:grid-cols-3",
+  4: "xl:grid-cols-4",
+  5: "xl:grid-cols-5",
 }
 
 export function KpiGrid({
@@ -76,7 +86,12 @@ export function KpiGrid({
   cols?: 3 | 4 | 5
 }) {
   return (
-    <div className={`grid grid-cols-2 gap-2.5 sm:gap-4 ${LG_COLS[cols]} ${className ?? ""}`}>
+    // 1 coluna abaixo de `sm` (todo celular em retrato): com 2 colunas em 360px
+    // sobram ~80px úteis por card e um valor de moeda ("R$ 3.482.995,00") ou
+    // quebrava no meio do número ou era cortado pelo `overflow-hidden` do Card.
+    // `[&>*]:min-w-0` deixa cada card encolher abaixo do próprio conteúdo (item
+    // de grid tem `min-width:auto` por padrão).
+    <div className={`grid grid-cols-1 gap-2.5 [&>*]:min-w-0 sm:grid-cols-2 sm:gap-4 ${WIDE_COLS[cols]} ${className ?? ""}`}>
       {children}
     </div>
   )

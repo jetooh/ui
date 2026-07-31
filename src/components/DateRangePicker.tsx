@@ -113,19 +113,27 @@ export function DateRangePicker({ value, onApply }: DateRangePickerProps) {
       <button
         onClick={openPicker}
         title={`vs. ${compareLabel(value.compare)} (${fmtRange(comp.from, comp.to)})`}
-        className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-branco px-3 py-1.5 text-[13px] text-gray-600 transition-colors hover:border-roxo hover:text-preto"
+        // `max-w-full` + `truncate` nos rótulos: em 360px o gatilho (preset +
+        // intervalo por extenso) estourava a largura da página.
+        className="inline-flex max-w-full items-center gap-2 rounded-lg border border-gray-200 bg-branco px-3 py-1.5 text-[13px] text-gray-600 transition-colors hover:border-roxo hover:text-preto pointer-coarse:min-h-10"
       >
-        <Calendar size={14} strokeWidth={1.5} className="text-gray-500" />
-        <span className="font-medium text-preto">{presetLabel(value.preset)}</span>
-        <span className="text-gray-500">({fmtRange(value.from, value.to)})</span>
-        <ChevronDown size={14} className="text-gray-500" />
+        <Calendar size={14} strokeWidth={1.5} className="shrink-0 text-gray-500" />
+        <span className="truncate font-medium text-preto">{presetLabel(value.preset)}</span>
+        <span className="truncate text-gray-500">({fmtRange(value.from, value.to)})</span>
+        <ChevronDown size={14} className="shrink-0 text-gray-500" />
       </button>
 
       {/* Lightbox central — portal no body p/ cobrir a PÁGINA INTEIRA (escapa de
           ancestrais com transform/overflow que limitariam o fixed). */}
       {open && createPortal((
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-preto/40 p-4" onClick={() => setOpen(false)}>
-          <div className="w-full max-w-xl overflow-hidden rounded-2xl bg-branco shadow-xl" onClick={(e) => e.stopPropagation()}>
+        // Mesma lição do Modal: o card é limitado a `100dvh - 2rem` e ROLA por
+        // dentro. Antes, num celular (360x640) o lightbox era mais alto que a
+        // tela e as datas / o botão "Atualizar" ficavam cortados e inalcançáveis.
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto bg-preto/40 p-4" onClick={() => setOpen(false)}>
+          <div
+            className="max-h-[calc(100dvh-2rem)] w-full max-w-xl overflow-y-auto overscroll-contain rounded-2xl bg-branco shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
               <p className="flex items-center gap-2 text-[15px] font-semibold text-preto"><Calendar size={18} strokeWidth={1.5} className="text-roxo" /> Selecione um período</p>
               <button onClick={() => setOpen(false)} className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-600">
@@ -146,7 +154,9 @@ export function DateRangePicker({ value, onApply }: DateRangePickerProps) {
 
             {/* corpo — mesma altura nas duas abas; custom centralizado */}
             {tab === "presets" ? (
-              <div className="grid min-h-[320px] grid-cols-2 content-start gap-2.5 p-5">
+              // 1 coluna em telas estreitas (2 colunas de ~150px cortavam
+              // rótulos como "Trimestre passado"); `min-h` só a partir de sm.
+              <div className="grid grid-cols-1 content-start gap-2.5 p-5 sm:min-h-[320px] sm:grid-cols-2">
                 {PRESETS.map((p) => {
                   const Ic = PRESET_ICONS[p.id] ?? Calendar
                   const on = draft.preset === p.id
@@ -160,7 +170,7 @@ export function DateRangePicker({ value, onApply }: DateRangePickerProps) {
                 })}
               </div>
             ) : (
-              <div className="flex min-h-[320px] flex-col justify-center gap-4 p-6">
+              <div className="flex flex-col justify-center gap-4 p-6 sm:min-h-[320px]">
                 <label className="block">
                   <span className="mb-1.5 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-gray-500">
                     <CalendarDays size={16} strokeWidth={1.5} className="text-roxo" /> Data inicial
@@ -185,7 +195,7 @@ export function DateRangePicker({ value, onApply }: DateRangePickerProps) {
 
             {/* comparar com */}
             <p className="flex items-center gap-1.5 border-t border-gray-100 px-6 pt-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500"><History size={13} strokeWidth={1.5} /> Comparar com</p>
-            <div className="grid grid-cols-2 gap-2.5 px-5 py-3">
+            <div className="grid grid-cols-1 gap-2.5 px-5 py-3 sm:grid-cols-2">
               {(["period", "year"] as const).map((c) => {
                 const on = draft.compare === c
                 return (
@@ -198,7 +208,7 @@ export function DateRangePicker({ value, onApply }: DateRangePickerProps) {
               })}
             </div>
 
-            <div className="flex items-center justify-between gap-3 border-t border-gray-100 px-6 py-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-6 py-4">
               <span className="min-w-0 text-[12px] text-gray-500">
                 {fmtRange(draft.from, draft.to)} <span className="text-gray-300">·</span> vs. {fmtRange(draftComp.from, draftComp.to)}
               </span>

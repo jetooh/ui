@@ -20,7 +20,10 @@ export interface AppBottomNavProps {
 
 export const AppBottomNav = memo(function AppBottomNav({ items, activeId, onNavigate }: AppBottomNavProps) {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-30 flex h-14 items-center justify-around border-t border-gray-200 bg-branco/95 backdrop-blur-sm lg:hidden">
+    // `min-h-14` + `pb-[env(safe-area-inset-bottom)]`: em telas com home
+    // indicator (iPhone) a barra ficava embaixo do gesto do sistema. O respiro
+    // extra é devolvido ao conteúdo pelo espaçador do PageFrame.
+    <nav className="fixed bottom-0 left-0 right-0 z-30 flex min-h-14 items-stretch justify-around border-t border-gray-200 bg-branco/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-sm lg:hidden">
       {items.map((item) => {
         const active = activeId === item.id
         return (
@@ -29,7 +32,9 @@ export const AppBottomNav = memo(function AppBottomNav({ items, activeId, onNavi
             onClick={() => onNavigate(item.id)}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "flex flex-col items-center gap-0.5 px-3 py-1.5 text-[10px] transition-all duration-150",
+              // `min-w-0 flex-1` + `truncate`: com 5-6 abas em 360px os rótulos
+              // dividem a barra por igual em vez de estourá-la.
+              "flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-1 py-1.5 text-[10px] transition-all duration-150 [&>span]:max-w-full [&>span]:truncate",
               active ? "font-semibold text-roxo" : "text-gray-500",
             )}
           >

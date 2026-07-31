@@ -10,7 +10,10 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
       // para quem navega só com teclado conseguir rolá-la (WCAG 2.1.1).
       tabIndex={0}
       role="group"
-      className="relative w-full overflow-x-auto outline-none"
+      // `max-w-full` + `overscroll-x-contain`: a tabela nunca alarga o pai (as
+      // células são `whitespace-nowrap`, então tabela larga = scroll AQUI) e o
+      // swipe lateral no mobile não "vaza" para a navegação do browser.
+      className="relative w-full max-w-full overflow-x-auto overscroll-x-contain outline-none"
     >
       <table
         data-slot="table"

@@ -22,7 +22,13 @@ export const AppFooter = memo(function AppFooter() {
 
       <div className="flex flex-wrap items-center gap-4">
         {footerLinks.map((link) => (
-          <a key={link.label} href={link.href} className="text-xs text-gray-500 transition-colors hover:text-gray-600">
+          <a
+            key={link.label}
+            href={link.href}
+            // `inline-flex` + `min-h-10` no toque: link de rodapé com 16px de
+            // altura é alvo pequeno demais no celular (WCAG 2.5.8).
+            className="inline-flex items-center text-xs text-gray-500 transition-colors hover:text-gray-600 pointer-coarse:min-h-10"
+          >
             {link.label}
           </a>
         ))}
@@ -33,7 +39,7 @@ export const AppFooter = memo(function AppFooter() {
               key={social.label}
               href={social.href}
               aria-label={social.label}
-              className="flex h-7 w-7 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-600"
+              className="flex h-7 w-7 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-600 pointer-coarse:h-10 pointer-coarse:w-10"
             >
               <social.icon size={14} strokeWidth={1.5} />
             </a>

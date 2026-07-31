@@ -17,21 +17,24 @@ export interface AppMobileHeaderProps {
 
 export function AppMobileHeader({ onMenuToggle, logoSrc = "/icone.svg", actions, userMenu }: AppMobileHeaderProps) {
   return (
-    <header className="fixed left-0 right-0 top-0 z-30 flex h-14 items-center justify-between border-b border-gray-200 bg-branco px-4 lg:hidden">
-      <div className="flex items-center gap-3">
+    // `gap-2` + `min-w-0`: com ações extras (busca/sino) o bloco da direita não
+    // pode empurrar o logo para fora da barra.
+    <header className="fixed left-0 right-0 top-0 z-30 flex h-14 items-center justify-between gap-2 border-b border-gray-200 bg-branco px-4 lg:hidden">
+      <div className="flex min-w-0 items-center gap-2">
         {onMenuToggle && (
           <button
             onClick={onMenuToggle}
             aria-label="Abrir menu"
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-gray-100"
+            // 40px de alvo de toque (era 36) — WCAG 2.5.8 Target Size (Minimum).
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-gray-100"
           >
             <Menu size={20} strokeWidth={1.5} />
           </button>
         )}
-        <img src={logoSrc} alt="JETOOH" width={24} height={24} />
+        <img src={logoSrc} alt="JETOOH" width={24} height={24} className="h-6 w-6 shrink-0" />
       </div>
 
-      <div className="flex items-center gap-1">
+      <div className="flex shrink-0 items-center gap-1">
         {actions}
         {userMenu}
       </div>

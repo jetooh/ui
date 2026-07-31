@@ -31,7 +31,14 @@ export function SegmentedTabs<T extends string>({
     <div
       role="tablist"
       aria-label={ariaLabel}
-      className={cn('inline-flex items-center gap-1 rounded-xl border border-gray-100 bg-branco p-1', className)}
+      // `max-w-full` + `overflow-x-auto`: com muitas abas a barra encolhe até a
+      // largura disponível e ROLA na horizontal em vez de estourar o container.
+      // Era o MAIOR causador de scroll lateral do tema (9 abas = 977px, vazava
+      // até em 1280). Scrollbar escondida — rola por toque/trackpad/teclado.
+      className={cn(
+        'inline-flex max-w-full items-center gap-1 overflow-x-auto overscroll-x-contain rounded-xl border border-gray-100 bg-branco p-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+        className,
+      )}
     >
       {items.map((it) => {
         const Icon = it.icon;
@@ -44,7 +51,11 @@ export function SegmentedTabs<T extends string>({
             aria-selected={active}
             onClick={() => onChange(it.id)}
             className={cn(
-              'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors',
+              // `shrink-0`/`whitespace-nowrap`: dentro do trilho com scroll a aba
+              // não pode encolher nem quebrar o rótulo. `pointer-coarse:min-h-10`
+              // dá alvo de toque de 40px em telas de toque (WCAG 2.5.8) sem
+              // engordar o controle no desktop.
+              'flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors pointer-coarse:min-h-10',
               active ? 'bg-preto/5 text-preto' : 'text-gray-500 hover:text-preto',
             )}
           >

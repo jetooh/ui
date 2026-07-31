@@ -209,15 +209,20 @@ var buttonVariants = cva(
         destructive: "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
         link: "text-primary underline-offset-4 hover:underline"
       },
+      // `pointer-coarse:` = só em telas de TOQUE (celular/tablet): os tamanhos
+      // "normais" (default/lg/icon/icon-lg) sobem para 40px de alvo, atendendo
+      // WCAG 2.5.8 (Target Size Minimum) sem engordar nada no desktop. Os
+      // tamanhos declaradamente compactos (xs/sm) ficam como estão — quem os usa
+      // pediu densidade de propósito.
       size: {
-        default: "h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
+        default: "h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 pointer-coarse:h-10 pointer-coarse:px-3.5",
         xs: "h-6 gap-1 rounded-[min(var(--radius-md),10px)] px-2 text-xs in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
         sm: "h-7 gap-1 rounded-[min(var(--radius-md),12px)] px-2.5 text-[0.8rem] in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
-        lg: "h-9 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
-        icon: "size-8",
+        lg: "h-9 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 pointer-coarse:h-11 pointer-coarse:px-3.5",
+        icon: "size-8 pointer-coarse:size-10",
         "icon-xs": "size-6 rounded-[min(var(--radius-md),10px)] in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-3",
         "icon-sm": "size-7 rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg",
-        "icon-lg": "size-9"
+        "icon-lg": "size-9 pointer-coarse:size-11"
       }
     },
     defaultVariants: {
@@ -312,7 +317,19 @@ function CardHeader({ className, ...props }) {
     {
       "data-slot": "card-header",
       className: cn(
-        "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-xl px-4 group-data-[size=sm]/card:px-3 has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-4 group-data-[size=sm]/card:[.border-b]:pb-3",
+        // Cabeçalho com AÇÕES (busca + filtro + "Novo …"):
+        //  • abaixo de `sm` o bloco de ações EMPILHA sob o título — antes a
+        //    coluna `auto` da ação estourava a largura do card no celular e
+        //    gerava scroll lateral;
+        //  • de `sm` para cima a coluna da ação é `fit-content(70%)`, NÃO `auto`:
+        //    com `auto` a trilha assumia o max-content da barra (582px num header
+        //    de 626px), zerava a coluna do título e o texto do título ficava POR
+        //    CIMA das ações. Com o teto de 70% a barra quebra dentro do próprio
+        //    espaço (ver `[&>*]:flex-wrap` no CardAction) e o título mantém 30%.
+        // Usa breakpoint de viewport, não container query: `@container/card-header`
+        // vale só para os DESCENDENTES — um elemento não consulta o próprio
+        // container, então `@md/card-header:` aqui nunca casaria.
+        "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-xl px-4 group-data-[size=sm]/card:px-3 has-data-[slot=card-action]:grid-cols-1 has-data-[slot=card-action]:gap-3 has-data-[slot=card-action]:sm:grid-cols-[1fr_fit-content(70%)] has-data-[slot=card-action]:sm:gap-1 has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-4 group-data-[size=sm]/card:[.border-b]:pb-3",
         className
       ),
       ...props
@@ -348,7 +365,16 @@ function CardAction({ className, ...props }) {
     {
       "data-slot": "card-action",
       className: cn(
-        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
+        // No celular a ação ocupa a linha inteira (justify-self-start); a partir
+        // de `sm` volta para a coluna da direita, como antes.
+        //
+        // `[&>*]:flex-wrap`: as apps montam a barra de ações como um
+        // `<div className="flex items-center gap-2">` (busca + filtro + botão).
+        // Sem `flex-wrap` essa linha não quebra e estoura o card no mobile.
+        // A regra é inócua quando o filho NÃO é um container flex (flex-wrap só
+        // tem efeito em display:flex), então vale para toda app do tema sem
+        // precisar tocar em cada tela.
+        "max-w-full justify-self-start [&>*]:flex-wrap sm:col-start-2 sm:row-span-2 sm:row-start-1 sm:self-start sm:justify-self-end",
         className
       ),
       ...props
@@ -464,10 +490,10 @@ function KpiCard({
   trendUp,
   hint
 }) {
-  return /* @__PURE__ */ jsx7(Card, { className: "gap-0", children: /* @__PURE__ */ jsxs4(CardHeader, { className: "flex flex-row items-start justify-between", children: [
-    /* @__PURE__ */ jsxs4("div", { className: "flex flex-col gap-1", children: [
+  return /* @__PURE__ */ jsx7(Card, { className: "gap-0", children: /* @__PURE__ */ jsxs4(CardHeader, { className: "flex flex-row items-start justify-between gap-2", children: [
+    /* @__PURE__ */ jsxs4("div", { className: "flex min-w-0 flex-col gap-1", children: [
       /* @__PURE__ */ jsx7("span", { className: "text-xs font-medium uppercase tracking-wider text-gray-500", children: label }),
-      /* @__PURE__ */ jsx7("span", { className: "text-2xl font-bold tracking-tight text-preto", children: value }),
+      /* @__PURE__ */ jsx7("span", { className: "break-words text-2xl font-bold tracking-tight text-preto", children: value }),
       trend && /* @__PURE__ */ jsxs4(
         "span",
         {
@@ -489,17 +515,24 @@ function KpiCard({
     )
   ] }) });
 }
-var LG_COLS = {
-  3: "lg:grid-cols-3",
-  4: "lg:grid-cols-4",
-  5: "lg:grid-cols-5"
+var WIDE_COLS = {
+  3: "xl:grid-cols-3",
+  4: "xl:grid-cols-4",
+  5: "xl:grid-cols-5"
 };
 function KpiGrid({
   children,
   className,
   cols = 4
 }) {
-  return /* @__PURE__ */ jsx7("div", { className: `grid grid-cols-2 gap-2.5 sm:gap-4 ${LG_COLS[cols]} ${className ?? ""}`, children });
+  return (
+    // 1 coluna abaixo de `sm` (todo celular em retrato): com 2 colunas em 360px
+    // sobram ~80px úteis por card e um valor de moeda ("R$ 3.482.995,00") ou
+    // quebrava no meio do número ou era cortado pelo `overflow-hidden` do Card.
+    // `[&>*]:min-w-0` deixa cada card encolher abaixo do próprio conteúdo (item
+    // de grid tem `min-width:auto` por padrão).
+    /* @__PURE__ */ jsx7("div", { className: `grid grid-cols-1 gap-2.5 [&>*]:min-w-0 sm:grid-cols-2 sm:gap-4 ${WIDE_COLS[cols]} ${className ?? ""}`, children })
+  );
 }
 
 // src/components/Table.tsx
@@ -511,7 +544,7 @@ function Table({ className, ...props }) {
       "data-slot": "table-container",
       tabIndex: 0,
       role: "group",
-      className: "relative w-full overflow-x-auto outline-none",
+      className: "relative w-full max-w-full overflow-x-auto overscroll-x-contain outline-none",
       children: /* @__PURE__ */ jsx8(
         "table",
         {
@@ -989,119 +1022,136 @@ function DateRangePicker({ value, onApply }) {
       {
         onClick: openPicker,
         title: `vs. ${compareLabel(value.compare)} (${fmtRange(comp.from, comp.to)})`,
-        className: "inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-branco px-3 py-1.5 text-[13px] text-gray-600 transition-colors hover:border-roxo hover:text-preto",
+        className: "inline-flex max-w-full items-center gap-2 rounded-lg border border-gray-200 bg-branco px-3 py-1.5 text-[13px] text-gray-600 transition-colors hover:border-roxo hover:text-preto pointer-coarse:min-h-10",
         children: [
-          /* @__PURE__ */ jsx13(Calendar, { size: 14, strokeWidth: 1.5, className: "text-gray-500" }),
-          /* @__PURE__ */ jsx13("span", { className: "font-medium text-preto", children: presetLabel(value.preset) }),
-          /* @__PURE__ */ jsxs8("span", { className: "text-gray-500", children: [
+          /* @__PURE__ */ jsx13(Calendar, { size: 14, strokeWidth: 1.5, className: "shrink-0 text-gray-500" }),
+          /* @__PURE__ */ jsx13("span", { className: "truncate font-medium text-preto", children: presetLabel(value.preset) }),
+          /* @__PURE__ */ jsxs8("span", { className: "truncate text-gray-500", children: [
             "(",
             fmtRange(value.from, value.to),
             ")"
           ] }),
-          /* @__PURE__ */ jsx13(ChevronDown, { size: 14, className: "text-gray-500" })
+          /* @__PURE__ */ jsx13(ChevronDown, { size: 14, className: "shrink-0 text-gray-500" })
         ]
       }
     ),
-    open && createPortal3(/* @__PURE__ */ jsx13("div", { className: "fixed inset-0 z-[9999] flex items-center justify-center bg-preto/40 p-4", onClick: () => setOpen(false), children: /* @__PURE__ */ jsxs8("div", { className: "w-full max-w-xl overflow-hidden rounded-2xl bg-branco shadow-xl", onClick: (e) => e.stopPropagation(), children: [
-      /* @__PURE__ */ jsxs8("div", { className: "flex items-center justify-between border-b border-gray-100 px-6 py-4", children: [
-        /* @__PURE__ */ jsxs8("p", { className: "flex items-center gap-2 text-[15px] font-semibold text-preto", children: [
-          /* @__PURE__ */ jsx13(Calendar, { size: 18, strokeWidth: 1.5, className: "text-roxo" }),
-          " Selecione um per\xEDodo"
-        ] }),
-        /* @__PURE__ */ jsx13("button", { onClick: () => setOpen(false), className: "flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-600", children: /* @__PURE__ */ jsx13(X3, { size: 16, strokeWidth: 1.5 }) })
-      ] }),
-      /* @__PURE__ */ jsx13("div", { className: "grid grid-cols-2 border-b border-gray-100", children: ["presets", "custom"].map((tb) => /* @__PURE__ */ jsxs8(
-        "button",
+    open && createPortal3(
+      // Mesma lição do Modal: o card é limitado a `100dvh - 2rem` e ROLA por
+      // dentro. Antes, num celular (360x640) o lightbox era mais alto que a
+      // tela e as datas / o botão "Atualizar" ficavam cortados e inalcançáveis.
+      /* @__PURE__ */ jsx13("div", { className: "fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto bg-preto/40 p-4", onClick: () => setOpen(false), children: /* @__PURE__ */ jsxs8(
+        "div",
         {
-          onClick: () => setTab(tb),
-          className: `flex items-center justify-center gap-1.5 py-3.5 text-[14px] font-medium ${tab === tb ? "border-b-2 border-roxo text-roxo" : "text-gray-500 hover:text-preto"}`,
+          className: "max-h-[calc(100dvh-2rem)] w-full max-w-xl overflow-y-auto overscroll-contain rounded-2xl bg-branco shadow-xl",
+          onClick: (e) => e.stopPropagation(),
           children: [
-            tb === "presets" ? /* @__PURE__ */ jsx13(CalendarCheck, { size: 15, strokeWidth: 1.5 }) : /* @__PURE__ */ jsx13(Calendar, { size: 15, strokeWidth: 1.5 }),
-            tb === "presets" ? "Predefinidos" : "Personalizado"
+            /* @__PURE__ */ jsxs8("div", { className: "flex items-center justify-between border-b border-gray-100 px-6 py-4", children: [
+              /* @__PURE__ */ jsxs8("p", { className: "flex items-center gap-2 text-[15px] font-semibold text-preto", children: [
+                /* @__PURE__ */ jsx13(Calendar, { size: 18, strokeWidth: 1.5, className: "text-roxo" }),
+                " Selecione um per\xEDodo"
+              ] }),
+              /* @__PURE__ */ jsx13("button", { onClick: () => setOpen(false), className: "flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-600", children: /* @__PURE__ */ jsx13(X3, { size: 16, strokeWidth: 1.5 }) })
+            ] }),
+            /* @__PURE__ */ jsx13("div", { className: "grid grid-cols-2 border-b border-gray-100", children: ["presets", "custom"].map((tb) => /* @__PURE__ */ jsxs8(
+              "button",
+              {
+                onClick: () => setTab(tb),
+                className: `flex items-center justify-center gap-1.5 py-3.5 text-[14px] font-medium ${tab === tb ? "border-b-2 border-roxo text-roxo" : "text-gray-500 hover:text-preto"}`,
+                children: [
+                  tb === "presets" ? /* @__PURE__ */ jsx13(CalendarCheck, { size: 15, strokeWidth: 1.5 }) : /* @__PURE__ */ jsx13(Calendar, { size: 15, strokeWidth: 1.5 }),
+                  tb === "presets" ? "Predefinidos" : "Personalizado"
+                ]
+              },
+              tb
+            )) }),
+            tab === "presets" ? (
+              // 1 coluna em telas estreitas (2 colunas de ~150px cortavam
+              // rótulos como "Trimestre passado"); `min-h` só a partir de sm.
+              /* @__PURE__ */ jsx13("div", { className: "grid grid-cols-1 content-start gap-2.5 p-5 sm:min-h-[320px] sm:grid-cols-2", children: PRESETS.map((p) => {
+                const Ic = PRESET_ICONS[p.id] ?? Calendar;
+                const on = draft.preset === p.id;
+                return /* @__PURE__ */ jsxs8(
+                  "button",
+                  {
+                    onClick: () => pickPreset(p.id),
+                    className: `flex items-center gap-3 rounded-xl border px-4 py-3.5 text-left text-[14px] transition-colors ${on ? "border-roxo bg-roxo/5 font-semibold text-roxo" : "border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50"}`,
+                    children: [
+                      /* @__PURE__ */ jsx13(Ic, { size: 18, strokeWidth: 1.5, className: on ? "text-roxo" : "text-gray-500" }),
+                      p.label
+                    ]
+                  },
+                  p.id
+                );
+              }) })
+            ) : /* @__PURE__ */ jsxs8("div", { className: "flex flex-col justify-center gap-4 p-6 sm:min-h-[320px]", children: [
+              /* @__PURE__ */ jsxs8("label", { className: "block", children: [
+                /* @__PURE__ */ jsxs8("span", { className: "mb-1.5 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-gray-500", children: [
+                  /* @__PURE__ */ jsx13(CalendarDays, { size: 16, strokeWidth: 1.5, className: "text-roxo" }),
+                  " Data inicial"
+                ] }),
+                /* @__PURE__ */ jsx13(
+                  "input",
+                  {
+                    type: "date",
+                    value: draft.from,
+                    max: draft.to || void 0,
+                    onChange: (e) => setDraft((d) => ({ ...d, preset: "custom", from: e.target.value })),
+                    className: "h-14 w-full rounded-xl border border-gray-200 px-4 text-[18px] font-bold text-preto focus:border-roxo focus:outline-none focus:ring-2 focus:ring-roxo/20"
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxs8("label", { className: "block", children: [
+                /* @__PURE__ */ jsxs8("span", { className: "mb-1.5 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-gray-500", children: [
+                  /* @__PURE__ */ jsx13(CalendarCheck, { size: 16, strokeWidth: 1.5, className: "text-roxo" }),
+                  " Data final"
+                ] }),
+                /* @__PURE__ */ jsx13(
+                  "input",
+                  {
+                    type: "date",
+                    value: draft.to,
+                    min: draft.from || void 0,
+                    onChange: (e) => setDraft((d) => ({ ...d, preset: "custom", to: e.target.value })),
+                    className: "h-14 w-full rounded-xl border border-gray-200 px-4 text-[18px] font-bold text-preto focus:border-roxo focus:outline-none focus:ring-2 focus:ring-roxo/20"
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsx13("p", { className: "w-full rounded-xl bg-roxo/5 px-4 py-3.5 text-center text-[14px] font-semibold text-roxo", children: draft.from && draft.to ? fmtRange(draft.from, draft.to) : "Selecione as duas datas" })
+            ] }),
+            /* @__PURE__ */ jsxs8("p", { className: "flex items-center gap-1.5 border-t border-gray-100 px-6 pt-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500", children: [
+              /* @__PURE__ */ jsx13(History, { size: 13, strokeWidth: 1.5 }),
+              " Comparar com"
+            ] }),
+            /* @__PURE__ */ jsx13("div", { className: "grid grid-cols-1 gap-2.5 px-5 py-3 sm:grid-cols-2", children: ["period", "year"].map((c) => {
+              const on = draft.compare === c;
+              return /* @__PURE__ */ jsxs8(
+                "button",
+                {
+                  onClick: () => setDraft((d) => ({ ...d, compare: c })),
+                  className: `flex items-center gap-3 rounded-xl border px-4 py-3 text-[14px] transition-colors ${on ? "border-roxo bg-roxo/5 font-semibold text-roxo" : "border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50"}`,
+                  children: [
+                    c === "year" ? /* @__PURE__ */ jsx13(CalendarCheck, { size: 17, strokeWidth: 1.5, className: on ? "text-roxo" : "text-gray-500" }) : /* @__PURE__ */ jsx13(History, { size: 17, strokeWidth: 1.5, className: on ? "text-roxo" : "text-gray-500" }),
+                    compareLabel(c)
+                  ]
+                },
+                c
+              );
+            }) }),
+            /* @__PURE__ */ jsxs8("div", { className: "flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-6 py-4", children: [
+              /* @__PURE__ */ jsxs8("span", { className: "min-w-0 text-[12px] text-gray-500", children: [
+                fmtRange(draft.from, draft.to),
+                " ",
+                /* @__PURE__ */ jsx13("span", { className: "text-gray-300", children: "\xB7" }),
+                " vs. ",
+                fmtRange(draftComp.from, draftComp.to)
+              ] }),
+              /* @__PURE__ */ jsx13("button", { onClick: apply, className: "shrink-0 rounded-lg bg-roxo px-6 py-2.5 text-[13px] font-semibold text-branco hover:bg-roxo-hover", children: "Atualizar" })
+            ] })
           ]
-        },
-        tb
-      )) }),
-      tab === "presets" ? /* @__PURE__ */ jsx13("div", { className: "grid min-h-[320px] grid-cols-2 content-start gap-2.5 p-5", children: PRESETS.map((p) => {
-        const Ic = PRESET_ICONS[p.id] ?? Calendar;
-        const on = draft.preset === p.id;
-        return /* @__PURE__ */ jsxs8(
-          "button",
-          {
-            onClick: () => pickPreset(p.id),
-            className: `flex items-center gap-3 rounded-xl border px-4 py-3.5 text-left text-[14px] transition-colors ${on ? "border-roxo bg-roxo/5 font-semibold text-roxo" : "border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50"}`,
-            children: [
-              /* @__PURE__ */ jsx13(Ic, { size: 18, strokeWidth: 1.5, className: on ? "text-roxo" : "text-gray-500" }),
-              p.label
-            ]
-          },
-          p.id
-        );
-      }) }) : /* @__PURE__ */ jsxs8("div", { className: "flex min-h-[320px] flex-col justify-center gap-4 p-6", children: [
-        /* @__PURE__ */ jsxs8("label", { className: "block", children: [
-          /* @__PURE__ */ jsxs8("span", { className: "mb-1.5 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-gray-500", children: [
-            /* @__PURE__ */ jsx13(CalendarDays, { size: 16, strokeWidth: 1.5, className: "text-roxo" }),
-            " Data inicial"
-          ] }),
-          /* @__PURE__ */ jsx13(
-            "input",
-            {
-              type: "date",
-              value: draft.from,
-              max: draft.to || void 0,
-              onChange: (e) => setDraft((d) => ({ ...d, preset: "custom", from: e.target.value })),
-              className: "h-14 w-full rounded-xl border border-gray-200 px-4 text-[18px] font-bold text-preto focus:border-roxo focus:outline-none focus:ring-2 focus:ring-roxo/20"
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxs8("label", { className: "block", children: [
-          /* @__PURE__ */ jsxs8("span", { className: "mb-1.5 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-gray-500", children: [
-            /* @__PURE__ */ jsx13(CalendarCheck, { size: 16, strokeWidth: 1.5, className: "text-roxo" }),
-            " Data final"
-          ] }),
-          /* @__PURE__ */ jsx13(
-            "input",
-            {
-              type: "date",
-              value: draft.to,
-              min: draft.from || void 0,
-              onChange: (e) => setDraft((d) => ({ ...d, preset: "custom", to: e.target.value })),
-              className: "h-14 w-full rounded-xl border border-gray-200 px-4 text-[18px] font-bold text-preto focus:border-roxo focus:outline-none focus:ring-2 focus:ring-roxo/20"
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsx13("p", { className: "w-full rounded-xl bg-roxo/5 px-4 py-3.5 text-center text-[14px] font-semibold text-roxo", children: draft.from && draft.to ? fmtRange(draft.from, draft.to) : "Selecione as duas datas" })
-      ] }),
-      /* @__PURE__ */ jsxs8("p", { className: "flex items-center gap-1.5 border-t border-gray-100 px-6 pt-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500", children: [
-        /* @__PURE__ */ jsx13(History, { size: 13, strokeWidth: 1.5 }),
-        " Comparar com"
-      ] }),
-      /* @__PURE__ */ jsx13("div", { className: "grid grid-cols-2 gap-2.5 px-5 py-3", children: ["period", "year"].map((c) => {
-        const on = draft.compare === c;
-        return /* @__PURE__ */ jsxs8(
-          "button",
-          {
-            onClick: () => setDraft((d) => ({ ...d, compare: c })),
-            className: `flex items-center gap-3 rounded-xl border px-4 py-3 text-[14px] transition-colors ${on ? "border-roxo bg-roxo/5 font-semibold text-roxo" : "border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50"}`,
-            children: [
-              c === "year" ? /* @__PURE__ */ jsx13(CalendarCheck, { size: 17, strokeWidth: 1.5, className: on ? "text-roxo" : "text-gray-500" }) : /* @__PURE__ */ jsx13(History, { size: 17, strokeWidth: 1.5, className: on ? "text-roxo" : "text-gray-500" }),
-              compareLabel(c)
-            ]
-          },
-          c
-        );
-      }) }),
-      /* @__PURE__ */ jsxs8("div", { className: "flex items-center justify-between gap-3 border-t border-gray-100 px-6 py-4", children: [
-        /* @__PURE__ */ jsxs8("span", { className: "min-w-0 text-[12px] text-gray-500", children: [
-          fmtRange(draft.from, draft.to),
-          " ",
-          /* @__PURE__ */ jsx13("span", { className: "text-gray-300", children: "\xB7" }),
-          " vs. ",
-          fmtRange(draftComp.from, draftComp.to)
-        ] }),
-        /* @__PURE__ */ jsx13("button", { onClick: apply, className: "shrink-0 rounded-lg bg-roxo px-6 py-2.5 text-[13px] font-semibold text-branco hover:bg-roxo-hover", children: "Atualizar" })
-      ] })
-    ] }) }), document.body)
+        }
+      ) }),
+      document.body
+    )
   ] });
 }
 
@@ -1249,7 +1299,9 @@ var AppSubNav = memo2(function AppSubNav2({
     "div",
     {
       className: cn(
-        "sticky top-0 z-10 flex gap-1.5 overflow-x-auto border-b border-gray-200 bg-branco px-4 py-2 lg:hidden",
+        // Scrollbar escondida (a barra nativa cobria o rótulo em telas curtas) e
+        // `overscroll-x-contain` para o swipe lateral não navegar a página.
+        "sticky top-0 z-10 flex gap-1.5 overflow-x-auto overscroll-x-contain border-b border-gray-200 bg-branco px-4 py-2 [-ms-overflow-style:none] [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden",
         className
       ),
       children: items2.map((item) => {
@@ -1260,7 +1312,8 @@ var AppSubNav = memo2(function AppSubNav2({
             onClick: () => onNavigate(item.id),
             "aria-current": isActive ? "page" : void 0,
             className: cn(
-              "flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] transition-colors",
+              // `min-h-10`: alvo de toque de 40px (era 32) — WCAG 2.5.8.
+              "flex min-h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[13px] transition-colors",
               isActive ? "bg-secondary-active-bg font-medium text-secondary-active" : "text-gray-600 hover:text-preto"
             ),
             children: [
@@ -1290,22 +1343,24 @@ function ContentHeader({
   return /* @__PURE__ */ jsxs11(
     "div",
     {
-      className: `sticky top-0 z-10 flex items-center justify-between rounded-t-xl border-b border-gray-100 bg-branco/95 px-8 py-4 backdrop-blur-sm ${className ?? ""}`,
+      className: `sticky top-0 z-10 flex items-center justify-between gap-3 rounded-t-xl border-b border-gray-100 bg-branco/95 px-4 py-4 backdrop-blur-sm xl:px-8 ${className ?? ""}`,
       children: [
-        customLeft ?? /* @__PURE__ */ jsxs11("div", { className: "flex items-center gap-4", children: [
-          /* @__PURE__ */ jsx16("div", { className: "flex h-10 w-10 items-center justify-center rounded-xl bg-roxo/10 text-roxo", children: /* @__PURE__ */ jsx16(Icon2, { size: 20, strokeWidth: 1.5 }) }),
-          /* @__PURE__ */ jsxs11("div", { children: [
-            /* @__PURE__ */ jsxs11("div", { className: "flex items-center gap-1", children: [
-              /* @__PURE__ */ jsx16("h1", { className: "text-2xl font-bold text-preto", children: moduleTitle }),
+        customLeft ?? // `min-w-0` deixa o bloco de título encolher (senão empurra as ações
+        // para fora); `truncate` evita que título longo quebre o header.
+        /* @__PURE__ */ jsxs11("div", { className: "flex min-w-0 items-center gap-3 xl:gap-4", children: [
+          /* @__PURE__ */ jsx16("div", { className: "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-roxo/10 text-roxo", children: /* @__PURE__ */ jsx16(Icon2, { size: 20, strokeWidth: 1.5 }) }),
+          /* @__PURE__ */ jsxs11("div", { className: "min-w-0", children: [
+            /* @__PURE__ */ jsxs11("div", { className: "flex min-w-0 items-center gap-1", children: [
+              /* @__PURE__ */ jsx16("h1", { className: "truncate text-xl font-bold text-preto xl:text-2xl", children: moduleTitle }),
               subTitle && /* @__PURE__ */ jsxs11(Fragment, { children: [
-                /* @__PURE__ */ jsx16(ChevronDown2, { size: 16, strokeWidth: 1.5, className: "-rotate-90 text-gray-300" }),
-                /* @__PURE__ */ jsx16("span", { className: "text-2xl font-bold text-preto", children: subTitle })
+                /* @__PURE__ */ jsx16(ChevronDown2, { size: 16, strokeWidth: 1.5, className: "shrink-0 -rotate-90 text-gray-300" }),
+                /* @__PURE__ */ jsx16("span", { className: "truncate text-xl font-bold text-preto xl:text-2xl", children: subTitle })
               ] })
             ] }),
-            description && /* @__PURE__ */ jsx16("p", { className: "mt-0.5 text-[12px] text-gray-500", children: description })
+            description && /* @__PURE__ */ jsx16("p", { className: "mt-0.5 truncate text-[12px] text-gray-500", children: description })
           ] })
         ] }),
-        /* @__PURE__ */ jsx16("div", { className: "flex items-center gap-3", children })
+        /* @__PURE__ */ jsx16("div", { className: "flex shrink-0 items-center gap-2 xl:gap-3", children })
       ]
     }
   );
@@ -1330,13 +1385,21 @@ var AppFooter = memo3(function AppFooter2() {
   return /* @__PURE__ */ jsxs12("footer", { className: "mt-auto flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between lg:px-8", children: [
     /* @__PURE__ */ jsx17("p", { className: "text-xs text-gray-500", children: "\xA9 2026 Jetooh. Todos os direitos reservados." }),
     /* @__PURE__ */ jsxs12("div", { className: "flex flex-wrap items-center gap-4", children: [
-      footerLinks.map((link) => /* @__PURE__ */ jsx17("a", { href: link.href, className: "text-xs text-gray-500 transition-colors hover:text-gray-600", children: link.label }, link.label)),
+      footerLinks.map((link) => /* @__PURE__ */ jsx17(
+        "a",
+        {
+          href: link.href,
+          className: "inline-flex items-center text-xs text-gray-500 transition-colors hover:text-gray-600 pointer-coarse:min-h-10",
+          children: link.label
+        },
+        link.label
+      )),
       /* @__PURE__ */ jsx17("div", { className: "flex items-center gap-2", children: socialLinks.map((social) => /* @__PURE__ */ jsx17(
         "a",
         {
           href: social.href,
           "aria-label": social.label,
-          className: "flex h-7 w-7 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-600",
+          className: "flex h-7 w-7 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-600 pointer-coarse:h-10 pointer-coarse:w-10",
           children: /* @__PURE__ */ jsx17(social.icon, { size: 14, strokeWidth: 1.5 })
         },
         social.label
@@ -1361,94 +1424,112 @@ function PageFrame({
   fullBleed,
   contentKey
 }) {
-  return /* @__PURE__ */ jsxs13("div", { className: "h-screen overflow-hidden bg-page-bg", children: [
-    /* @__PURE__ */ jsx18(
-      "a",
-      {
-        href: `#${mainId}`,
-        className: "sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[10001] focus:rounded-lg focus:bg-roxo focus:px-4 focus:py-2 focus:text-[13px] focus:font-semibold focus:text-branco",
-        children: "Pular para o conte\xFAdo"
-      }
-    ),
-    mobileHeader,
-    rail,
-    extras,
-    /* @__PURE__ */ jsx18("div", { className: cn("flex h-screen flex-col", contentAreaClassName), children: /* @__PURE__ */ jsxs13(
-      "div",
-      {
-        className: cn(
-          "flex min-h-0 flex-1 flex-col bg-branco lg:rounded-xl lg:border lg:border-gray-200",
-          fullBleed && "overflow-hidden"
-        ),
-        children: [
-          header && /* @__PURE__ */ jsx18("div", { className: "sticky top-0 z-10 hidden lg:block", children: header }),
-          mobileTitle && /* @__PURE__ */ jsx18("div", { className: "block px-4 pb-1 pt-3 lg:hidden", children: mobileTitle }),
-          /* @__PURE__ */ jsx18(
-            "div",
-            {
-              role: "main",
-              id: mainId,
-              className: cn("min-h-0 flex-1", !fullBleed && "content-scroll overflow-y-auto"),
-              children: /* @__PURE__ */ jsxs13("div", { className: cn("flex flex-col", fullBleed ? "h-full" : "min-h-full"), children: [
-                /* @__PURE__ */ jsx18("div", { className: "min-h-0 flex-1 animate-fade-in-up", children }, contentKey),
-                footer
-              ] })
-            }
-          )
-        ]
-      }
-    ) }),
-    mobileBottomNav
-  ] });
+  return (
+    // Altura da casca em `100dvh` (dynamic viewport) quando o browser suporta:
+    // no mobile a barra de URL entra/sai e `100vh` MENTE (é maior que a área
+    // visível), cortando o fim do conteúdo/rodapé. `h-screen` fica de fallback
+    // via `@supports`. Mesma lição já aplicada no login do auth.
+    /* @__PURE__ */ jsxs13("div", { className: "h-screen overflow-hidden bg-page-bg supports-[height:100dvh]:h-dvh", children: [
+      /* @__PURE__ */ jsx18(
+        "a",
+        {
+          href: `#${mainId}`,
+          className: "sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[10001] focus:rounded-lg focus:bg-roxo focus:px-4 focus:py-2 focus:text-[13px] focus:font-semibold focus:text-branco",
+          children: "Pular para o conte\xFAdo"
+        }
+      ),
+      mobileHeader,
+      rail,
+      extras,
+      /* @__PURE__ */ jsx18("div", { className: cn("flex h-screen flex-col supports-[height:100dvh]:h-dvh", contentAreaClassName), children: /* @__PURE__ */ jsxs13(
+        "div",
+        {
+          className: cn(
+            "flex min-h-0 flex-1 flex-col bg-branco lg:rounded-xl lg:border lg:border-gray-200",
+            fullBleed && "overflow-hidden"
+          ),
+          children: [
+            header && /* @__PURE__ */ jsx18("div", { className: "sticky top-0 z-10 hidden lg:block", children: header }),
+            mobileTitle && /* @__PURE__ */ jsx18("div", { className: "block px-4 pb-1 pt-3 lg:hidden", children: mobileTitle }),
+            /* @__PURE__ */ jsx18(
+              "div",
+              {
+                role: "main",
+                id: mainId,
+                className: cn("min-h-0 flex-1", !fullBleed && "content-scroll overflow-y-auto"),
+                children: /* @__PURE__ */ jsxs13("div", { className: cn("flex flex-col", fullBleed ? "h-full" : "min-h-full"), children: [
+                  /* @__PURE__ */ jsx18("div", { className: "min-h-0 flex-1 animate-fade-in-up", children }, contentKey),
+                  footer,
+                  mobileBottomNav && /* @__PURE__ */ jsx18("div", { "aria-hidden": true, className: "h-[env(safe-area-inset-bottom)] shrink-0 lg:hidden" })
+                ] })
+              }
+            )
+          ]
+        }
+      ) }),
+      mobileBottomNav
+    ] })
+  );
 }
 
 // src/components/AppBottomNav.tsx
 import { memo as memo4 } from "react";
 import { jsx as jsx19, jsxs as jsxs14 } from "react/jsx-runtime";
 var AppBottomNav = memo4(function AppBottomNav2({ items: items2, activeId, onNavigate }) {
-  return /* @__PURE__ */ jsx19("nav", { className: "fixed bottom-0 left-0 right-0 z-30 flex h-14 items-center justify-around border-t border-gray-200 bg-branco/95 backdrop-blur-sm lg:hidden", children: items2.map((item) => {
-    const active = activeId === item.id;
-    return /* @__PURE__ */ jsxs14(
-      "button",
-      {
-        onClick: () => onNavigate(item.id),
-        "aria-current": active ? "page" : void 0,
-        className: cn(
-          "flex flex-col items-center gap-0.5 px-3 py-1.5 text-[10px] transition-all duration-150",
-          active ? "font-semibold text-roxo" : "text-gray-500"
-        ),
-        children: [
-          /* @__PURE__ */ jsx19(item.icon, { size: 20, strokeWidth: active ? 2 : 1.5 }),
-          /* @__PURE__ */ jsx19("span", { children: item.label })
-        ]
-      },
-      item.id
-    );
-  }) });
+  return (
+    // `min-h-14` + `pb-[env(safe-area-inset-bottom)]`: em telas com home
+    // indicator (iPhone) a barra ficava embaixo do gesto do sistema. O respiro
+    // extra é devolvido ao conteúdo pelo espaçador do PageFrame.
+    /* @__PURE__ */ jsx19("nav", { className: "fixed bottom-0 left-0 right-0 z-30 flex min-h-14 items-stretch justify-around border-t border-gray-200 bg-branco/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-sm lg:hidden", children: items2.map((item) => {
+      const active = activeId === item.id;
+      return /* @__PURE__ */ jsxs14(
+        "button",
+        {
+          onClick: () => onNavigate(item.id),
+          "aria-current": active ? "page" : void 0,
+          className: cn(
+            // `min-w-0 flex-1` + `truncate`: com 5-6 abas em 360px os rótulos
+            // dividem a barra por igual em vez de estourá-la.
+            "flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-1 py-1.5 text-[10px] transition-all duration-150 [&>span]:max-w-full [&>span]:truncate",
+            active ? "font-semibold text-roxo" : "text-gray-500"
+          ),
+          children: [
+            /* @__PURE__ */ jsx19(item.icon, { size: 20, strokeWidth: active ? 2 : 1.5 }),
+            /* @__PURE__ */ jsx19("span", { children: item.label })
+          ]
+        },
+        item.id
+      );
+    }) })
+  );
 });
 
 // src/components/AppMobileHeader.tsx
 import { Menu } from "lucide-react";
 import { jsx as jsx20, jsxs as jsxs15 } from "react/jsx-runtime";
 function AppMobileHeader({ onMenuToggle, logoSrc = "/icone.svg", actions, userMenu }) {
-  return /* @__PURE__ */ jsxs15("header", { className: "fixed left-0 right-0 top-0 z-30 flex h-14 items-center justify-between border-b border-gray-200 bg-branco px-4 lg:hidden", children: [
-    /* @__PURE__ */ jsxs15("div", { className: "flex items-center gap-3", children: [
-      onMenuToggle && /* @__PURE__ */ jsx20(
-        "button",
-        {
-          onClick: onMenuToggle,
-          "aria-label": "Abrir menu",
-          className: "flex h-9 w-9 items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-gray-100",
-          children: /* @__PURE__ */ jsx20(Menu, { size: 20, strokeWidth: 1.5 })
-        }
-      ),
-      /* @__PURE__ */ jsx20("img", { src: logoSrc, alt: "JETOOH", width: 24, height: 24 })
-    ] }),
-    /* @__PURE__ */ jsxs15("div", { className: "flex items-center gap-1", children: [
-      actions,
-      userMenu
+  return (
+    // `gap-2` + `min-w-0`: com ações extras (busca/sino) o bloco da direita não
+    // pode empurrar o logo para fora da barra.
+    /* @__PURE__ */ jsxs15("header", { className: "fixed left-0 right-0 top-0 z-30 flex h-14 items-center justify-between gap-2 border-b border-gray-200 bg-branco px-4 lg:hidden", children: [
+      /* @__PURE__ */ jsxs15("div", { className: "flex min-w-0 items-center gap-2", children: [
+        onMenuToggle && /* @__PURE__ */ jsx20(
+          "button",
+          {
+            onClick: onMenuToggle,
+            "aria-label": "Abrir menu",
+            className: "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-gray-100",
+            children: /* @__PURE__ */ jsx20(Menu, { size: 20, strokeWidth: 1.5 })
+          }
+        ),
+        /* @__PURE__ */ jsx20("img", { src: logoSrc, alt: "JETOOH", width: 24, height: 24, className: "h-6 w-6 shrink-0" })
+      ] }),
+      /* @__PURE__ */ jsxs15("div", { className: "flex shrink-0 items-center gap-1", children: [
+        actions,
+        userMenu
+      ] })
     ] })
-  ] });
+  );
 }
 
 // src/components/UserMenu.tsx
@@ -1487,6 +1568,7 @@ function UserMenu({
         "aria-haspopup": "menu",
         "aria-expanded": open,
         "aria-label": "Menu do usu\xE1rio",
+        className: "flex items-center justify-center pointer-coarse:min-h-10 pointer-coarse:min-w-10",
         children: /* @__PURE__ */ jsxs16(Avatar, { className: `${avatarCls} border border-gray-200`, children: [
           avatarUrl && /* @__PURE__ */ jsx21(AvatarImage, { src: avatarUrl, alt: name, className: "object-cover" }),
           /* @__PURE__ */ jsx21(AvatarFallback, { className: "bg-roxo text-xs font-semibold text-branco", children: initials })
@@ -1660,7 +1742,10 @@ var Input = React2.forwardRef(({ className, type, ...props }, ref) => {
     {
       type,
       className: cn(
-        "flex w-full rounded-lg border border-gray-200 bg-branco px-3 py-2 text-[14px] text-preto outline-hidden transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50",
+        // Em telas de toque: `min-h-10` (40px de alvo, o py-2 dá 38) e
+        // `text-[16px]` — abaixo de 16px o Safari do iOS DÁ ZOOM ao focar o
+        // campo, e o zoom desloca/estoura o layout da página.
+        "flex w-full rounded-lg border border-gray-200 bg-branco px-3 py-2 text-[14px] text-preto outline-hidden transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:min-h-10 pointer-coarse:text-[16px]",
         className
       ),
       ref,
@@ -2178,7 +2263,9 @@ var NativeSelect = React5.forwardRef(
       {
         ref,
         className: cn(
-          "flex w-full appearance-none items-center rounded-lg border border-gray-200 bg-branco px-3 py-2 pr-9 text-[14px] text-preto outline-hidden transition-colors focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50",
+          // Mesmo tratamento de toque do Input: 40px de alvo e fonte 16px
+          // (evita o zoom automático do Safari iOS ao focar o campo).
+          "flex w-full appearance-none items-center rounded-lg border border-gray-200 bg-branco px-3 py-2 pr-9 text-[14px] text-preto outline-hidden transition-colors focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:min-h-10 pointer-coarse:text-[16px]",
           className
         ),
         ...props,
@@ -2360,7 +2447,10 @@ function SegmentedTabs({
     {
       role: "tablist",
       "aria-label": ariaLabel,
-      className: cn("inline-flex items-center gap-1 rounded-xl border border-gray-100 bg-branco p-1", className),
+      className: cn(
+        "inline-flex max-w-full items-center gap-1 overflow-x-auto overscroll-x-contain rounded-xl border border-gray-100 bg-branco p-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+        className
+      ),
       children: items2.map((it) => {
         const Icon2 = it.icon;
         const active = it.id === value;
@@ -2372,7 +2462,11 @@ function SegmentedTabs({
             "aria-selected": active,
             onClick: () => onChange(it.id),
             className: cn(
-              "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors",
+              // `shrink-0`/`whitespace-nowrap`: dentro do trilho com scroll a aba
+              // não pode encolher nem quebrar o rótulo. `pointer-coarse:min-h-10`
+              // dá alvo de toque de 40px em telas de toque (WCAG 2.5.8) sem
+              // engordar o controle no desktop.
+              "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors pointer-coarse:min-h-10",
               active ? "bg-preto/5 text-preto" : "text-gray-500 hover:text-preto"
             ),
             children: [
@@ -2401,23 +2495,29 @@ function SegmentedTabs({
 import { ArrowLeft } from "lucide-react";
 import { jsx as jsx36, jsxs as jsxs27 } from "react/jsx-runtime";
 function DetailHeader({ onBack, backLabel = "Voltar", title, titleAdornment, status, action }) {
-  return /* @__PURE__ */ jsxs27("div", { className: "flex items-center gap-3", children: [
-    /* @__PURE__ */ jsx36(
-      Button,
-      {
-        variant: "outline",
-        size: "icon",
-        "aria-label": backLabel,
-        className: "h-8 w-8 border-gray-200",
-        onClick: onBack,
-        children: /* @__PURE__ */ jsx36(ArrowLeft, { size: 16, strokeWidth: 1.5 })
-      }
-    ),
-    /* @__PURE__ */ jsx36("h2", { className: "text-base font-bold text-preto", children: title }),
-    titleAdornment,
-    status && /* @__PURE__ */ jsx36(StatusBadge, { label: status.label, variant: status.variant }),
-    action && /* @__PURE__ */ jsx36("div", { className: "ml-auto", children: action })
-  ] });
+  return (
+    // `flex-wrap` + `min-w-0`: nome longo de entidade + status + ação não cabem
+    // em uma linha no mobile/tablet — em vez de estourar a largura, refluem em
+    // linhas. A ação ocupa linha própria no mobile (`w-full`) e volta à direita
+    // a partir de `sm`.
+    /* @__PURE__ */ jsxs27("div", { className: "flex flex-wrap items-center gap-x-3 gap-y-2", children: [
+      /* @__PURE__ */ jsx36(
+        Button,
+        {
+          variant: "outline",
+          size: "icon",
+          "aria-label": backLabel,
+          className: "h-8 w-8 shrink-0 border-gray-200 pointer-coarse:h-10 pointer-coarse:w-10",
+          onClick: onBack,
+          children: /* @__PURE__ */ jsx36(ArrowLeft, { size: 16, strokeWidth: 1.5 })
+        }
+      ),
+      /* @__PURE__ */ jsx36("h2", { className: "min-w-0 break-words text-base font-bold text-preto", children: title }),
+      titleAdornment,
+      status && /* @__PURE__ */ jsx36(StatusBadge, { label: status.label, variant: status.variant }),
+      action && /* @__PURE__ */ jsx36("div", { className: "w-full sm:ml-auto sm:w-auto", children: action })
+    ] })
+  );
 }
 export {
   AlertDialog,

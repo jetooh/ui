@@ -32,29 +32,37 @@ export function ContentHeader({
 }: ContentHeaderProps) {
   return (
     <div
-      className={`sticky top-0 z-10 flex items-center justify-between rounded-t-xl border-b border-gray-100 bg-branco/95 px-8 py-4 backdrop-blur-sm ${className ?? ""}`}
+      // Respiro e escala do título encolhem no desktop estreito (1024–1280, onde
+      // a sidebar secundária consome 298px): `px-4` vira `px-8` só em xl e o
+      // título `text-xl` vira `text-2xl` em xl. Sem isso o bloco de ações era
+      // empurrado para fora do card.
+      className={`sticky top-0 z-10 flex items-center justify-between gap-3 rounded-t-xl border-b border-gray-100 bg-branco/95 px-4 py-4 backdrop-blur-sm xl:px-8 ${className ?? ""}`}
     >
       {customLeft ?? (
-        <div className="flex items-center gap-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-roxo/10 text-roxo">
+        // `min-w-0` deixa o bloco de título encolher (senão empurra as ações
+        // para fora); `truncate` evita que título longo quebre o header.
+        <div className="flex min-w-0 items-center gap-3 xl:gap-4">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-roxo/10 text-roxo">
             <Icon size={20} strokeWidth={1.5} />
           </div>
-          <div>
-            <div className="flex items-center gap-1">
-              <h1 className="text-2xl font-bold text-preto">{moduleTitle}</h1>
+          <div className="min-w-0">
+            <div className="flex min-w-0 items-center gap-1">
+              <h1 className="truncate text-xl font-bold text-preto xl:text-2xl">{moduleTitle}</h1>
               {subTitle && (
                 <>
-                  <ChevronDown size={16} strokeWidth={1.5} className="-rotate-90 text-gray-300" />
-                  <span className="text-2xl font-bold text-preto">{subTitle}</span>
+                  <ChevronDown size={16} strokeWidth={1.5} className="shrink-0 -rotate-90 text-gray-300" />
+                  <span className="truncate text-xl font-bold text-preto xl:text-2xl">{subTitle}</span>
                 </>
               )}
             </div>
-            {description && <p className="mt-0.5 text-[12px] text-gray-500">{description}</p>}
+            {description && <p className="mt-0.5 truncate text-[12px] text-gray-500">{description}</p>}
           </div>
         </div>
       )}
 
-      <div className="flex items-center gap-3">{children}</div>
+      {/* `shrink-0`: as ações (busca/sino/avatar) nunca são espremidas — quem
+          cede espaço é o título, que trunca. */}
+      <div className="flex shrink-0 items-center gap-2 xl:gap-3">{children}</div>
     </div>
   )
 }

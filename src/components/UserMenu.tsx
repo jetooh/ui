@@ -78,6 +78,9 @@ export function UserMenu({
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label="Menu do usuário"
+        // Alvo de toque de 40px em telas de toque, sem mudar o tamanho visual do
+        // avatar (h-8 = 32px) — WCAG 2.5.8 Target Size (Minimum).
+        className="flex items-center justify-center pointer-coarse:min-h-10 pointer-coarse:min-w-10"
       >
         <Avatar className={`${avatarCls} border border-gray-200`}>
           {avatarUrl && <AvatarImage src={avatarUrl} alt={name} className="object-cover" />}

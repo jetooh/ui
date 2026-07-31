@@ -156,7 +156,9 @@ export const AppSubNav = memo(function AppSubNav({
   return (
     <div
       className={cn(
-        "sticky top-0 z-10 flex gap-1.5 overflow-x-auto border-b border-gray-200 bg-branco px-4 py-2 lg:hidden",
+        // Scrollbar escondida (a barra nativa cobria o rótulo em telas curtas) e
+        // `overscroll-x-contain` para o swipe lateral não navegar a página.
+        "sticky top-0 z-10 flex gap-1.5 overflow-x-auto overscroll-x-contain border-b border-gray-200 bg-branco px-4 py-2 [-ms-overflow-style:none] [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden",
         className,
       )}
     >
@@ -168,7 +170,8 @@ export const AppSubNav = memo(function AppSubNav({
             onClick={() => onNavigate(item.id)}
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              "flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] transition-colors",
+              // `min-h-10`: alvo de toque de 40px (era 32) — WCAG 2.5.8.
+              "flex min-h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[13px] transition-colors",
               isActive
                 ? "bg-secondary-active-bg font-medium text-secondary-active"
                 : "text-gray-600 hover:text-preto",

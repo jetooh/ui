@@ -48,7 +48,11 @@ export function PageFrame({
   contentKey,
 }: PageFrameProps) {
   return (
-    <div className="h-screen overflow-hidden bg-page-bg">
+    // Altura da casca em `100dvh` (dynamic viewport) quando o browser suporta:
+    // no mobile a barra de URL entra/sai e `100vh` MENTE (é maior que a área
+    // visível), cortando o fim do conteúdo/rodapé. `h-screen` fica de fallback
+    // via `@supports`. Mesma lição já aplicada no login do auth.
+    <div className="h-screen overflow-hidden bg-page-bg supports-[height:100dvh]:h-dvh">
       <a
         href={`#${mainId}`}
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[10001] focus:rounded-lg focus:bg-roxo focus:px-4 focus:py-2 focus:text-[13px] focus:font-semibold focus:text-branco"
@@ -59,7 +63,7 @@ export function PageFrame({
       {rail}
       {extras}
 
-      <div className={cn("flex h-screen flex-col", contentAreaClassName)}>
+      <div className={cn("flex h-screen flex-col supports-[height:100dvh]:h-dvh", contentAreaClassName)}>
         <div
           className={cn(
             "flex min-h-0 flex-1 flex-col bg-branco lg:rounded-xl lg:border lg:border-gray-200",
@@ -79,6 +83,14 @@ export function PageFrame({
                 {children}
               </div>
               {footer}
+              {/* Respiro do "notch" inferior (home indicator do iOS): o
+                  bottom-nav ganha `pb-[env(safe-area-inset-bottom)]` e fica mais
+                  alto que os `pb-14` que as apps reservam — este espaçador
+                  devolve exatamente a diferença, sem mexer no contrato de
+                  `contentAreaClassName`. Zero em telas sem notch e no desktop. */}
+              {mobileBottomNav && (
+                <div aria-hidden className="h-[env(safe-area-inset-bottom)] shrink-0 lg:hidden" />
+              )}
             </div>
           </div>
         </div>

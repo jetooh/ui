@@ -20,20 +20,24 @@ export interface DetailHeaderProps {
 
 export function DetailHeader({ onBack, backLabel = 'Voltar', title, titleAdornment, status, action }: DetailHeaderProps) {
   return (
-    <div className="flex items-center gap-3">
+    // `flex-wrap` + `min-w-0`: nome longo de entidade + status + ação não cabem
+    // em uma linha no mobile/tablet — em vez de estourar a largura, refluem em
+    // linhas. A ação ocupa linha própria no mobile (`w-full`) e volta à direita
+    // a partir de `sm`.
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
       <Button
         variant="outline"
         size="icon"
         aria-label={backLabel}
-        className="h-8 w-8 border-gray-200"
+        className="h-8 w-8 shrink-0 border-gray-200 pointer-coarse:h-10 pointer-coarse:w-10"
         onClick={onBack}
       >
         <ArrowLeft size={16} strokeWidth={1.5} />
       </Button>
-      <h2 className="text-base font-bold text-preto">{title}</h2>
+      <h2 className="min-w-0 break-words text-base font-bold text-preto">{title}</h2>
       {titleAdornment}
       {status && <StatusBadge label={status.label} variant={status.variant} />}
-      {action && <div className="ml-auto">{action}</div>}
+      {action && <div className="w-full sm:ml-auto sm:w-auto">{action}</div>}
     </div>
   );
 }
