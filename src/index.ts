@@ -31,6 +31,10 @@ export {
 export type { DateRangePickerProps, RangeValue, Compare } from './components/DateRangePicker';
 export { AppRail } from './components/AppRail';
 export type { AppRailProps, RailItem } from './components/AppRail';
+export { AppSecondarySidebar, AppSubNav } from './components/AppSecondarySidebar';
+export type {
+  AppSecondarySidebarProps, AppSubNavProps, SidebarNavItem, SidebarSection,
+} from './components/AppSecondarySidebar';
 export { ContentHeader } from './components/ContentHeader';
 export type { ContentHeaderProps } from './components/ContentHeader';
 export { AppFooter } from './components/AppFooter';
@@ -42,6 +46,10 @@ export { AppMobileHeader } from './components/AppMobileHeader';
 export type { AppMobileHeaderProps } from './components/AppMobileHeader';
 export { UserMenu } from './components/UserMenu';
 export type { UserMenuProps, UserMenuItem } from './components/UserMenu';
+export {
+  AppUserMenu, USER_MENU_PROFILE_LABEL, USER_MENU_SETTINGS_LABEL,
+} from './components/AppUserMenu';
+export type { AppUserMenuProps } from './components/AppUserMenu';
 export { EmptyState, SearchEmptyState } from './components/EmptyState';
 export type { EmptyStateProps } from './components/EmptyState';
 export { Input } from './components/Input';

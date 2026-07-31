@@ -290,6 +290,49 @@ interface AppRailProps {
 }
 declare const AppRail: React.NamedExoticComponent<AppRailProps>;
 
+interface SidebarNavItem {
+    /** Identificador do item — rota (`/config/roles`) ou chave de página (`settings.team`). */
+    id: string;
+    label: string;
+    icon: LucideIcon;
+    /** Contador de notificação (bolinha vermelha à direita). Ausente/0 = sem badge. */
+    badge?: number;
+}
+interface SidebarSection {
+    heading: string;
+    items: SidebarNavItem[];
+}
+interface AppSecondarySidebarProps {
+    /** Seções do domínio/módulo ativo. Vazio = sidebar não renderiza (null). */
+    sections: SidebarSection[];
+    activeId: string;
+    onNavigate: (id: string) => void;
+    onPrefetch?: (id: string) => void;
+    /** Widgets contextuais abaixo da navegação (ex.: KPIs do platform). */
+    footer?: ReactNode;
+    /** Quando fornecido, mostra o botão "Recolher" no rodapé do aside. */
+    onCollapse?: () => void;
+    /** Rótulo do botão de recolher. Default: "Recolher". */
+    collapseLabel?: string;
+    /** Esconde no mobile (`hidden lg:flex`). Default: sempre visível. */
+    hideOnMobile?: boolean;
+    className?: string;
+}
+declare const AppSecondarySidebar: React.NamedExoticComponent<AppSecondarySidebarProps>;
+interface AppSubNavProps {
+    /** Itens (flat) do domínio/módulo ativo. Com 0 ou 1 item a barra não renderiza. */
+    items: SidebarNavItem[];
+    activeId: string;
+    onNavigate: (id: string) => void;
+    className?: string;
+}
+/**
+ * Sub-navegação do MOBILE (a mesma "sub menu" da sidebar, em barra horizontal no
+ * topo do conteúdo). O bottom-nav mostra só os domínios; aqui os subitens ficam
+ * alcançáveis. Some quando o domínio tem 1 rota só.
+ */
+declare const AppSubNav: React.NamedExoticComponent<AppSubNavProps>;
+
 interface ContentHeaderProps {
     /** Ícone do módulo — vai na caixa roxa (rounded-xl bg-roxo/10 text-roxo). */
     icon: LucideIcon;
@@ -386,6 +429,30 @@ interface UserMenuProps {
     avatarSize?: "sm" | "md";
 }
 declare function UserMenu({ name, email, avatarUrl, initials, items, accountHref, isDark, onToggleTheme, onLogout, avatarSize, }: UserMenuProps): React.JSX.Element;
+
+/** Rótulos canônicos dos itens padrão — iguais em todas as apps do tema. */
+declare const USER_MENU_PROFILE_LABEL = "Minha Conta";
+declare const USER_MENU_SETTINGS_LABEL = "Configura\u00E7\u00F5es";
+interface AppUserMenuProps {
+    name?: string;
+    email?: string;
+    avatarUrl?: string;
+    /** Iniciais do fallback do avatar (ex.: "AJ"). */
+    initials: string;
+    /** Ação do item padrão "Minha Conta". Ausente = o item não aparece. */
+    onProfile?: () => void;
+    /** Ação do item padrão "Configurações". Ausente = o item não aparece. */
+    onSettings?: () => void;
+    /** Itens específicos da app, sempre depois dos padrão (ex.: Idioma). */
+    extraItems?: UserMenuItem[];
+    /** Tema atual escuro? Com `onToggleTheme`, mostra o switch de tema. */
+    isDark?: boolean;
+    onToggleTheme?: () => void;
+    onLogout: () => void;
+    /** "md" (h-10) no header desktop; "sm" (h-8) no header mobile. Default: "md". */
+    avatarSize?: "sm" | "md";
+}
+declare function AppUserMenu({ name, email, avatarUrl, initials, onProfile, onSettings, extraItems, isDark, onToggleTheme, onLogout, avatarSize, }: AppUserMenuProps): React.JSX.Element;
 
 interface EmptyStateProps {
     icon: LucideIcon;
@@ -558,4 +625,4 @@ interface DetailHeaderProps {
 }
 declare function DetailHeader({ onBack, backLabel, title, titleAdornment, status, action }: DetailHeaderProps): React.JSX.Element;
 
-export { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, AppBottomNav, type AppBottomNavProps, AppFooter, AppMobileHeader, type AppMobileHeaderProps, AppRail, type AppRailProps, Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, type BottomNavItem, BrandLoading, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, type Compare, ConfirmDialog, type ConfirmDialogProps, ContentHeader, type ContentHeaderProps, DateRangePicker, type DateRangePickerProps, DateTimeField, type DateTimeFieldProps, DetailHeader, type DetailHeaderProps, type DeviceStatus, DeviceStatusBadge, type DeviceStatusBadgeProps, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, EmptyState, type EmptyStateProps, Input, type InputProps, KpiCard, type KpiCardProps, KpiGrid, Label, Loading, Modal, type ModalProps, NativeSelect, type NativeSelectProps, PRESETS, PageFrame, type PageFrameProps, type RailItem, type RangeValue, SearchEmptyState, SectionCard, type SectionCardProps, type SegmentedTabItem, SegmentedTabs, type SegmentedTabsProps, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, Separator, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, StatusBadge, type StatusBadgeProps, StatusDot, type StatusDotProps, type StatusVariant, Switch, type SwitchProps, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, UserMenu, type UserMenuItem, type UserMenuProps, badgeVariants, buttonVariants, cn, comparisonRange, computePreset, defaultRange, deviceStatusMeta, toast, useToast };
+export { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, AppBottomNav, type AppBottomNavProps, AppFooter, AppMobileHeader, type AppMobileHeaderProps, AppRail, type AppRailProps, AppSecondarySidebar, type AppSecondarySidebarProps, AppSubNav, type AppSubNavProps, AppUserMenu, type AppUserMenuProps, Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, Badge, type BottomNavItem, BrandLoading, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, type Compare, ConfirmDialog, type ConfirmDialogProps, ContentHeader, type ContentHeaderProps, DateRangePicker, type DateRangePickerProps, DateTimeField, type DateTimeFieldProps, DetailHeader, type DetailHeaderProps, type DeviceStatus, DeviceStatusBadge, type DeviceStatusBadgeProps, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, EmptyState, type EmptyStateProps, Input, type InputProps, KpiCard, type KpiCardProps, KpiGrid, Label, Loading, Modal, type ModalProps, NativeSelect, type NativeSelectProps, PRESETS, PageFrame, type PageFrameProps, type RailItem, type RangeValue, SearchEmptyState, SectionCard, type SectionCardProps, type SegmentedTabItem, SegmentedTabs, type SegmentedTabsProps, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, Separator, type SidebarNavItem, type SidebarSection, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, StatusBadge, type StatusBadgeProps, StatusDot, type StatusDotProps, type StatusVariant, Switch, type SwitchProps, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, USER_MENU_PROFILE_LABEL, USER_MENU_SETTINGS_LABEL, UserMenu, type UserMenuItem, type UserMenuProps, badgeVariants, buttonVariants, cn, comparisonRange, computePreset, defaultRange, deviceStatusMeta, toast, useToast };
