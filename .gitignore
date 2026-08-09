@@ -1,2 +1,18 @@
 node_modules
 *.log
+coverage
+.DS_Store
+
+# Artefatos de IA — nunca versionar dentro de um repo de produção
+# (regra do ecossistema: IA vive só na raiz do workspace `pilot`)
+.claude
+.aiox-core
+.codex
+.cursor
+.gemini
+.mcp.json
+AGENTS.md
+CLAUDE.md
+
+# NOTA: dist/ é versionado DE PROPÓSITO — este pacote é consumido por git-dep
+# (github:jetooh/ui#<sha>), então o build precisa estar no repo.
