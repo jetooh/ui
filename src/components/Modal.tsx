@@ -13,10 +13,10 @@ export interface ModalProps {
   /** Rodapé (ex.: Cancelar/Aplicar). Ausente = sem rodapé. */
   footer?: ReactNode;
   /** Largura máxima do card. Régua do platform = md. `xl`/`2xl` para forms densos. */
-  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | 'screen';
 }
 
-const SIZES = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-lg', xl: 'max-w-2xl', '2xl': 'max-w-3xl', '3xl': 'max-w-5xl' } as const;
+const SIZES = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-lg', xl: 'max-w-2xl', '2xl': 'max-w-3xl', '3xl': 'max-w-5xl', screen: 'max-w-[80vw]' } as const;
 
 const FOCUSABLE =
   'a[href],button:not([disabled]),textarea:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';

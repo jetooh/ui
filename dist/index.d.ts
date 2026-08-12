@@ -24,7 +24,7 @@ interface ModalProps {
     /** Rodapé (ex.: Cancelar/Aplicar). Ausente = sem rodapé. */
     footer?: ReactNode;
     /** Largura máxima do card. Régua do platform = md. `xl`/`2xl` para forms densos. */
-    size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
+    size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | 'screen';
 }
 /**
  * Modal canônico do ecossistema JETOOH — extraído do padrão do platform

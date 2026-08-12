@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import { useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import { jsx, jsxs } from "react/jsx-runtime";
-var SIZES = { sm: "max-w-sm", md: "max-w-md", lg: "max-w-lg", xl: "max-w-2xl", "2xl": "max-w-3xl", "3xl": "max-w-5xl" };
+var SIZES = { sm: "max-w-sm", md: "max-w-md", lg: "max-w-lg", xl: "max-w-2xl", "2xl": "max-w-3xl", "3xl": "max-w-5xl", screen: "max-w-[80vw]" };
 var FOCUSABLE = 'a[href],button:not([disabled]),textarea:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
 function Modal({ open, onClose, title, description, children, footer, size = "md" }) {
   const cardRef = useRef(null);
