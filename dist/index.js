@@ -65,7 +65,7 @@ function Modal({ open, onClose, title, description, children, footer, size = "md
                 {
                   ref: cardRef,
                   tabIndex: -1,
-                  className: "flex max-h-[calc(100dvh-2rem)] w-full flex-col rounded-2xl border border-gray-200 bg-branco outline-none",
+                  className: `flex w-full flex-col rounded-2xl border border-gray-200 bg-branco outline-none ${size === "screen" ? "h-[80vh]" : "max-h-[calc(100dvh-2rem)]"}`,
                   children: [
                     title != null && /* @__PURE__ */ jsxs("div", { className: "flex shrink-0 items-start justify-between gap-3 border-b border-gray-100 px-6 py-4", children: [
                       /* @__PURE__ */ jsxs("div", { className: "min-w-0", children: [
@@ -83,7 +83,7 @@ function Modal({ open, onClose, title, description, children, footer, size = "md
                         }
                       )
                     ] }),
-                    /* @__PURE__ */ jsx("div", { className: "min-h-0 overflow-y-auto overscroll-contain px-6 py-5", children }),
+                    /* @__PURE__ */ jsx("div", { className: `min-h-0 overflow-y-auto overscroll-contain px-6 py-5 ${size === "screen" ? "flex-1" : ""}`, children }),
                     footer != null && /* @__PURE__ */ jsx("div", { className: "flex shrink-0 items-center justify-end gap-2 border-t border-gray-100 px-6 py-4", children: footer })
                   ]
                 }
