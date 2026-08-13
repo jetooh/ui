@@ -79,6 +79,12 @@ export {
   AlertDialogAction, AlertDialogCancel,
 } from './components/AlertDialog';
 export { cn } from './lib/cn';
+// Camada de boot (JET-118): os valores que a app precisa ANTES de existir CSS var
+// — o build injeta o `meta theme-color` e o splash do index.html a partir daqui,
+// em vez de repetir o hex da marca em cada index.html.
+export {
+  BOOT_COLORS, BOOT_LOGO_PATH, BOOT_THEME_STORAGE_KEY, BOOT_THEME_DARK_VALUE,
+} from './themes/boot';
 export { SectionCard } from './components/SectionCard';
 export type { SectionCardProps } from './components/SectionCard';
 export { SegmentedTabs } from './components/SegmentedTabs';

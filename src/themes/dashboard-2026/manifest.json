@@ -112,5 +112,35 @@
         "gray-400": "JET-106 — resolvida por D4 mantendo a PROIBIÇÃO: os 2 usos migraram (SectionCard → text-muted-foreground, ícone decorativo; StatusBadge → bg-muted-foreground, que expõe o grau gray-500 e passa os 3:1 de WCAG 1.4.11 que o gray-400 reprovava a 2.20:1). Declarar gray-400 como 'token de ícone decorativo' criaria um nome sancionado a um passo de virar texto de novo — o modo de falha que a JET-99 já pagou."
       }
     }
+  },
+  "bootContract": {
+    "nota": "Camada de BOOT (JET-118): o que pinta a tela ANTES do bundle e antes do theme.css. Ali não existe var(--color-*) para referenciar, então o valor é ESCRITO — e a fonte única dele é src/themes/boot.ts (BOOT_COLORS), conferida contra o tokens.json por src/themes/boot.test.ts. Não é a camada semântica e não segue a D1.1 do ADR-001; segue a outra metade da mesma regra: se precisa ser escrito, é escrito UMA vez.",
+    "medicao": "2026-08-13, curl nos 3 index.html de produção: o bloco de boot (o <style> e o markup do #initial-loading) é BYTE A BYTE idêntico em auth, platform e devices, e o <BrandLoading /> do próprio pacote repetia os mesmos literais uma QUARTA vez. Zero divergência entre as apps — centralizar não muda pixel.",
+    "enviaNoDist": {
+      "theme-init.js": "Bootstrap do modo escuro: lê localStorage('theme') e adiciona .dark no <html> antes do primeiro paint. É arquivo, e não <script> inline, por causa de CSP script-src sem 'unsafe-inline' (@security 2026-07-27).",
+      "boot.css": "Estilos do splash: #initial-loading, .jt-ring, .jt-logo e @keyframes jt-spin.",
+      "boot.html": "Markup do splash, para o <body> antes do #root."
+    },
+    "comoAdotar": [
+      "copiar dist/theme-init.js e dist/boot.css para o public/ da app (ou servir por alias do bundler);",
+      "<script src=\"/theme-init.js\"></script> no <head>, ANTES do bundle — é o que evita o flash de tema;",
+      "<link rel=\"stylesheet\" href=\"/boot.css\"> no <head> (bloqueia o render igual ao <style> inline e sai do style-src 'unsafe-inline');",
+      "inlinar dist/boot.html no <body>, antes do #root;",
+      "injetar o <meta name=\"theme-color\"> a partir de BOOT_COLORS.ring no build, em vez do hex escrito à mão no index.html."
+    ],
+    "mapeamento": {
+      "bg": { "literal": "#0B0F0C", "grau": "colors.preto", "onde": "background do #initial-loading e do <BrandLoading />" },
+      "ring": { "literal": "#8B47FF", "grau": "colors.roxo", "onde": "border-top-color do anel e <meta name=\"theme-color\"> das 3 apps" },
+      "ringTrail": { "literal": "rgba(139, 71, 255, 0.3)", "grau": "colors.roxo a 30%", "onde": "border-right-color do anel" },
+      "logo": { "literal": "#ffffff", "grau": "colors['branco-fixo']", "onde": "fill do logo" }
+    },
+    "lacunas": {
+      "fundoDoSplash": {
+        "problema": "BOOT_COLORS.bg usa o valor CLARO de `preto` (#0B0F0C) como constante estática. `preto` é grau DE MODO (#F3F4F6 no escuro) e o guard de modo do ADR-001 (D5) proíbe exatamente isso na camada semântica. O splash é arte sempre escura — a mesma do jetooh.com.br — então o VALOR está certo e a REFERÊNCIA é que está torta.",
+        "decisaoPendente": "criar um grau estático `preto-fixo` (par do `branco-fixo`) e apontar BOOT_COLORS.bg para ele. É mudança da camada base, com rollout nas 3 apps — não cabia na JET-118.",
+        "dono": "@organizer"
+      }
+    },
+    "foraDeEscopoAqui": "Servir os arquivos e injetar o meta theme-color é trabalho de APP: mora em JET-79 (theme-init.js no devices) e JET-80 (cor de marca nos 3 index.html), as duas travadas na JET-73 (credencial/clone dos repos privados)."
   }
 }

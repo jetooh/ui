@@ -1,0 +1,67 @@
+/* Casca de BOOT do Dashboard2026 — ENVIADA pelo @jetooh/ui (JET-118).
+ *
+ * O splash que cobre a tela entre o primeiro paint e a montagem do React. Roda
+ * ANTES do bundle e antes do `theme.css`, então aqui não existe `var(--color-*)`
+ * para referenciar: os valores são escritos, e a fonte única deles é
+ * `src/themes/boot.ts` (`BOOT_COLORS`), conferida contra o `tokens.json` pelo
+ * `src/themes/boot.test.ts`.
+ *
+ * Este arquivo é a cópia canônica do <style> que hoje está inline nos três
+ * `index.html` — byte a byte idêntico em `auth`, `platform` e `devices` em
+ * 2026-08-13. Adotar não muda pixel: as declarações abaixo são as mesmas.
+ *
+ * Como a app serve (ver `bootContract` no manifest.json): copiar para o
+ * `public/` e `<link rel="stylesheet" href="/boot.css">` no <head>, ANTES do
+ * bundle. Um <link> no head bloqueia o render igual ao <style> inline, e sai do
+ * caminho de CSP `style-src` sem 'unsafe-inline'. O markup que ele estiliza é o
+ * `boot.html` deste mesmo diretório.
+ *
+ * Não usar oklch() aqui, ao contrário do theme.css: esta é a única CSS que
+ * precisa pintar no navegador mais velho que alcança a app, e um `background`
+ * não suportado deixa o splash TRANSPARENTE — o pior modo de falhar, porque
+ * mostra a app meio montada. Hex e rgba() são o formato certo nesta camada.
+ */
+
+#initial-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* BOOT_COLORS.bg — colors.preto (claro), estático: o splash é sempre escuro. */
+  background: #0B0F0C;
+  transition: opacity 600ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* A app adiciona `.hide` quando monta; o splash some no fade e para de capturar clique. */
+#initial-loading.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#initial-loading .jt-ring {
+  position: absolute;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 9999px;
+  border: 3px solid transparent;
+  /* BOOT_COLORS.ring — colors.roxo. */
+  border-top-color: #8B47FF;
+  /* BOOT_COLORS.ringTrail — o mesmo roxo a 30%. */
+  border-right-color: rgba(139, 71, 255, 0.3);
+  animation: jt-spin 0.9s linear infinite;
+}
+
+#initial-loading .jt-logo {
+  width: 6rem;
+  height: 6rem;
+  /* BOOT_COLORS.logo — colors['branco-fixo']. */
+  fill: #ffffff;
+}
+
+@keyframes jt-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

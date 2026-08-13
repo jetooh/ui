@@ -57,6 +57,46 @@ ui/
    cascata. Apagar a declaração local e ficar só com o que o pacote envia é a
    migração, e é o que o `token-drift` passa a cobrar valor a valor.
 5. Rodar `node scripts/token-drift.mjs` (no pilot) — não pode divergir do manifesto.
+6. **Casca de boot** (JET-118) — copiar `dist/theme-init.js` e `dist/boot.css` para o
+   `public/` da app, e no `index.html`: `<script src="/theme-init.js">` +
+   `<link rel="stylesheet" href="/boot.css">` no `<head>`, `dist/boot.html` inlinado no
+   `<body>` antes do `#root`, e o `<meta name="theme-color">` injetado no build a partir
+   de `BOOT_COLORS.ring`. Ver a seção abaixo.
+
+## Camada de boot — o que pinta antes de existir `var()` (JET-118)
+
+O `theme.css` só vale depois que o CSS da app carrega. Antes disso existe o
+`index.html`: o `<script>` que decide o modo e o splash que cobre a tela até o React
+montar. Essa faixa é a **camada de boot**, e ela é a única do tema que **escreve**
+valor de cor fora do `tokens.json` — não por descuido: ali `var(--color-roxo)` ainda
+não existe.
+
+| arquivo (no `dist`) | o que é | a app usa como |
+|---|---|---|
+| `theme-init.js` | lê `localStorage('theme')` e põe `.dark` no `<html>` antes do primeiro paint | `<script src="/theme-init.js">` no `<head>` |
+| `boot.css` | estilos do splash (`#initial-loading`, `.jt-ring`, `.jt-logo`) | `<link rel="stylesheet" href="/boot.css">` |
+| `boot.html` | markup do splash | inlinado no `<body>`, antes do `#root` |
+| `BOOT_COLORS` (JS) | os literais da camada, exportados na raiz | injetar `meta theme-color` no build |
+
+Regra: **se precisa ser escrito, é escrito uma vez** — em `src/themes/boot.ts`. Cada
+literal é um grau da escala (`bg` = `preto`, `ring` = `roxo`, `logo` = `branco-fixo`,
+`ringTrail` = `roxo` a 30%) e o `src/themes/boot.test.ts` reprova se `boot.ts`,
+`boot.css`, `boot.html`, o `<BrandLoading />` ou o `tokens.json` mudarem sozinhos.
+
+Por que isso virou arquivo do pacote: em 2026-08-13 o bloco de boot era **byte a byte
+idêntico** nos três `index.html` (`auth`, `platform`, `devices`) e o `<BrandLoading />`
+repetia os mesmos hex uma **quarta** vez — trocar o roxo da marca exigia editar quatro
+arquivos que nenhum sistema de tema alcança. `theme-init.js`, além disso, só o
+`platform` servia: no `devices` a URL cai no fallback SPA e devolve o `index.html`, o
+que deixa o modo escuro sem pré-aplicação (flash de tema claro no boot — JET-79).
+
+Dívida registrada em `bootContract.lacunas.fundoDoSplash`: `BOOT_COLORS.bg` usa o valor
+**claro** de `preto` como constante estática. O splash é arte sempre escura, então o
+valor está certo; o correto seria um grau estático `preto-fixo` (par do `branco-fixo`),
+que é mudança da camada base com rollout nas 3 apps.
+
+Adotar nas apps é JET-79 (`theme-init.js` no `devices`) e JET-80 (cor de marca nos 3
+`index.html`) — as duas travadas na JET-73 (credencial/clone dos repos privados).
 
 ## Duas camadas, duas regras (JET-106 / ADR-001)
 
