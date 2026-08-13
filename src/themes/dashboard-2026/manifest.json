@@ -31,6 +31,45 @@
         "usoNoPacote": "border-borda-controle nos controles de formulário (Input, Select, NativeSelect, DateTimeField via Input, gatilho e campos de data do DateRangePicker)",
         "porque": "WCAG 1.4.11 exige 3:1 para a borda que delimita um controle; gray-200 media 1.26:1 sobre branco",
         "ordemDeRollout": "A app declara --color-borda-controle no index.css (claro E escuro) ANTES de subir a versão do pacote. Sem a declaração, a utility border-borda-controle não existe no CSS da app e a borda do campo cai para o currentColor do Tailwind v4 — regressão visual. Depois de declarar, rodar node scripts/token-drift.mjs (pilot)."
+      },
+      "verde | verde-dark | status-critico | secondary-active | secondary-text": {
+        "desde": "JET-77",
+        "porque": "O pacote já emitia estas classes BARE sem que o contrato as declarasse. Uma app nova que não as declare renderiza o componente SEM a cor (a utility não é gerada), e o token-drift não acusava porque o token não existia no tokens.json.",
+        "origemDoValor": "MEDIDO nos bundles de produção de platform (régua) e devices em 2026-08-13, não escolhido aqui. Os dois apps já concordam exatamente, então declarar não muda pixel nenhum em platform/devices — só fecha o contrato para consumidores futuros.",
+        "usoNoPacote": "bg/text/border-verde (KpiCard, StatusBadge, StatusDot, Toast), text-verde-dark (KpiCard, StatusBadge), bg/text-status-critico (ConfirmDialog, Toast), text-secondary-active e text-secondary-text (AppSecondarySidebar)",
+        "ordemDeRollout": "Mesma regra do borda-controle: declarar --color-<token> no index.css (claro E escuro) ANTES de subir a versão do pacote."
+      }
+    },
+    "tokensExternosTailwind": {
+      "nota": "Defaults do Tailwind v4 usados direto pelos componentes. NÃO são tokens JETOOH, não entram no tokens.json e não são medidos pelo token-drift — qualquer app com Tailwind v4 já os tem.",
+      "lista": ["amber-50", "amber-200", "amber-500", "amber-700", "red-50", "red-200", "red-400", "red-500", "red-600", "red-700"]
+    },
+    "tokensSoEmVariante": {
+      "nota": "Tokens JETOOH que o pacote usa APENAS sob variante (hover:, focus:). A app precisa declará-los igual, mas eles ficam fora do token-drift porque a classe BARE não existe no CSS e não dá para medir por getComputedStyle — é a mesma exclusão que o _nota_cobertura do tokens.json descreve.",
+      "lista": ["rail-icon-hover", "rail-icon-hover-text", "roxo-hover", "secondary-text-hover"],
+      "valoresMedidos": {
+        "rail-icon-hover": "#2a2a2a claro / #2a2a42 escuro (platform e devices concordam)",
+        "roxo-hover": "#7a33ee (estático; platform emite literal, devices via --color-roxo-hover)",
+        "secondary-text-hover": "gray-900: #111827 claro / #f9fafb escuro"
+      }
+    },
+    "lacunasAbertas": {
+      "nota": "Tokens que o pacote JÁ emite como classe BARE mas que o contrato NÃO declara — cada um por um motivo diferente, e nenhum deles é decisão que o dono da estrutura toma sozinho. Enquanto estiverem aqui, src/themes/contract.test.ts aceita a ausência; sair daqui é decisão explícita, não esquecimento.",
+      "camadaSemanticaShadcn": {
+        "tokens": ["primary", "primary-foreground", "secondary", "secondary-foreground", "background", "foreground", "card", "card-foreground", "muted", "muted-foreground", "popover", "popover-foreground", "destructive", "border", "accent", "accent-foreground", "input", "ring"],
+        "usadoPor": ["Button", "Badge", "Avatar", "Card", "Skeleton", "DropdownMenu", "Select", "Table", "Tooltip", "Separator"],
+        "problema": "Não é só divergência de VALOR (JET-78: platform tem --primary: oklch(20.5% 0 0), neutro; devices tem 262 100% 64%, o roxo da marca). É divergência de FORMATO: platform declara cor completa em oklch() e devices declara TRIPLA HSL crua, que só funciona embrulhada em hsl(var(--primary)) (42 ocorrências no bundle do devices, 0 no do platform). Uma mesma utility bg-primary vinda do pacote não consegue ser válida nos dois formatos ao mesmo tempo.",
+        "decisaoPendente": "JET-78 — qual é a semântica de --primary (marca ou neutro) e qual o formato canônico do contrato. Bloqueia a adoção do pacote por platform/devices tanto quanto a falta de credencial."
+      },
+      "secondary-active-bg": {
+        "usadoPor": ["AppSecondarySidebar"],
+        "problema": "platform gera .bg-secondary-active-bg (= --base-roxo-light: #f3edff claro / #8b47ff26 escuro); devices NÃO gera a utility. Declarar no tokens.json hoje faria o token-drift reprovar em devices.",
+        "decisaoPendente": "Ou devices passa a declarar o token, ou o AppSecondarySidebar para de depender dele."
+      },
+      "gray-400": {
+        "usadoPor": ["SectionCard", "StatusBadge"],
+        "problema": "platform e devices declaram --color-gray-400 = #9ca3af (claro) / #6b7280 (escuro), mas uma app que NÃO declare herda o gray-400 default do Tailwind v4 — a mesma classe vira duas cores conforme a app. Declarar aqui contradiz a JET-99, que proibiu gray-400 como texto de controle; contrast.test.tsx guarda essa proibição com expect(tokens.colors).not.toHaveProperty('gray-400').",
+        "decisaoPendente": "Manter proibido (e tirar os 2 usos restantes) ou declarar como token de ícone decorativo. Enquanto não decidir, fica fora do tokens.json de propósito."
       }
     }
   }
