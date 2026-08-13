@@ -139,6 +139,16 @@ a JET-78. Dois guards estáticos (sem render) no `contract.test.ts`:
   grau **estático**. É o que impede `--primary-foreground: var(--color-branco)`
   — o que a própria D1.1 sugere — de virar rótulo `#161625` sobre o roxo no
   escuro, a 3,78:1.
+- **coincidência** (D7, JET-109) — a recíproca do anterior: um grau marcado
+  **de modo** que entrega o **mesmo valor** nos dois modos está dizendo uma
+  coisa e fazendo outra, e é assim que um par escuro que nunca existiu passa
+  despercebido. Foi o caso do `secondary-active`: `#7a33ee` nos dois modos, e no
+  escuro isso é o rótulo do item **ativo** da sidebar secundária a **2,37:1**
+  sobre a pílula. Ou o grau ganha par (`secondary-active` agora é `#7a33ee`
+  claro / `#ad86fa` escuro), ou registra `porqueCoincide` explicando por que o
+  valor único não esconde uma reprovação **no papel que ele exerce** — é o que
+  `verde` e `status-critico` fazem: são graus de preenchimento, e o papel de
+  texto ao lado deles (`verde-dark`, `status-critico-texto`) esse sim é de modo.
 
 ## Acrescentar um token ao tema — quem vem primeiro depende do `@import`
 
@@ -187,6 +197,22 @@ segundo:
 | Borda que **delimita um controle** (`Input`, `Select`, `NativeSelect`, `DateTimeField`, gatilho e campos de data do `DateRangePicker`, botão de voltar do `DetailHeader`) | `borda-controle` (`#85858c` claro / `#6b6b8f` escuro) | O controle é branco dentro de card branco: a borda é a única delimitação da área clicável e WCAG 1.4.11 exige **3:1**. Claro mede 3.66 / 3.33 / 3.10 e escuro 3.51 / 3.84 / 3.28 sobre `branco` / `page-bg` / `gray-100`. |
 | Borda de **superfície** (card, `PageFrame`, `Modal`, `Toast`, divisores) | `gray-200` | Não delimita controle — 3:1 não é exigido; escurecer sujaria a tela à toa. `gray-200` mede 1.26:1 sobre `branco`. |
 | Borda de **controle ROTULADO** (cartões de opção do `DateRangePicker`, botão `Cancelar` do `ConfirmDialog`/`AlertDialog`) | `gray-200` | **Exceção registrada na JET-102.** O rótulo de texto (`gray-600` = 7.56:1) já identifica o controle, então a borda não é "informação necessária para identificar o componente" e a 1.4.11 não a exige. Nos cartões, escurecer as bordas não-selecionadas ainda reduziria o contraste entre selecionado (`border-roxo` + `bg-roxo/5`) e não-selecionado, que **é** exigido. Reavaliar se um desses controles perder o rótulo. |
+
+### Texto sobre fundo **translúcido**: mede-se contra o que fica atrás
+
+O item ativo da sidebar secundária é `text-secondary-active` sobre
+`bg-secondary-active-bg`, e no escuro esse fundo é
+`color-mix(in oklch, var(--primary) 15%, transparent)` — **translúcido**. Um
+token assim não tem cor até se saber o que está embaixo: a mesma pílula resolve
+`#1e1439` sobre `page-bg`, `#2e2452` sobre o rail e `#281d46` sobre o card.
+
+Foi exatamente aí que o primeiro par proposto para a JET-109 morreu: `#a06ef7`
+mede **4,70:1** contra o **rail** e **4,07:1** contra a **pílula** que fica em
+cima dele — aprovado contra o fundo errado. O par fechado (`#ad86fa`) é medido
+contra o envelope inteiro (5,08 rail / 5,59 card / 6,23 page-bg) e o
+`contrast.test.tsx` **resolve
+o `color-mix` a partir da declaração do `tokens.json`**, em vez de comparar com
+um hex copiado à mão, justamente para essa distinção não depender de quem lê.
 
 **Regra de bolso para decidir entre os dois:** o controle tem rótulo de texto
 ou ícone próprio com ≥3:1? Então quem o identifica é o rótulo, e a borda pode

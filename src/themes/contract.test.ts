@@ -109,7 +109,10 @@ const semantic = tokens.semantic as unknown as Record<string, SemanticEntry>;
 const SEMANTIC_TOKENS = Object.keys(semantic);
 
 /** Classificação da camada base: participa do modo, ou é estática (D5). */
-const base = tokens.base as unknown as Record<string, { estatico: boolean; porque?: string }>;
+const base = tokens.base as unknown as Record<
+  string,
+  { estatico: boolean; porque?: string; porqueCoincide?: string }
+>;
 const BASE_TOKENS = Object.keys(tokens.colors);
 
 // A camada semântica conta como DECLARADA: o pacote envia o valor (D0.1), então
@@ -283,6 +286,36 @@ describe('camada base: a única que escreve valor (ADR-001 D1.1)', () => {
   it('grau estático justifica por escrito por que não participa do modo', () => {
     const semPorque = BASE_TOKENS.filter((n) => base[n].estatico && (base[n].porque ?? '').length <= 60);
     expect(semPorque).toEqual([]);
+  });
+
+  it('grau DE MODO com um valor só justifica a coincidência (guard da D7)', () => {
+    // A recíproca do teste acima, e o guard que teria pego a JET-109 sozinho:
+    // `secondary-active` estava `estatico: false` — "participo do modo" — e
+    // entregava #7a33ee nos dois. A classificação dizia uma coisa e o valor
+    // outra, e no escuro isso era um texto a 2.37:1 sobre a pílula.
+    //
+    // Coincidir não é proibido: `verde` e `status-critico` são graus de
+    // PREENCHIMENTO e coincidem legitimamente. O que o guard proíbe é coincidir
+    // em SILÊNCIO — ou o grau ganha par, ou registra por que o valor único não
+    // esconde uma reprovação NO PAPEL que ele exerce.
+    const coincidem = BASE_TOKENS.filter(
+      (n) => !base[n].estatico && tokens.colors[n].toLowerCase() === tokens.colorsDark[n].toLowerCase(),
+    );
+    const semJustificativa = coincidem.filter((n) => (base[n].porqueCoincide ?? '').length <= 60);
+    expect(semJustificativa).toEqual([]);
+    // E a justificativa é do par, não do grau isolado: quem tem par não pode
+    // carregar o carimbo de coincidência como resíduo de um valor antigo.
+    const carimboSobrando = BASE_TOKENS.filter((n) => !coincidem.includes(n) && base[n].porqueCoincide);
+    expect(carimboSobrando).toEqual([]);
+  });
+
+  it('secondary-active tem par de modo de fato — a D7 fechou a ausência', () => {
+    // O defeito da JET-109 era literalmente a FALTA de uma linha no `.dark`.
+    // Este teste guarda o valor; o mínimo WCAG que ele existe para atingir está
+    // em src/components/contrast.test.tsx.
+    expect(base['secondary-active'].estatico).toBe(false);
+    expect(tokens.colorsDark['secondary-active']).not.toBe(tokens.colors['secondary-active']);
+    expect(baseNoEscuro['color-secondary-active']).toBe(canonicalOklch(tokens.colorsDark['secondary-active']));
   });
 
   it('a forma canônica de cada grau reconverte EXATO para o hex de origem', () => {

@@ -101,6 +101,69 @@ export function parseBaseRef(value: string): string | null {
   return BASE_REF.exec(value.trim())?.[1] ?? null;
 }
 
+/**
+ * Derivação permitida pela D1.1: `color-mix(in oklch, var(--x) N%, <resto>)`,
+ * onde o resto é outra `var()` ou `transparent`. É a forma do
+ * `--secondary-active-bg` (D3), e o `grau`/`resto` saem como NOME de variável
+ * porque quem resolve o nome é quem tem a escala na mão (o teste), não este
+ * módulo.
+ */
+export const COLOR_MIX =
+  /^color-mix\(in oklch, var\(--([a-z0-9-]+)\) (\d{1,3})%, (?:var\(--([a-z0-9-]+)\)|(transparent))\)$/;
+
+export type ColorMix = {
+  /** Nome da variável do primeiro operando, sem o `--`. */
+  origem: string;
+  /** Fração do primeiro operando, 0..1. */
+  fracao: number;
+  /** Nome da variável do segundo operando, ou `null` quando é `transparent`. */
+  resto: string | null;
+};
+
+/** Parseia a derivação. `null` se a string não for um `color-mix` do contrato. */
+export function parseColorMix(value: string): ColorMix | null {
+  const m = COLOR_MIX.exec(value.trim());
+  if (!m) return null;
+  return { origem: m[1], fracao: Number(m[2]) / 100, resto: m[3] ?? null };
+}
+
+/**
+ * `color-mix(in oklch, a p%, b)` resolvido em hex.
+ *
+ * Duas sutilezas do CSS Color 4/5 que mudam o resultado e não são opcionais:
+ * a interpolação de matiz é pelo ARCO CURTO, e o matiz de uma cor acromática
+ * (C≈0, como o branco do `--background` claro) é POWERLESS — quem manda é o
+ * matiz do outro operando. Sem a substituição, misturar roxo com branco puxaria
+ * o resultado para H=0 e a pílula clara sairia rosada.
+ */
+export function mixOklch(a: string, p: number, b: string): string {
+  const x = hexToOklch(a);
+  const y = hexToOklch(b);
+  const ACROMATICO = 1e-4;
+  const ha = x.c < ACROMATICO ? y.h : x.h;
+  const hb = y.c < ACROMATICO ? ha : y.h;
+  const arco = ((hb - ha + 540) % 360) - 180;
+  return oklchToHex({
+    l: x.l * p + y.l * (1 - p),
+    c: x.c * p + y.c * (1 - p),
+    h: (ha + arco * (1 - p) + 360) % 360,
+  });
+}
+
+/**
+ * `fg` com alpha sobre `bg` opaco, composto em sRGB — o que a tela faz com um
+ * `color-mix(…, transparent)`.
+ *
+ * Existe porque um token translúcido não TEM cor até se saber o que está atrás:
+ * a pílula escura do item ativo resolve #2e2452 sobre o rail e #1e1439 sobre o
+ * page-bg, e medir WCAG contra o valor "do token" seria medir contra nada.
+ */
+export function alphaOver(fg: string, alpha: number, bg: string): string {
+  const f = hexToRgb(fg);
+  const b = hexToRgb(bg);
+  return rgbToHex(f.map((c, i) => c * alpha + b[i] * (1 - alpha)));
+}
+
 /** `21` e não `21.0`; `163.1` continua `163.1`. */
 const num = (n: number) => String(Number(n.toFixed(1)));
 

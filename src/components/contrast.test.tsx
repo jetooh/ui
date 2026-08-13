@@ -21,7 +21,7 @@ import { render, screen } from '@testing-library/react';
 
 import tokens from '../themes/dashboard-2026/tokens.json';
 import manifest from '../themes/dashboard-2026/manifest.json';
-import { parseBaseRef } from '../themes/oklch';
+import { parseBaseRef, parseColorMix, mixOklch, alphaOver } from '../themes/oklch';
 import { Input } from './Input';
 import { NativeSelect } from './NativeSelect';
 import { DateTimeField } from './DateTimeField';
@@ -229,6 +229,93 @@ describe('camada semântica: os pares que o pacote envia atingem o mínimo WCAG'
     }
     expect(contrast(sem('ring', 'claro'), sem('background', 'claro'))).toBeGreaterThanOrEqual(UI_MIN);
     expect(contrast(sem('ring', 'escuro'), sem('background', 'escuro'))).toBeGreaterThanOrEqual(UI_MIN);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// JET-109 / ADR-001 D7 — o item ATIVO da sidebar secundária, no escuro
+// ---------------------------------------------------------------------------
+// O texto do item ativo é o rótulo de navegação: é conteúdo, cai na 1.4.3 (4.5:1)
+// e não na 1.4.11. Ele reprovava a 2.37:1 no escuro porque `secondary-active`
+// tinha UM valor para os dois modos enquanto o fundo invertia.
+//
+// O que este bloco guarda além do valor: contra QUE fundo se mede. A pílula é
+// `color-mix(…, transparent)` — translúcida —, então ela não tem cor até se
+// saber o que está atrás. Medir contra o rail em vez da pílula foi o que fez o
+// primeiro par proposto (#a06ef7) parecer aprovado a 4.70:1 quando na tela
+// mediria 4.07:1. Aqui a pílula é RESOLVIDA a partir da declaração do
+// tokens.json, não copiada à mão.
+describe('item ativo da sidebar secundária: 4.5:1 sobre a pílula (D7)', () => {
+  /** Resolve `--secondary-active-bg` contra a superfície que estiver atrás. */
+  const pilula = (modo: 'claro' | 'escuro', atras: string) => {
+    const decl = semantic['secondary-active-bg'][modo];
+    const mix = parseColorMix(decl);
+    if (!mix) throw new Error(`secondary-active-bg.${modo} não é o color-mix do contrato: ${decl}`);
+    const primary = sem(mix.origem, modo);
+    // `transparent` como resto: o token é translúcido e a tela compõe em sRGB.
+    // Qualquer outro resto é opaco, e aí o que está atrás não entra na conta.
+    return mix.resto === null
+      ? alphaOver(primary, mix.fracao, atras)
+      : mixOklch(primary, mix.fracao, sem(mix.resto, modo));
+  };
+
+  const ativo = (modo: 'claro' | 'escuro') =>
+    (modo === 'claro' ? tokens.colors : tokens.colorsDark)['secondary-active'].toLowerCase();
+
+  // O `<aside>` é `bg-page-bg`, mas aceita `className` — então o envelope são as
+  // três superfícies escuras em que a sidebar pode cair, e não só a nominal. A
+  // mais CLARA é o pior caso para texto claro (rail-bg), e é ela que governa:
+  // medir só a superfície nominal é a mesma amostragem que deixou o defeito
+  // nascer.
+  const SUPERFICIES_ESCURAS = ['page-bg', 'rail-bg', 'branco'] as const;
+
+  it('escuro: passa 4.5:1 sobre a pílula em TODAS as superfícies do envelope', () => {
+    for (const s of SUPERFICIES_ESCURAS) {
+      const fundo = pilula('escuro', tokens.colorsDark[s]);
+      expect(contrast(ativo('escuro'), fundo)).toBeGreaterThanOrEqual(TEXT_MIN);
+    }
+  });
+
+  it('claro: o valor do claro NÃO mudou e continua passando sobre a pílula clara', () => {
+    // A pílula clara é opaca (mix com `--background`), então não depende do que
+    // está atrás. O par assimétrico só se justifica se o claro seguir de pé.
+    expect(contrast(ativo('claro'), pilula('claro', tokens.colors.branco))).toBeGreaterThanOrEqual(TEXT_MIN);
+  });
+
+  it('o par PRECISA ser assimétrico — nenhum dos dois valores serve nos dois modos', () => {
+    // É o teste que guarda o defeito, não só a correção: "simplificar" o par de
+    // volta a um valor só reprova em UM dos modos, nos dois sentidos.
+    expect(contrast(ativo('claro'), pilula('escuro', tokens.colorsDark['rail-bg']))).toBeLessThan(TEXT_MIN);
+    expect(contrast(ativo('escuro'), pilula('claro', tokens.colors.branco))).toBeLessThan(TEXT_MIN);
+  });
+
+  it('a medida é contra a PÍLULA, não contra o rail — é onde o par anterior passava', () => {
+    // `roxo-claro` (#a06ef7) foi o primeiro par proposto na JET-109: mede 4.70:1
+    // sobre o rail e reprova a 4.07:1 sobre a pílula que fica em cima dele. Sem
+    // esta asserção, trocar a medida de fundo volta a "aprovar" um par que
+    // reprova na tela.
+    const rail = tokens.colorsDark['rail-bg'];
+    expect(contrast(tokens.colorsDark['roxo-claro'], rail)).toBeGreaterThanOrEqual(TEXT_MIN);
+    expect(contrast(tokens.colorsDark['roxo-claro'], pilula('escuro', rail))).toBeLessThan(TEXT_MIN);
+  });
+
+  it('margem: o par aguenta --primary trocando, porque a D3 faz o fundo segui-lo', () => {
+    // O fundo é derivado de `--primary` (D3), então um par no fio dos 4.5
+    // quebraria no dia em que a marca mudasse. `roxo-forte` e `roxo-claro` são
+    // os dois roxos que já existem na base.
+    for (const grau of ['roxo-forte', 'roxo-claro'] as const) {
+      const fundo = alphaOver(tokens.colorsDark[grau], 0.15, tokens.colorsDark['rail-bg']);
+      expect(contrast(ativo('escuro'), fundo)).toBeGreaterThanOrEqual(TEXT_MIN);
+    }
+  });
+
+  it('o call site não mudou, e "ativo" não fica só na cor (1.4.1)', () => {
+    const code = source('AppSecondarySidebar.tsx');
+    expect(code).toContain('text-secondary-active');
+    expect(code).toContain('bg-secondary-active-bg');
+    // Cor É o sinal de estado aqui; `font-medium` é o segundo sinal, e é ele que
+    // mantém o item ativo identificável sem depender de percepção de cor.
+    expect(code).toMatch(/bg-secondary-active-bg font-medium text-secondary-active/);
   });
 });
 
