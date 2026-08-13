@@ -1067,11 +1067,15 @@ function DateRangePicker({ value, onApply }) {
             tab === "presets" ? (
               // 1 coluna em telas estreitas (2 colunas de ~150px cortavam
               // rótulos como "Trimestre passado"); `min-h` só a partir de sm.
-              // Os cartões de preset ficam em `gray-200` de propósito (JET-101):
-              // o token `borda-controle` cobre os CAMPOS (gatilho + datas), onde
-              // a borda é a única delimitação. Escurecer 8 cartões de opção de
-              // uma vez é decisão visual — está na revisão da @Uma, não assumida
-              // aqui.
+              // EXCEÇÃO REGISTRADA (JET-102, decisão de design): os cartões de
+              // opção — estes e os de "Comparar com" abaixo — ficam em
+              // `gray-200`. Cada cartão tem ícone (gray-500, 4.83:1) e rótulo
+              // (gray-600, 7.56:1): é o RÓTULO que identifica o controle, então
+              // a borda não é informação exigida pela WCAG 1.4.11. E o estado
+              // selecionado é `border-roxo` + `bg-roxo/5` + peso — escurecer as
+              // bordas não-selecionadas encolheria justamente o contraste entre
+              // selecionado e não-selecionado, que É exigido pela 1.4.11.
+              // Reavaliar só se o cartão perder o rótulo de texto.
               /* @__PURE__ */ jsx13("div", { className: "grid grid-cols-1 content-start gap-2.5 p-5 sm:min-h-[320px] sm:grid-cols-2", children: PRESETS.map((p) => {
                 const Ic = PRESET_ICONS[p.id] ?? Calendar;
                 const on = draft.preset === p.id;
@@ -2415,6 +2419,9 @@ var AlertDialogCancel = React6.forwardRef(({ className, ...props }, ref) => /* @
     ref,
     className: cn(
       buttonVariants({ variant: "outline" }),
+      // EXCEÇÃO REGISTRADA (JET-102): mesma do `ConfirmDialog` — o rótulo de
+      // texto (gray-600 = 7.56:1) já identifica o botão, então a borda não é
+      // informação exigida pela WCAG 1.4.11 e `gray-200` fica.
       "mt-2 border-gray-200 px-4 text-[13px] font-medium text-gray-600 hover:border-gray-300 hover:text-preto sm:mt-0",
       className
     ),
@@ -2512,7 +2519,7 @@ function DetailHeader({ onBack, backLabel = "Voltar", title, titleAdornment, sta
           variant: "outline",
           size: "icon",
           "aria-label": backLabel,
-          className: "h-8 w-8 shrink-0 border-gray-200 pointer-coarse:h-10 pointer-coarse:w-10",
+          className: "h-8 w-8 shrink-0 border-borda-controle pointer-coarse:h-10 pointer-coarse:w-10",
           onClick: onBack,
           children: /* @__PURE__ */ jsx36(ArrowLeft, { size: 16, strokeWidth: 1.5 })
         }

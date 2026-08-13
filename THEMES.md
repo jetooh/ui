@@ -68,12 +68,20 @@ a borda cai para o `currentColor`, ou seja, uma borda quase preta no campo):
 
 | Uso | Token | Por quê |
 |-----|-------|---------|
-| Borda que **delimita um controle** (`Input`, `Select`, `NativeSelect`, `DateTimeField`, gatilho e campos de data do `DateRangePicker`) | `borda-controle` (`#8b8b93` claro / `#6b6b8f` escuro) | Campo branco dentro de card branco: a borda é a única delimitação da área clicável e WCAG 1.4.11 exige **3:1**. Mede 3.38:1 sobre `branco` e 3.08:1 sobre `page-bg` (escuro: 3.51:1 e 3.84:1). |
+| Borda que **delimita um controle** (`Input`, `Select`, `NativeSelect`, `DateTimeField`, gatilho e campos de data do `DateRangePicker`, botão de voltar do `DetailHeader`) | `borda-controle` (`#85858c` claro / `#6b6b8f` escuro) | O controle é branco dentro de card branco: a borda é a única delimitação da área clicável e WCAG 1.4.11 exige **3:1**. Claro mede 3.66 / 3.33 / 3.10 e escuro 3.51 / 3.84 / 3.28 sobre `branco` / `page-bg` / `gray-100`. |
 | Borda de **superfície** (card, `PageFrame`, `Modal`, `Toast`, divisores) | `gray-200` | Não delimita controle — 3:1 não é exigido; escurecer sujaria a tela à toa. `gray-200` mede 1.26:1 sobre `branco`. |
+| Borda de **controle ROTULADO** (cartões de opção do `DateRangePicker`, botão `Cancelar` do `ConfirmDialog`/`AlertDialog`) | `gray-200` | **Exceção registrada na JET-102.** O rótulo de texto (`gray-600` = 7.56:1) já identifica o controle, então a borda não é "informação necessária para identificar o componente" e a 1.4.11 não a exige. Nos cartões, escurecer as bordas não-selecionadas ainda reduziria o contraste entre selecionado (`border-roxo` + `bg-roxo/5`) e não-selecionado, que **é** exigido. Reavaliar se um desses controles perder o rótulo. |
+
+**Regra de bolso para decidir entre os dois:** o controle tem rótulo de texto
+ou ícone próprio com ≥3:1? Então quem o identifica é o rótulo, e a borda pode
+ficar em `gray-200`. É um campo vazio ou um botão só-ícone, em que o alvo
+clicável só existe porque a caixa está desenhada? Então a borda É a informação
+e vai em `borda-controle`.
 
 Guarda-corpo: `src/components/contrast.test.tsx` calcula os contrastes a partir
-do `tokens.json` (claro e escuro) e reprova se um controle voltar a se delimitar
-com `border-gray-*` sobre `bg-branco`.
+do `tokens.json` (claro e escuro), mede o token contra as **três** superfícies
+do envelope (`branco`, `page-bg`, `gray-100`) e reprova se um controle voltar a
+se delimitar com `border-gray-*` sobre `bg-branco`.
 
 ## Criar um tema NOVO (quando surgir um 2º tema)
 

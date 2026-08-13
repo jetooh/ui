@@ -2,9 +2,10 @@
 // `borda-controle`, foco roxo (border-roxo + ring-roxo/30). Régua = estilo de
 // form do platform.
 //
-// Borda em `borda-controle` (#8b8b93 claro = 3.38:1 sobre branco e 3.08:1 sobre
-// page-bg; #6b6b8f escuro = 3.51:1): o campo é branco dentro de card branco, a
-// borda é a ÚNICA delimitação da área clicável e WCAG 1.4.11 exige 3:1.
+// Borda em `borda-controle` (#85858c claro = 3.66:1 sobre branco, 3.33:1 sobre
+// page-bg e 3.10:1 sobre gray-100; #6b6b8f escuro = 3.51 / 3.84 / 3.28): o campo
+// é branco dentro de card branco, a borda é a ÚNICA delimitação da área clicável
+// e WCAG 1.4.11 exige 3:1.
 // `gray-200` media 1.26:1 (JET-101) e segue sendo a borda de superfície (card,
 // PageFrame, Modal, divisores), onde 3:1 não é exigido.
 //

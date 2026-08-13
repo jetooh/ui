@@ -24,6 +24,7 @@ import manifest from '../themes/dashboard-2026/manifest.json';
 import { Input } from './Input';
 import { NativeSelect } from './NativeSelect';
 import { DateTimeField } from './DateTimeField';
+import { DetailHeader } from './DetailHeader';
 
 /** Luminância relativa WCAG 2.x de um hex `#RRGGBB`. */
 function luminance(hex: string): number {
@@ -105,9 +106,13 @@ describe('render: placeholder e hint saem em gray-500', () => {
 // ---------------------------------------------------------------------------
 // Um campo branco dentro de card branco só é percebido pela borda: ela é uma
 // "parte visual necessária para identificar o controle" e cai na 1.4.11, não na
-// 1.4.3. Mede-se contra as DUAS superfícies em que um campo do tema aparece:
-// `branco` (dentro do card) e `page-bg` (formulário solto na página).
-const FIELD_SURFACES = ['branco', 'page-bg'] as const;
+// 1.4.3. Mede-se contra as TRÊS superfícies em que um controle do tema pode
+// aparecer: `branco` (dentro do card), `page-bg` (formulário solto na página) e
+// `gray-100` (faixa de chip/ícone). `gray-100` entrou na JET-102: o par escuro
+// já passava lá (3.28:1) e o claro não (2.86:1 com o #8b8b93 original) — um par
+// assimétrico deixaria um controle passar no escuro e reprovar no claro, que é
+// o defeito mais caro de achar. Daí o claro ter fechado em `#85858c`.
+const FIELD_SURFACES = ['branco', 'page-bg', 'gray-100'] as const;
 
 describe('borda de controle atinge 3:1 (WCAG 1.4.11)', () => {
   it.each(FIELD_SURFACES)('claro: borda-controle sobre %s', (surface) => {
@@ -154,6 +159,17 @@ describe('controles não delimitam campo branco com borda cinza-clara', () => {
     expect(dateFields).toHaveLength(2); // data inicial + data final
     for (const cls of dateFields) expect(cls).toContain('border-borda-controle');
   });
+
+  // JET-102: o `DateRangePicker` tem DOIS grids de cartão de opção — os presets
+  // e o "Comparar com" — com a mesma borda. A exceção vale para os dois; travar
+  // a igualdade evita a meia-correção (escurecer um grid e esquecer o outro),
+  // que deixaria o mesmo painel com duas bordas de opção diferentes.
+  it('DateRangePicker: os dois grids de cartão de opção mantêm a MESMA borda (exceção JET-102)', () => {
+    const code = source('DateRangePicker.tsx');
+    const unselected = [...code.matchAll(/on \? "border-roxo[^"]*" : "([^"]*)"/g)].map((m) => m[1]);
+    expect(unselected).toHaveLength(2); // presets + comparar com
+    expect(new Set(unselected.map((c) => c.match(/border-[\w-]+/)?.[0])).size).toBe(1);
+  });
 });
 
 describe('render: os campos saem com a borda do token', () => {
@@ -162,6 +178,15 @@ describe('render: os campos saem com a borda do token', () => {
     const input = screen.getByPlaceholderText('seu@email.com');
     expect(input.className).toContain('border-borda-controle');
     expect(input.className).not.toContain('border-gray-200');
+  });
+
+  // JET-102: o botão de voltar do `DetailHeader` é o único controle ícone-só
+  // coberto pelo token — sem rótulo, quem delimita o alvo de 32px é a caixa.
+  it('DetailHeader: o botão de voltar aplica border-borda-controle', () => {
+    render(<DetailHeader title="Dispositivo 42" onBack={() => {}} />);
+    const voltar = screen.getByLabelText('Voltar');
+    expect(voltar.className).toContain('border-borda-controle');
+    expect(voltar.className).not.toContain('border-gray-200');
   });
 
   it('NativeSelect aplica border-borda-controle', () => {
