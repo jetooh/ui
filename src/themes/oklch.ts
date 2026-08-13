@@ -88,3 +88,80 @@ export function parseOklch(value: string): Oklch | null {
   if (!m) return null;
   return { l: Number(m[1]), c: Number(m[2]), h: Number(m[3]) };
 }
+
+/** Referência à camada base: `var(--color-<grau>)`. Ver `parseBaseRef`. */
+export const BASE_REF = /^var\(--color-([a-z0-9-]+)\)$/;
+
+/**
+ * Extrai o grau referenciado por um token semântico (ADR-001 D1.1: a camada
+ * semântica REFERENCIA a base, nunca recopia o valor). `null` se não for uma
+ * referência — e aí o guard de literal do contract.test.ts reprova.
+ */
+export function parseBaseRef(value: string): string | null {
+  return BASE_REF.exec(value.trim())?.[1] ?? null;
+}
+
+/** `21` e não `21.0`; `163.1` continua `163.1`. */
+const num = (n: number) => String(Number(n.toFixed(1)));
+
+/** Formata um triplo já arredondado na gramática canônica do ADR-001. */
+const formatOklch = (l: number, c: number, h: number) =>
+  c === 0 ? `oklch(${num(l)}% 0 0)` : `oklch(${num(l)}% ${c.toFixed(3)} ${num(h)})`;
+
+/**
+ * Forma canônica de um hex da camada base — a de MENOR precisão que reconverte
+ * EXATO para o mesmo hex.
+ *
+ * Por que não é só arredondar: a gramática do ADR-001 corta em 1 casa de `L`, 3
+ * de `C` e 1 de `H`, e para alguns hex o arredondamento ingênuo cai fora do
+ * cubo sRGB de origem. `#34d399` é o caso vivo no tema: arredondar dá
+ * `oklch(77.3% 0.153 163.2)`, que reconverte para `#35d399` — 1/255 de deriva
+ * no canal R. Imperceptível, e é exatamente por isso que é perigoso: sob D1.1 a
+ * base é a ÚNICA cópia do valor, então uma deriva silenciosa aqui reescreve a
+ * cor de todo mundo que referencia o grau, sem nada acusar.
+ *
+ * Então a busca varre a vizinhança do valor exato dentro da gramática, mantém
+ * só os candidatos que reconvertem exato e escolhe o perceptualmente mais
+ * próximo do valor real (distância euclidiana em OKLab, com desempate
+ * lexicográfico para o resultado não depender da ordem da varredura).
+ *
+ * Lança se nenhum candidato reconverte exato — silêncio aqui seria a deriva.
+ */
+export function canonicalOklch(hex: string): string {
+  const alvo = hex.toLowerCase();
+  const exato = hexToOklch(hex);
+  const rad = (exato.h * Math.PI) / 180;
+  const [aAlvo, bAlvo] = [exato.c * Math.cos(rad), exato.c * Math.sin(rad)];
+
+  const candidatos: Array<{ css: string; dist: number }> = [];
+  for (let dl = -3; dl <= 3; dl++) {
+    const l = Number((Math.round(exato.l * 10) / 10 + dl / 10).toFixed(1));
+    if (l < 0 || l > 100) continue;
+    // Cinza: `C 0` e `H 0` (D1). Entra como candidato próprio, sem varrer H.
+    if (Math.abs(exato.c) < 0.0015) {
+      const css = formatOklch(l, 0, 0);
+      if (oklchToHex(parseOklch(css)!) === alvo) {
+        candidatos.push({ css, dist: Math.hypot((l - exato.l) / 100, aAlvo, bAlvo) });
+      }
+    }
+    for (let dc = -3; dc <= 3; dc++) {
+      const c = Number((Math.round(exato.c * 1000) / 1000 + dc / 1000).toFixed(3));
+      if (c <= 0) continue;
+      for (let dh = -5; dh <= 5; dh++) {
+        const h = Number(((Math.round(exato.h * 10) / 10 + dh / 10 + 360) % 360).toFixed(1));
+        const css = formatOklch(l, c, h);
+        if (oklchToHex(parseOklch(css)!) !== alvo) continue;
+        const r = (h * Math.PI) / 180;
+        candidatos.push({
+          css,
+          dist: Math.hypot((l - exato.l) / 100, c * Math.cos(r) - aAlvo, c * Math.sin(r) - bAlvo),
+        });
+      }
+    }
+  }
+  if (candidatos.length === 0) {
+    throw new Error(`nenhuma forma canônica de ${hex} reconverte exato — a gramática do ADR-001 não cobre este hex`);
+  }
+  candidatos.sort((x, y) => x.dist - y.dist || x.css.localeCompare(y.css));
+  return candidatos[0].css;
+}

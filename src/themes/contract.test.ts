@@ -25,20 +25,38 @@
 // pode voltar a ficar incompleto por esquecimento, só por decisão explícita.
 //
 // JET-106 acrescentou a QUINTA classificação e as regras que ela traz:
-//   5. tokens.semantic                        — camada semântica, em oklch(),
-//                                               ENVIADA pelo pacote (theme.css).
-// Com ela vieram quatro guardas novos, todos do ADR-001: nenhum token do
-// contrato em tripla HSL crua; `hsl(var(` proibido no CSS do pacote; par
-// `:root`/`.dark` completo para todo token semântico; e o round-trip que prova
-// que cada token semântico converte EXATO para o grau da escala JETOOH que ele
-// diz expor.
+//   5. tokens.semantic                        — camada semântica, ENVIADA pelo
+//                                               pacote (theme.css).
+// Com ela vieram os guardas do ADR-001: nenhum token do contrato em tripla HSL
+// crua; `hsl(var(` proibido no CSS do pacote; par `:root`/`.dark` completo para
+// todo token semântico; e o round-trip que prova que o valor emitido converte
+// EXATO para o hex do grau que ele diz expor.
+//
+// A revisão 4 do ADR-001 acrescentou os dois que fecham a duplicação de valor:
+//   · GUARD DE LITERAL (D1.1) — a camada semântica não escreve cor, só
+//     `var(--color-<grau>)` ou `color-mix()` sobre `var()`. Um literal aqui é
+//     uma segunda cópia do valor que já existe na base, e duas cópias divergem
+//     no primeiro ajuste de marca: é a máquina que produziu a JET-78.
+//   · GUARD DE MODO (D5) — a base tem graus DE MODO (`branco` = #FFFFFF claro,
+//     #161625 escuro) e ESTÁTICOS (`branco-fixo`). Um token semântico
+//     invariante de modo só pode referenciar grau estático. Sem isto,
+//     `--primary-foreground: var(--color-branco)` — que é literalmente o que a
+//     D1.1 sugere — dá rótulo #161625 sobre o roxo no escuro: 3.78:1, reprova.
+// Os dois são estáticos: não precisam render.
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { describe, it, expect } from 'vitest';
 
 import tokens from './dashboard-2026/tokens.json';
 import manifest from './dashboard-2026/manifest.json';
-import { OKLCH_CANONICO, hexToOklch, oklchToHex, parseOklch } from './oklch';
+import {
+  OKLCH_CANONICO,
+  canonicalOklch,
+  hexToOklch,
+  oklchToHex,
+  parseBaseRef,
+  parseOklch,
+} from './oklch';
 
 const COMPONENTS_DIR = resolve(process.cwd(), 'src/components');
 const THEME_DIR = resolve(process.cwd(), 'src/themes/dashboard-2026');
@@ -76,16 +94,23 @@ const NOT_A_COLOR = new Set([
 ]);
 
 type SemanticEntry = {
-  /** Grau da escala JETOOH que o token expõe; `null` = valor próprio. */
+  /** Grau da camada base que o token expõe; `null` = valor próprio. */
   grauClaro: string | null;
   grauEscuro: string | null;
+  /** REFERÊNCIA ao grau — `var(--color-<grau>)`, nunca o valor (D1.1). */
   claro: string;
   escuro: string;
+  /** D5: vale o mesmo nos dois modos, então só pode referenciar base estática. */
+  invarianteDeModo?: boolean;
   derivado?: boolean;
   porque?: string;
 };
 const semantic = tokens.semantic as unknown as Record<string, SemanticEntry>;
 const SEMANTIC_TOKENS = Object.keys(semantic);
+
+/** Classificação da camada base: participa do modo, ou é estática (D5). */
+const base = tokens.base as unknown as Record<string, { estatico: boolean; porque?: string }>;
+const BASE_TOKENS = Object.keys(tokens.colors);
 
 // A camada semântica conta como DECLARADA: o pacote envia o valor (D0.1), então
 // a app não precisa fazer nada para a utility existir. É a diferença entre esta
@@ -185,7 +210,7 @@ describe('contrato de tema: claro e escuro andam juntos', () => {
 });
 
 // ---------------------------------------------------------------------------
-// JET-106 / ADR-001 — camada semântica: formato canônico e entrega
+// JET-106 / ADR-001 — as duas camadas do tema
 // ---------------------------------------------------------------------------
 
 /** Todo arquivo de fonte do pacote (para varreduras que valem no repo inteiro). */
@@ -200,20 +225,109 @@ function allSources(dir: string): string[] {
 /** Remove comentários CSS antes de parsear — comentário não é declaração. */
 const stripCss = (css: string) => css.replace(/\/\*[\s\S]*?\*\//g, '');
 
-/** Extrai `--token: valor;` de um bloco nomeado do theme.css. */
-function cssBlock(css: string, selector: string): Record<string, string> {
-  const re = new RegExp(`${selector}\\s*\\{([^}]*)\\}`);
-  const body = re.exec(stripCss(css))?.[1];
-  if (body === undefined) throw new Error(`bloco ${selector} não encontrado em theme.css`);
-  const out: Record<string, string> = {};
-  for (const m of body.matchAll(/--([a-z0-9-]+)\s*:\s*([^;]+);/g)) out[m[1]] = m[2].trim();
+type Regra = { seletores: string[]; decls: Record<string, string> };
+
+/** Quebra o theme.css em regras (lista de seletores + declarações). */
+function cssRegras(css: string): Regra[] {
+  const out: Regra[] = [];
+  for (const m of stripCss(css).matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    const decls: Record<string, string> = {};
+    for (const d of m[2].matchAll(/--([a-z0-9-]+)\s*:\s*([^;]+);/g)) decls[d[1]] = d[2].trim();
+    out.push({ seletores: m[1].split(',').map((s) => s.trim()).filter(Boolean), decls });
+  }
   return out;
 }
 
 const THEME_CSS = readFileSync(resolve(THEME_DIR, 'theme.css'), 'utf8');
+const REGRAS = cssRegras(THEME_CSS);
+
+/** Declarações efetivas de um seletor, na ordem em que a cascata as aplica. */
+function declaracoes(seletor: string, manter: (chave: string) => boolean): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const r of REGRAS) {
+    if (!r.seletores.includes(seletor)) continue;
+    for (const [k, v] of Object.entries(r.decls)) if (manter(k)) out[k] = v;
+  }
+  return out;
+}
+
+const ehVarDeCor = (chave: string) => chave.startsWith('color-');
+const semNoClaro = declaracoes(':root', (k) => !ehVarDeCor(k));
+const semNoEscuro = declaracoes('.dark', (k) => !ehVarDeCor(k));
+const baseNoClaro = declaracoes('@theme', ehVarDeCor);
+const baseNoEscuro = declaracoes('.dark', ehVarDeCor);
+const themeInline = declaracoes('@theme inline', () => true);
+
+// ---------------------------------------------------------------------------
+// ADR-001 D1.1 + D5 — camada BASE: onde o valor mora, e quem é de modo
+// ---------------------------------------------------------------------------
+
+describe('camada base: a única que escreve valor (ADR-001 D1.1)', () => {
+  it('todo grau da escala está classificado — e só os da escala', () => {
+    // Sem classificação não existe guard de modo: `estatico` é o que separa
+    // `branco` (#FFFFFF claro, #161625 escuro) de `branco-fixo`.
+    expect(Object.keys(base).sort()).toEqual(Object.keys(tokens.colors).sort());
+  });
+
+  it('`estatico: true` é declaração, mas não pode contradizer o valor medido', () => {
+    // A marcação é intenção (coincidir hoje não torna um grau estático), mas o
+    // sentido seguro é checável: se o grau diz que não participa do modo, os
+    // dois modos precisam ter o MESMO valor. Sem isto, `estatico` viraria um
+    // carimbo para escapar do guard de modo.
+    const mentindo = BASE_TOKENS.filter(
+      (n) => base[n].estatico && tokens.colors[n].toLowerCase() !== tokens.colorsDark[n].toLowerCase(),
+    );
+    expect(mentindo).toEqual([]);
+  });
+
+  it('grau estático justifica por escrito por que não participa do modo', () => {
+    const semPorque = BASE_TOKENS.filter((n) => base[n].estatico && (base[n].porque ?? '').length <= 60);
+    expect(semPorque).toEqual([]);
+  });
+
+  it('a forma canônica de cada grau reconverte EXATO para o hex de origem', () => {
+    // O round-trip que o ADR-001 exige, agora na ÚNICA camada que escreve
+    // valor. `canonicalOklch` lança se a gramática não cobrir o hex; aqui a
+    // asserção é a volta completa, grau a grau, nos dois modos.
+    const erros: string[] = [];
+    for (const [modo, escala] of [['claro', tokens.colors], ['escuro', tokens.colorsDark]] as const) {
+      for (const n of BASE_TOKENS) {
+        const hex = (escala as Record<string, string>)[n].toLowerCase();
+        const css = canonicalOklch(hex);
+        const volta = oklchToHex(parseOklch(css)!);
+        if (volta !== hex) erros.push(`${n}.${modo}: ${hex} → ${css} → ${volta}`);
+      }
+    }
+    expect(erros).toEqual([]);
+  });
+
+  it('o @theme envia a base inteira, em oklch() derivado do hex — sem inventar valor', () => {
+    expect(Object.keys(baseNoClaro).sort()).toEqual(BASE_TOKENS.map((n) => `color-${n}`).sort());
+    for (const n of BASE_TOKENS) {
+      expect(`${n} = ${baseNoClaro[`color-${n}`]}`).toBe(`${n} = ${canonicalOklch(tokens.colors[n])}`);
+    }
+  });
+
+  it('o .dark redeclara exatamente os graus cujo valor escuro DIFERE — nenhum a mais', () => {
+    // Redeclarar um grau com o mesmo valor é a segunda cópia que a D1.1 proíbe,
+    // com o agravante de parecer decisão de modo. Faltar um é a regressão que a
+    // ordem de rollout da JET-101 descreve.
+    const deModo = BASE_TOKENS.filter(
+      (n) => tokens.colors[n].toLowerCase() !== tokens.colorsDark[n].toLowerCase(),
+    );
+    expect(Object.keys(baseNoEscuro).sort()).toEqual(deModo.map((n) => `color-${n}`).sort());
+    for (const n of deModo) {
+      expect(`${n} = ${baseNoEscuro[`color-${n}`]}`).toBe(`${n} = ${canonicalOklch(tokens.colorsDark[n])}`);
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// JET-106 / ADR-001 — camada semântica: formato canônico e entrega
+// ---------------------------------------------------------------------------
 
 describe('camada semântica: formato canônico (ADR-001 D1)', () => {
-  it('os 18 tokens do shadcn e os 3 que a JET-105/JET-106 acrescentaram', () => {
+  it('os 18 tokens do shadcn, os 2 que a D5 separou de --primary, e o derivado da D3', () => {
     const OS_18_DO_SHADCN = [
       'background', 'foreground', 'card', 'card-foreground', 'popover', 'popover-foreground',
       'primary', 'primary-foreground', 'secondary', 'secondary-foreground', 'muted',
@@ -221,12 +335,15 @@ describe('camada semântica: formato canônico (ADR-001 D1)', () => {
     ];
     // O conjunto exato que estava em lacunasAbertas precisa ter saído inteiro.
     expect(OS_18_DO_SHADCN.filter((t) => !SEMANTIC_TOKENS.includes(t))).toEqual([]);
-    // Mais `secondary-active-bg` (D3) e o par que a JET-105 separou de --primary.
+    // D5: a camada vai a 20 — `--primary` acumulava três papéis, e os dois que
+    // não são preenchimento ganharam token próprio. Mais `secondary-active-bg`,
+    // que entra por D3 como derivado.
     expect(SEMANTIC_TOKENS.filter((t) => !OS_18_DO_SHADCN.includes(t))).toEqual([
       'primary-hover',
-      'link',
+      'primary-text',
       'secondary-active-bg',
     ]);
+    expect(SEMANTIC_TOKENS.filter((t) => t !== 'secondary-active-bg')).toHaveLength(20);
     expect(SEMANTIC_TOKENS).toEqual(manifest.cssContract.camadaSemantica.tokens);
   });
 
@@ -238,41 +355,108 @@ describe('camada semântica: formato canônico (ADR-001 D1)', () => {
     expect(incompletos).toEqual([]);
   });
 
-  it('nenhum token do contrato em tripla HSL crua', () => {
-    // `262 100% 64%` — o formato que só é cor dentro de um hsl() que alguém
-    // lembrou de escrever. É o que o D1 proíbe, e o modo de falha é silencioso.
-    const TRIPLA_CRUA = /^\s*-?[\d.]+\s+[\d.]+%\s+[\d.]+%\s*$/;
+  it('NENHUM valor literal de cor do lado direito — só var() ou color-mix (D1.1)', () => {
+    // O guard que impede a JET-78 de renascer. Escrever `oklch(58.6% 0.253 294)`
+    // aqui é o valor da marca escrito uma SEGUNDA vez, ao lado do --color-roxo
+    // que já o tem: as duas cópias divergem no primeiro ajuste de marca e
+    // ninguém descobre até a tela sair errada. É checagem estática, sem render.
+    // `color-mix(in oklch, …)` continua permitido: `oklch` ali é o espaço de
+    // interpolação e a porcentagem é a DERIVAÇÃO, não uma cópia da cor.
+    const LITERAL = /(?:oklch|hsla?|rgba?|lab|lch|hwb|color)\(|#[0-9a-fA-F]{3,8}\b/;
     const ofensores = SEMANTIC_TOKENS.flatMap((t) =>
       (['claro', 'escuro'] as const)
-        .filter((modo) => TRIPLA_CRUA.test(semantic[t][modo]))
+        .filter((modo) => LITERAL.test(semantic[t][modo]))
         .map((modo) => `${t}.${modo} = ${semantic[t][modo]}`),
     );
     expect(ofensores).toEqual([]);
   });
 
-  it('todo token não-derivado é oklch() canônico: L 1 casa, C 3 casas ou 0, H 1 casa', () => {
-    const foraDaGramatica = SEMANTIC_TOKENS.flatMap((t) =>
-      (['claro', 'escuro'] as const)
-        .filter((modo) => !semantic[t].derivado && !OKLCH_CANONICO.test(semantic[t][modo]))
-        .map((modo) => `${t}.${modo} = ${semantic[t][modo]}`),
-    );
+  it('e a forma positiva: referência a um grau que EXISTE na base', () => {
+    // O guard de literal sozinho aceitaria `var(--nao-existe)` e qualquer outra
+    // coisa que não pareça cor. A regra da D1.1 é mais estreita: ou o token é
+    // `var(--color-<grau>)` de um grau declarado, ou é derivado.
+    const erros: string[] = [];
+    for (const t of SEMANTIC_TOKENS) {
+      if (semantic[t].derivado) continue;
+      for (const [modo, grauKey] of [['claro', 'grauClaro'], ['escuro', 'grauEscuro']] as const) {
+        const ref = parseBaseRef(semantic[t][modo]);
+        if (ref === null) erros.push(`${t}.${modo} não é var(--color-*): ${semantic[t][modo]}`);
+        else if (!BASE_TOKENS.includes(ref)) erros.push(`${t}.${modo} referencia grau inexistente: ${ref}`);
+        else if (ref !== semantic[t][grauKey]) erros.push(`${t}.${modo} referencia ${ref}, mas declara grau ${semantic[t][grauKey]}`);
+      }
+    }
+    expect(erros).toEqual([]);
+  });
+
+  it('token INVARIANTE de modo só referencia base ESTÁTICA (guard de modo, D5)', () => {
+    // A armadilha que a D1.1 abria: `--primary-foreground: var(--color-branco)`
+    // é o que a regra "referencie a base" sugere, e no escuro dá rótulo #161625
+    // sobre o roxo = 3.78:1 — reprova. O fill é o mesmo nos dois modos, então o
+    // rótulo precisa de base que também seja.
+    const erros: string[] = [];
+    for (const t of SEMANTIC_TOKENS.filter((k) => semantic[k].invarianteDeModo)) {
+      if (semantic[t].claro !== semantic[t].escuro) {
+        erros.push(`${t} se diz invariante mas troca de referência entre os modos`);
+        continue;
+      }
+      const ref = parseBaseRef(semantic[t].claro);
+      if (!ref || !base[ref]?.estatico) erros.push(`${t} é invariante de modo mas referencia base DE MODO (${ref})`);
+    }
+    expect(erros).toEqual([]);
+  });
+
+  it('e o contrário: token silenciosamente invariante precisa se declarar', () => {
+    // Sem este lado, bastava não marcar `invarianteDeModo` para escapar do guard
+    // acima — e a marcação passaria a ser opcional, que é o mesmo que não haver
+    // guard. Um token que referencia o MESMO grau ESTÁTICO nos dois modos é
+    // invariante de fato; ou se declara, ou muda de grau.
+    const naoDeclarados = SEMANTIC_TOKENS.filter((t) => {
+      if (semantic[t].invarianteDeModo || semantic[t].derivado) return false;
+      const ref = parseBaseRef(semantic[t].claro);
+      return ref !== null && semantic[t].claro === semantic[t].escuro && base[ref]?.estatico === true;
+    });
+    expect(naoDeclarados).toEqual([]);
+  });
+
+  it('nenhum token do contrato em tripla HSL crua', () => {
+    // `262 100% 64%` — o formato que só é cor dentro de um hsl() que alguém
+    // lembrou de escrever. É o que o D1 proíbe, e o modo de falha é silencioso.
+    // Sobrevive à D1.1 porque a base é hex e o guard vale para as duas camadas.
+    const TRIPLA_CRUA = /^\s*-?[\d.]+\s+[\d.]+%\s+[\d.]+%\s*$/;
+    const ofensores = [
+      ...SEMANTIC_TOKENS.flatMap((t) =>
+        (['claro', 'escuro'] as const)
+          .filter((modo) => TRIPLA_CRUA.test(semantic[t][modo]))
+          .map((modo) => `${t}.${modo} = ${semantic[t][modo]}`),
+      ),
+      ...Object.entries({ ...baseNoClaro, ...baseNoEscuro })
+        .filter(([, v]) => TRIPLA_CRUA.test(v))
+        .map(([k, v]) => `${k} = ${v}`),
+    ];
+    expect(ofensores).toEqual([]);
+  });
+
+  it('todo valor emitido é oklch() canônico: L 1 casa, C 3 casas ou 0, H 1 casa', () => {
+    // Vale para a camada BASE, que é onde os valores passaram a morar.
+    const foraDaGramatica = Object.entries({ ...baseNoClaro, ...baseNoEscuro })
+      .filter(([, v]) => !OKLCH_CANONICO.test(v))
+      .map(([k, v]) => `${k} = ${v}`);
     expect(foraDaGramatica).toEqual([]);
   });
 
-  it('token derivado é color-mix(in oklch, …) e declara o porquê da derivação', () => {
+  it('token derivado é color-mix(in oklch, …) sobre var() e declara o porquê', () => {
     for (const t of SEMANTIC_TOKENS.filter((k) => semantic[k].derivado)) {
-      expect(semantic[t].claro).toMatch(/^color-mix\(in oklch, /);
-      expect(semantic[t].escuro).toMatch(/^color-mix\(in oklch, /);
+      for (const modo of ['claro', 'escuro'] as const) {
+        expect(semantic[t][modo]).toMatch(/^color-mix\(in oklch, var\(--[a-z0-9-]+\) \d{1,3}%, /);
+      }
       expect(semantic[t].porque).toEqual(expect.any(String));
     }
   });
 
   it('cinza é C 0 e H 0 — chroma zero não carrega matiz', () => {
-    for (const t of SEMANTIC_TOKENS.filter((k) => !semantic[k].derivado)) {
-      for (const modo of ['claro', 'escuro'] as const) {
-        const cor = parseOklch(semantic[t][modo])!;
-        if (cor.c === 0) expect(`${t}.${modo}=${cor.h}`).toBe(`${t}.${modo}=0`);
-      }
+    for (const [chave, valor] of Object.entries({ ...baseNoClaro, ...baseNoEscuro })) {
+      const cor = parseOklch(valor)!;
+      if (cor.c === 0) expect(`${chave}=${cor.h}`).toBe(`${chave}=0`);
     }
   });
 
@@ -292,8 +476,10 @@ describe('camada semântica: formato canônico (ADR-001 D1)', () => {
     expect(ofensores).toEqual([]);
   });
 
-  it('e o contrato registra a proibição por escrito, não só no teste', () => {
-    expect(manifest.cssContract.camadaSemantica.formato.proibido.join(' ')).toContain('hsl(var(--x))');
+  it('e o contrato registra as duas proibições por escrito, não só no teste', () => {
+    const { proibido } = manifest.cssContract.camadaSemantica.formato;
+    expect(proibido.join(' ')).toContain('hsl(var(--x))');
+    expect(proibido.join(' ')).toMatch(/literal/i);
   });
 });
 
@@ -317,10 +503,20 @@ describe('camada semântica: round-trip contra a escala JETOOH (prova exigida pe
     expect(Math.abs(medido.h - esperado.h)).toBeLessThanOrEqual(0.5);
   });
 
-  it('todo token semântico com grau converte EXATO para o hex do grau', () => {
-    // É isto que impede a camada semântica e a escala JETOOH de voltarem a ser
-    // duas paletas diferentes — e é o round-trip por token que o ADR-001 pede
-    // antes de qualquer flip.
+  it('a forma canônica é a que reconverte exato, não a de arredondamento ingênuo', () => {
+    // `#34d399` é o caso vivo do tema: arredondar dá oklch(77.3% 0.153 163.2),
+    // que reconverte para #35d399 — 1/255 no canal R. Sob D1.1 a base é a única
+    // cópia do valor, então essa deriva reescreveria a cor de todo mundo que
+    // referencia o grau, sem nada acusar.
+    expect(oklchToHex(hexToOklch('#34d399'))).toBe('#34d399');
+    expect(canonicalOklch('#34d399')).toBe('oklch(77.3% 0.154 163.1)');
+    expect(oklchToHex(parseOklch('oklch(77.3% 0.153 163.2)')!)).toBe('#35d399');
+  });
+
+  it('token com grau expõe o grau da base — a semântica não é uma segunda paleta', () => {
+    // Continua sendo o que impede a camada semântica e a escala JETOOH de
+    // voltarem a ser duas paletas diferentes. Sob D1.1 a prova ficou mais forte
+    // e mais barata: o token REFERENCIA o grau, então basta o grau existir.
     const erros: string[] = [];
     for (const t of SEMANTIC_TOKENS) {
       for (const [modo, grauKey, escala] of [
@@ -329,9 +525,8 @@ describe('camada semântica: round-trip contra a escala JETOOH (prova exigida pe
       ] as const) {
         const grau = semantic[t][grauKey];
         if (!grau) continue;
-        const esperado = (escala as Record<string, string>)[grau].toLowerCase();
-        const obtido = oklchToHex(parseOklch(semantic[t][modo])!);
-        if (obtido !== esperado) erros.push(`${t}.${modo}: ${semantic[t][modo]} → ${obtido}, grau ${grau} = ${esperado}`);
+        if (!(grau in escala)) erros.push(`${t}.${modo}: grau ${grau} não existe na escala`);
+        if (parseBaseRef(semantic[t][modo]) !== grau) erros.push(`${t}.${modo} não referencia o grau ${grau}`);
       }
     }
     expect(erros).toEqual([]);
@@ -352,30 +547,28 @@ describe('camada semântica: round-trip contra a escala JETOOH (prova exigida pe
 });
 
 describe('camada semântica: o pacote ENVIA a camada (ADR-001 D0.1)', () => {
-  const root = cssBlock(THEME_CSS, ':root');
-  const dark = cssBlock(THEME_CSS, '\\.dark');
-  const theme = cssBlock(THEME_CSS, '@theme inline');
-
   it(':root envia exatamente os tokens da camada semântica', () => {
-    expect(Object.keys(root).sort()).toEqual([...SEMANTIC_TOKENS].sort());
+    expect(Object.keys(semNoClaro).sort()).toEqual([...SEMANTIC_TOKENS].sort());
   });
 
   it('.dark envia o mesmo conjunto — par incompleto no CSS reprova igual', () => {
-    expect(Object.keys(dark).sort()).toEqual([...SEMANTIC_TOKENS].sort());
+    // Vale mesmo quando a declaração é compartilhada em `:root, .dark`: o que se
+    // cobra é o valor EFETIVO por modo, não em quantos blocos ele foi escrito.
+    expect(Object.keys(semNoEscuro).sort()).toEqual([...SEMANTIC_TOKENS].sort());
   });
 
   it('@theme inline mapeia --color-<token> para cada um (senão a utility não existe)', () => {
     // No Tailwind v4 `bg-primary` só nasce se `--color-primary` estiver no tema.
     // Declarar `--primary` no :root sem este bloco entrega a variável e nenhuma
     // classe — exatamente a falha silenciosa que a JET-77 descreve.
-    expect(Object.keys(theme).sort()).toEqual(SEMANTIC_TOKENS.map((t) => `color-${t}`).sort());
-    for (const t of SEMANTIC_TOKENS) expect(theme[`color-${t}`]).toBe(`var(--${t})`);
+    expect(Object.keys(themeInline).sort()).toEqual(SEMANTIC_TOKENS.map((t) => `color-${t}`).sort());
+    for (const t of SEMANTIC_TOKENS) expect(themeInline[`color-${t}`]).toBe(`var(--${t})`);
   });
 
   it('o theme.css não inventa valor: bate com o tokens.json nos dois modos', () => {
     for (const t of SEMANTIC_TOKENS) {
-      expect(`${t} claro = ${root[t]}`).toBe(`${t} claro = ${semantic[t].claro}`);
-      expect(`${t} escuro = ${dark[t]}`).toBe(`${t} escuro = ${semantic[t].escuro}`);
+      expect(`${t} claro = ${semNoClaro[t]}`).toBe(`${t} claro = ${semantic[t].claro}`);
+      expect(`${t} escuro = ${semNoEscuro[t]}`).toBe(`${t} escuro = ${semantic[t].escuro}`);
     }
   });
 
@@ -412,8 +605,15 @@ describe('overrides são registrados, não escondidos (ADR-001 D0.2)', () => {
   });
 
   it('o canônico do --primary é a marca, não o neutro do scaffold (JET-105, opção A)', () => {
-    expect(semantic.primary.claro).toBe('oklch(58.6% 0.253 294)');
-    expect(semantic.primary.escuro).toBe('oklch(58.6% 0.253 294)');
+    // Sob D1.1 o token não carrega mais o valor, então a asserção segue a
+    // referência até a base — que é onde o roxo mora — em vez de comparar com
+    // uma cópia do literal escrita aqui dentro. Comparar com o literal seria
+    // fazer no teste exatamente o que a D1.1 proíbe no CSS.
+    expect(semantic.primary.claro).toBe('var(--color-roxo)');
+    expect(semantic.primary.escuro).toBe('var(--color-roxo)');
+    expect(tokens.colors.roxo).toBe('#8B47FF');
+    expect(tokens.colorsDark.roxo).toBe('#8B47FF');
+    expect(canonicalOklch(tokens.colors.roxo)).toBe('oklch(58.6% 0.253 294)');
     expect(entradas.filter((o) => o.token === 'primary')).toEqual([]);
   });
 

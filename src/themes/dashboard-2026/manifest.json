@@ -55,17 +55,17 @@
     },
     "camadaSemantica": {
       "desde": "JET-106",
-      "adr": "ADR-001 (JET-104#document-adr-contrato-css) — D0 entrega, D1 formato, D3 secondary-active-bg, D4 gray-400.",
-      "tokens": ["background", "foreground", "card", "card-foreground", "popover", "popover-foreground", "primary", "primary-foreground", "primary-hover", "link", "secondary", "secondary-foreground", "muted", "muted-foreground", "accent", "accent-foreground", "destructive", "border", "input", "ring", "secondary-active-bg"],
+      "adr": "ADR-001 rev. 4 (JET-104#document-adr-contrato-css) — D0 entrega, D1 formato, D1.1 base x semantica (referencia, nunca literal), D3 secondary-active-bg, D4 gray-400, D5 os 20 tokens + base estatica x de modo.",
+      "tokens": ["background", "foreground", "card", "card-foreground", "popover", "popover-foreground", "primary", "primary-foreground", "primary-hover", "primary-text", "secondary", "secondary-foreground", "muted", "muted-foreground", "accent", "accent-foreground", "destructive", "border", "input", "ring", "secondary-active-bg"],
       "papeisDoPrimary": {
         "nota": "`--primary` é papel de PREENCHIMENTO, e só. Os outros dois papéis que o shadcn empilhava nele ganharam par próprio na JET-105 (decisão A, riders a e b), porque com o roxo da marca eles reprovam WCAG e com o neutro do scaffold não reprovavam — a divergência escondia o defeito.",
         "preenchimento": "--primary + --primary-foreground (rótulo branco, 4.73:1 nos dois modos)",
         "hover do preenchimento": "--primary-hover, sólido — `bg-primary/80` cai para 3.43:1 no claro",
-        "texto/link": "--link — `text-primary` mede 4.30:1 sobre page-bg no claro e 3.78:1 sobre o card no escuro",
+        "texto/link": "--primary-text — `text-primary` mede 4.30:1 sobre page-bg no claro e 3.78:1 sobre o card no escuro. Claro = grau `roxo-forte`, escuro = grau `roxo-claro`: o par troca de GRAU, e os dois graus sao estaticos",
         "guardado por": "src/components/contrast.test.tsx proíbe `text-primary` e `bg-primary/<alpha>` no pacote"
       },
       "usadoPor": ["Button", "Badge", "Avatar", "Card", "Skeleton", "DropdownMenu", "Select", "Table", "Tooltip", "Separator", "SectionCard", "StatusBadge", "AppSecondarySidebar"],
-      "valores": "tokens.json → semantic (par claro/escuro por token, em oklch() completo)",
+      "valores": "tokens.json → semantic (par claro/escuro por token, cada um como `var(--color-<grau>)` da camada base — a semantica nao escreve valor, D1.1)",
       "entrega": {
         "arquivo": "src/themes/dashboard-2026/theme.css → dist/theme.css",
         "importaNaApp": "@import \"@jetooh/ui/theme.css\";",
@@ -73,10 +73,10 @@
         "ordemDeRollout": "Diferente da escala JETOOH: NÃO há pré-requisito de declaração. A app importa o theme.css e passa a receber os 18. Se precisar divergir, registra em overridesRegistrados ANTES de subir a versão — override não registrado reprova no token-drift."
       },
       "formato": {
-        "regra": "D1 — cor completa em oklch() sempre. `L` em % com até 1 casa · `C` com 3 casas (ou o literal `0`) · `H` com até 1 casa · cinza é `C 0` e `H 0`. Alpha só quando a semântica do token é translúcida.",
-        "proibido": ["tripla HSL crua (ex.: `262 100% 64%`)", "wrapper `hsl(var(--x))`"],
+        "regra": "D1 — cor completa em oklch() sempre, na CAMADA BASE, que e a unica que escreve valor (D1.1). `L` em % com ate 1 casa · `C` com 3 casas (ou o literal `0`) · `H` com ate 1 casa · cinza e `C 0` e `H 0`. A forma canonica de um grau e a de menor precisao que RECONVERTE EXATO para o hex de origem (`canonicalOklch` em src/themes/oklch.ts): arredondar #34d399 de forma ingenua da #35d399, e sob D1.1 essa deriva de 1/255 reescreveria a cor de todo mundo que referencia o grau.",
+        "proibido": ["tripla HSL crua (ex.: `262 100% 64%`)", "wrapper `hsl(var(--x))`", "valor literal de cor (`oklch(`, `hsl(`, `rgb(`, `#`) do lado direito de um token semantico — so `var(--color-*)` ou `color-mix()` sobre `var()` (D1.1)", "token semantico invariante de modo referenciando grau DE MODO da base (D5)"],
         "porque": "A tripla não é uma cor, é dado sem tipo: só vale dentro de um hsl() que alguém lembrou de escrever, e esquecer o wrapper não quebra o build — apaga a cor. Guardado por src/themes/contract.test.ts.",
-        "roundTrip": "Todo token semântico com `grau` declarado converte EXATO para o hex do grau na escala JETOOH — provado token a token no contract.test.ts, que é a prova que o ADR-001 exige antes de qualquer flip. As 4 conversões medidas que o ADR publica (#8b47ff, #f3edff, #161625, #6b7280) ficam travadas lá como âncora independente da aritmética."
+        "roundTrip": "Sob D1.1 o round-trip mudou de camada e ficou mais forte: o oklch() emitido para cada grau da BASE reconverte EXATO para o hex de `colors`/`colorsDark`, nos dois modos, e o token semantico REFERENCIA o grau em vez de recopiar o valor — provado grau a grau e token a token no contract.test.ts. As 4 conversoes medidas que o ADR publica (#8b47ff, #f3edff, #161625, #6b7280) ficam travadas la como ancora independente da aritmetica."
       },
       "tokenDrift": {
         "regraAntiga": "a app declarou o token?",

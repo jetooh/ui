@@ -21,7 +21,7 @@ import { render, screen } from '@testing-library/react';
 
 import tokens from '../themes/dashboard-2026/tokens.json';
 import manifest from '../themes/dashboard-2026/manifest.json';
-import { oklchToHex, parseOklch } from '../themes/oklch';
+import { parseBaseRef } from '../themes/oklch';
 import { Input } from './Input';
 import { NativeSelect } from './NativeSelect';
 import { DateTimeField } from './DateTimeField';
@@ -97,9 +97,21 @@ describe('controles de formulário não usam gray-400 em texto/ícone', () => {
 // semântico `muted-foreground`, que expõe o MESMO grau `gray-500` que a JET-99
 // mediu — e este bloco trava as duas pontas: o valor e o call site.
 const semantic = tokens.semantic as unknown as Record<string, { claro: string; escuro: string }>;
-/** Hex efetivo de um token semântico, para medir WCAG sobre valores oklch. */
-const sem = (token: string, modo: 'claro' | 'escuro') =>
-  oklchToHex(parseOklch(semantic[token][modo])!);
+/**
+ * Hex efetivo de um token semântico. Sob D1.1 o token não tem valor próprio: ele
+ * REFERENCIA um grau da camada base, e é lá que a cor mora — então medir WCAG
+ * aqui é resolver a referência contra `colors`/`colorsDark`. Lança se a
+ * referência não existir, para um token mal escrito não medir `undefined` e
+ * passar por acidente.
+ */
+const sem = (token: string, modo: 'claro' | 'escuro') => {
+  const grau = parseBaseRef(semantic[token][modo]);
+  const escala = (modo === 'claro' ? tokens.colors : tokens.colorsDark) as Record<string, string>;
+  if (grau === null || !(grau in escala)) {
+    throw new Error(`${token}.${modo} não referencia um grau da base: ${semantic[token][modo]}`);
+  }
+  return escala[grau].toLowerCase();
+};
 
 describe('gray-400 saiu dos 2 usos e continua fora do contrato (D4)', () => {
   it('gray-400 não aparece em NENHUM componente do pacote', () => {
@@ -188,20 +200,20 @@ describe('camada semântica: os pares que o pacote envia atingem o mínimo WCAG'
     }
   });
 
-  it('link: o par de texto passa 4.5:1 sobre card e page-bg, nos dois modos', () => {
+  it('primary-text: o par de texto passa 4.5:1 sobre card e page-bg, nos dois modos', () => {
     for (const surface of SUPERFICIES_CLARAS) {
-      expect(contrast(sem('link', 'claro'), tokens.colors[surface])).toBeGreaterThanOrEqual(TEXT_MIN);
+      expect(contrast(sem('primary-text', 'claro'), tokens.colors[surface])).toBeGreaterThanOrEqual(TEXT_MIN);
     }
     for (const surface of SUPERFICIES_ESCURAS) {
-      expect(contrast(sem('link', 'escuro'), tokens.colorsDark[surface])).toBeGreaterThanOrEqual(TEXT_MIN);
+      expect(contrast(sem('primary-text', 'escuro'), tokens.colorsDark[surface])).toBeGreaterThanOrEqual(TEXT_MIN);
     }
   });
 
-  it('e o par de link PRECISA ser assimétrico — nenhum dos dois valores serve sozinho', () => {
+  it('e o par de primary-text PRECISA ser assimétrico — nenhum dos dois valores serve sozinho', () => {
     // Guarda o motivo: sem isto, "simplificar" o par para um valor só volta a
     // reprovar em um dos modos, que é o defeito mais caro de achar.
-    expect(contrast(sem('link', 'claro'), tokens.colorsDark.branco)).toBeLessThan(TEXT_MIN);
-    expect(contrast(sem('link', 'escuro'), tokens.colors.branco)).toBeLessThan(TEXT_MIN);
+    expect(contrast(sem('primary-text', 'claro'), tokens.colorsDark.branco)).toBeLessThan(TEXT_MIN);
+    expect(contrast(sem('primary-text', 'escuro'), tokens.colors.branco)).toBeLessThan(TEXT_MIN);
     // E o roxo do preenchimento não serve para nenhum dos dois: é o ponto todo.
     expect(contrast(sem('primary', 'claro'), tokens.colors['page-bg'])).toBeLessThan(TEXT_MIN);
     expect(contrast(sem('primary', 'escuro'), tokens.colorsDark.branco)).toBeLessThan(TEXT_MIN);

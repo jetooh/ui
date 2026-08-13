@@ -31,7 +31,7 @@ ui/
 │   │   └── dashboard-2026/
 │   │       ├── manifest.json  ← id, nome, régua, apps, casca, componentes, contrato CSS
 │   │       ├── tokens.json    ← tokens canônicos (claro + escuro) — fonte única
-│   │       └── theme.css      ← camada semântica ENVIADA pelo pacote (JET-106)
+│   │       └── theme.css      ← base + camada semântica ENVIADAS pelo pacote (JET-106)
 │   ├── themes/oklch.ts        ← conversão sRGB↔OKLCH (round-trip do contrato)
 │   └── index.ts               ← export raiz (= Dashboard2026 enquanto houver 1 tema)
 └── THEMES.md                  ← este arquivo (registro de temas)
@@ -42,28 +42,32 @@ ui/
 1. `npm install "github:jetooh/ui#main"` (ou npm quando publicado — ver
    `docs/process/ui-npm-publish-migration.md`).
 2. `@source "../node_modules/@jetooh/ui/dist"` no `index.css` (Tailwind v4 gera as classes).
-3. `@import "@jetooh/ui/theme.css"` — traz a **camada semântica** pronta (os 18 do
-   shadcn + `--secondary-active-bg`, `--primary-hover` e `--link`), em claro e
-   escuro. Nada a declarar.
+3. `@import "@jetooh/ui/theme.css"` — traz o tema inteiro pronto, em claro e
+   escuro: a **camada base** (escala JETOOH, em `oklch()`) e a **camada
+   semântica** (os **20** — os 18 do shadcn + `--primary-hover` e
+   `--primary-text` — mais `--secondary-active-bg`). Nada a declarar.
 
    > `--primary` é papel de **preenchimento**, e só. O hover do preenchimento é
-   > `--primary-hover` (sólido) e o papel de texto/link é `--link` — os dois
-   > ganharam par próprio na JET-105 porque, com o roxo da marca,
+   > `--primary-hover` (sólido) e o papel de texto/link é `--primary-text` — os
+   > dois ganharam par próprio na JET-105/D5 porque, com o roxo da marca,
    > `bg-primary/80` cai para 3,43:1 e `text-primary` para 4,30:1 sobre
    > `page-bg`. Com o `--primary` neutro do scaffold isso passava por acidente.
-4. Definir os tokens da **escala JETOOH** (`colors`/`colorsDark` do `tokens.json`) no
-   `index.css`, em **claro e escuro** (valores da régua = `platform`).
+4. Se a app já declara a escala JETOOH no `index.css` (platform, devices), ela
+   continua valendo — a declaração local vem depois do `@import` e vence na
+   cascata. Apagar a declaração local e ficar só com o que o pacote envia é a
+   migração, e é o que o `token-drift` passa a cobrar valor a valor.
 5. Rodar `node scripts/token-drift.mjs` (no pilot) — não pode divergir do manifesto.
 
 ## Duas camadas, duas regras (JET-106 / ADR-001)
 
-|  | escala JETOOH (`colors`) | camada semântica (`semantic`) |
+|  | camada base (`colors`) | camada semântica (`semantic`) |
 |---|---|---|
-| formato | hex | `oklch()` completo |
-| quem declara | **a app**, nos dois modos | **o pacote**, via `theme.css` |
-| se a app não declara | a utility não existe → componente sai sem cor | recebe o canônico |
-| divergir | não pode | pode, com entrada em `cssContract.overridesRegistrados` |
-| o que o `token-drift` pergunta | "a app declarou?" | "valor efetivo == canônico **ou** override registrado e não vencido?" |
+| o que é | a escala JETOOH: `roxo`, `gray-*`, `borda-controle`, … | os 20 do contrato: `--primary`, `--border`, `--muted`, … |
+| formato | hex no `tokens.json` → `oklch()` no `theme.css` | **referência**: `var(--color-<grau>)` ou `color-mix()` |
+| escreve valor de cor? | **sim — é a única que escreve** | **nunca** (D1.1) |
+| quem envia | **o pacote**, via `theme.css` | **o pacote**, via `theme.css` |
+| divergir | pode, com entrada em `cssContract.overridesRegistrados` | idem |
+| o que o `token-drift` pergunta | "valor efetivo == canônico **ou** override registrado e não vencido?" | idem |
 
 O motivo da assimetria: até a JET-106 o contrato era declaração-obrigatória em
 tudo, e por isso qualquer divergência conhecida (`--primary` neutro no platform,
@@ -72,12 +76,29 @@ tudo, e por isso qualquer divergência conhecida (`--primary` neutro no platform
 mudarem juntas. Enviar o default separa as duas coisas: o contrato tem um valor
 sempre, e a divergência vira dívida com dono e prazo.
 
-Regras de formato da camada semântica: `L` em % com até 1 casa · `C` com 3 casas
+Regras de formato da camada base: `L` em % com até 1 casa · `C` com 3 casas
 (ou o literal `0`) · `H` com até 1 casa · cinza é `C 0` e `H 0` · alpha só quando
 a semântica do token é translúcida. Tripla HSL crua e `hsl(var(--x))` reprovam no
-`contract.test.ts`. Todo token semântico com `grau` declarado converte **exato**
-para o hex daquele grau na escala JETOOH — o `contract.test.ts` prova o round-trip
-token a token, para as duas camadas não voltarem a ser duas paletas diferentes.
+`contract.test.ts`. A forma canônica de um grau é a de **menor precisão que
+reconverte exato** para o hex de origem (`canonicalOklch`): arredondar `#34d399`
+de forma ingênua dá `#35d399`, e como a base é a única cópia do valor, essa
+deriva de 1/255 reescreveria a cor de todo mundo que referencia o grau.
+
+**A camada semântica não escreve cor** (D1.1). Cada um dos 20 é
+`var(--color-<grau>)` da base, ou um `color-mix()` sobre `var()` — um literal
+aqui seria a segunda cópia do valor da marca, que é a máquina exata que produziu
+a JET-78. Dois guards estáticos (sem render) no `contract.test.ts`:
+
+- **literal** — nenhuma função de cor (`oklch(`, `hsl(`, `rgb(`, `#`) do lado
+  direito de um token semântico, e a referência tem que apontar para um grau que
+  existe;
+- **modo** — a base tem graus **de modo** (`branco` = `#FFFFFF` claro,
+  `#161625` escuro) e **estáticos** (`roxo`, `roxo-forte`, `roxo-claro`,
+  `branco-fixo`, `rail-active-*`), marcados com `estatico` no `tokens.json`. Um
+  token semântico invariante de modo (`invarianteDeModo`) só pode referenciar
+  grau **estático**. É o que impede `--primary-foreground: var(--color-branco)`
+  — o que a própria D1.1 sugere — de virar rótulo `#161625` sobre o roxo no
+  escuro, a 3,78:1.
 
 ## Acrescentar um token ao tema — a app vem PRIMEIRO
 
