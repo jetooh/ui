@@ -56,6 +56,16 @@ ui/
    continua valendo — a declaração local vem depois do `@import` e vence na
    cascata. Apagar a declaração local e ficar só com o que o pacote envia é a
    migração, e é o que o `token-drift` passa a cobrar valor a valor.
+
+   > **Vencer por ordem só vale dentro da mesma camada** (JET-77). O `theme.css`
+   > declara `:root, .dark` **sem** `@layer`, e no CSS uma declaração sem camada
+   > vence qualquer uma **dentro** de camada — a ordem no arquivo nem é
+   > consultada. App que guarda token em `@layer base` (era o caso do `devices`)
+   > perde para o pacote sem nada avisar, e o estrago não é "voltou ao valor do
+   > contrato": no `devices` o `--border` local era uma tripla HSL lida por
+   > `hsl(var(--border))`, então herdar o `oklch()` do pacote produziu
+   > `hsl(oklch(…))` — valor inválido, **borda sem cor na app inteira**, 142
+   > declarações. Antes de importar, tirar os tokens do `@layer`.
 5. Rodar `node scripts/token-drift.mjs` (no pilot) — não pode divergir do manifesto.
 6. **Casca de boot** (JET-118) — copiar `dist/theme-init.js` e `dist/boot.css` para o
    `public/` da app, e no `index.html`: `<script src="/theme-init.js">` +
