@@ -52,6 +52,7 @@ import manifest from './dashboard-2026/manifest.json';
 import {
   OKLCH_CANONICO,
   canonicalOklch,
+  canonicalOklchDetalhe,
   hexToOklch,
   oklchToHex,
   parseBaseRef,
@@ -111,7 +112,7 @@ const SEMANTIC_TOKENS = Object.keys(semantic);
 /** Classificação da camada base: participa do modo, ou é estática (D5). */
 const base = tokens.base as unknown as Record<
   string,
-  { estatico: boolean; porque?: string; porqueCoincide?: string }
+  { estatico: boolean; porque?: string; porqueCoincide?: string; precisaoEstendida?: string }
 >;
 const BASE_TOKENS = Object.keys(tokens.colors);
 
@@ -318,6 +319,27 @@ describe('camada base: a única que escreve valor (ADR-001 D1.1)', () => {
     expect(baseNoEscuro['color-secondary-active']).toBe(canonicalOklch(tokens.colorsDark['secondary-active']));
   });
 
+  it('nenhum grau de hoje precisou estender a precisão — e quem precisar, registra', () => {
+    // D6 regra 3: quando nenhuma forma da vizinhança reconverte, a precisão do
+    // token vai a L 2 / C 4 / H 2 casas e a extensão fica REGISTRADA ao lado
+    // dele. Aceitar a deriva nunca é opção. O ADR afirma que nenhum dos graus
+    // de hoje cai nesse caso — este teste é quem verifica a afirmação, e é o
+    // que vai acusar no dia em que um grau novo de croma alto entrar.
+    const estendidos: string[] = [];
+    for (const [modo, escala] of [['claro', tokens.colors], ['escuro', tokens.colorsDark]] as const) {
+      for (const n of BASE_TOKENS) {
+        const d = canonicalOklchDetalhe((escala as Record<string, string>)[n]);
+        if (d.precisao === 'estendida') estendidos.push(`${n}.${modo} = ${d.css}`);
+      }
+    }
+    expect(estendidos).toEqual([]);
+    // Quem estende, justifica; e o carimbo não sobra em quem não estende — o
+    // mesmo par de guardas que a D7 usa para `porqueCoincide`.
+    const nomesEstendidos = new Set(estendidos.map((e) => e.split('.')[0]));
+    expect(estendidos.filter((e) => !base[e.split('.')[0]].precisaoEstendida)).toEqual([]);
+    expect(BASE_TOKENS.filter((n) => base[n].precisaoEstendida && !nomesEstendidos.has(n))).toEqual([]);
+  });
+
   it('a forma canônica de cada grau reconverte EXATO para o hex de origem', () => {
     // O round-trip que o ADR-001 exige, agora na ÚNICA camada que escreve
     // valor. `canonicalOklch` lança se a gramática não cobrir o hex; aqui a
@@ -520,11 +542,16 @@ describe('camada semântica: round-trip contra a escala JETOOH (prova exigida pe
   // Âncora INDEPENDENTE: as 4 conversões que o ADR-001 publica como medidas.
   // Sem isto, um erro na aritmética do oklch.ts passaria despercebido, porque o
   // mesmo código gera e confere os valores do tokens.json.
+  // Valores da tabela REGENERADA na rev. 5 (D6). A rev. 4 publicava `H` inteiro
+  // por convenção — `301`, `284`, `264` — e a D6 tirou essa convenção: `H`
+  // inteiro só é correto quando o gerador o emite, e aqui ele emite só no
+  // `roxo`. Nenhuma COR muda entre as duas colunas: os quatro já reconvertiam
+  // certo e só ganharam a casa decimal que a gramática sempre permitiu.
   const MEDIDAS_DO_ADR = [
-    { hex: '#8b47ff', oklch: 'oklch(58.6% 0.253 294)', o_que: 'roxo da marca' },
-    { hex: '#f3edff', oklch: 'oklch(95.6% 0.025 301)', o_que: '--base-roxo-light claro' },
-    { hex: '#161625', oklch: 'oklch(20.8% 0.030 284)', o_que: 'fundo escuro' },
-    { hex: '#6b7280', oklch: 'oklch(55.1% 0.023 264)', o_que: 'gray-500' },
+    { hex: '#8b47ff', oklch: 'oklch(58.6% 0.253 294)', rev4: 'oklch(58.6% 0.253 294)', o_que: 'roxo da marca' },
+    { hex: '#f3edff', oklch: 'oklch(95.6% 0.025 301.1)', rev4: 'oklch(95.6% 0.025 301)', o_que: '--base-roxo-light claro' },
+    { hex: '#161625', oklch: 'oklch(20.8% 0.030 283.5)', rev4: 'oklch(20.8% 0.030 284)', o_que: 'fundo escuro' },
+    { hex: '#6b7280', oklch: 'oklch(55.1% 0.023 264.4)', rev4: 'oklch(55.1% 0.023 264)', o_que: 'gray-500' },
   ] as const;
 
   it.each(MEDIDAS_DO_ADR)('$o_que: $hex ↔ $oklch (valor medido no ADR-001)', ({ hex, oklch }) => {
@@ -536,6 +563,24 @@ describe('camada semântica: round-trip contra a escala JETOOH (prova exigida pe
     expect(Math.abs(medido.h - esperado.h)).toBeLessThanOrEqual(0.5);
   });
 
+  it.each(MEDIDAS_DO_ADR)('$o_que: o gerador reproduz a tabela da rev. 5 — $oklch', ({ hex, oklch }) => {
+    // A âncora continua INDEPENDENTE: a coluna vem da tabela publicada no
+    // ADR-001, medida pela @Aria por fora deste código. Esta asserção é a que
+    // prova que o gerador da D6 e o documento dizem a mesma coisa — sem ela, o
+    // ADR e o pacote podem divergir em silêncio, que é como a rev. 4 chegou a
+    // publicar `oklch(65.3% 0.197 297)` para um hex que ele não reconverte.
+    expect(canonicalOklch(hex)).toBe(oklch);
+  });
+
+  it('a rev. 4 mudou a STRING de três âncoras e nenhuma COR', () => {
+    // O que a D6 promete ("nenhuma cor muda") verificado onde importa: as duas
+    // formas resolvem o mesmo hex, então quem já tinha a string antiga no CSS
+    // não vê pixel diferente — só deixa de ser canônico.
+    for (const { hex, rev4 } of MEDIDAS_DO_ADR) {
+      expect(`${hex}: ${oklchToHex(parseOklch(rev4)!)}`).toBe(`${hex}: ${hex}`);
+    }
+  });
+
   it('a forma canônica é a que reconverte exato, não a de arredondamento ingênuo', () => {
     // `#34d399` é o caso vivo do tema: arredondar dá oklch(77.3% 0.153 163.2),
     // que reconverte para #35d399 — 1/255 no canal R. Sob D1.1 a base é a única
@@ -544,6 +589,47 @@ describe('camada semântica: round-trip contra a escala JETOOH (prova exigida pe
     expect(oklchToHex(hexToOklch('#34d399'))).toBe('#34d399');
     expect(canonicalOklch('#34d399')).toBe('oklch(77.3% 0.154 163.1)');
     expect(oklchToHex(parseOklch('oklch(77.3% 0.153 163.2)')!)).toBe('#35d399');
+  });
+
+  it('D6 regra 1: cinza sai `C 0 H 0` — o gerador não elege matiz para acromático', () => {
+    // Honestidade sobre o que este teste prova: medi a cláusula de precedência
+    // contra a variante sem ela em 2.688 hex e as duas concordam em TODOS —
+    // para um cinza os candidatos cromáticos ficam sempre mais longe em OKLab,
+    // então a forma acromática já venceria por distância. A precedência existe
+    // para o resultado não DEPENDER disso: sem ela, "cinza não carrega matiz"
+    // seria uma coincidência aritmética que um ajuste de métrica desfaz em
+    // silêncio, e o `H` de um cinza viraria ruído estável no diff.
+    for (const cinza of ['#ffffff', '#000000', '#1c1c1c', '#808080']) {
+      expect(`${cinza} → ${canonicalOklch(cinza)}`).toMatch(/→ oklch\([\d.]+% 0 0\)$/);
+      expect(oklchToHex(parseOklch(canonicalOklch(cinza))!)).toBe(cinza);
+    }
+  });
+
+  it('D6 regra 3: o que a gramática não representa ESTENDE a precisão, nunca deriva', () => {
+    // `#0b0dee` é croma alto perto da borda do gamut, onde o passo de 0.001 em
+    // `C` é grosso demais: nenhuma das formas de L 1 / C 3 / H 1 na vizinhança
+    // reconverte. A regra 3 manda estender AQUELE token para L 2 / C 4 / H 2 —
+    // e o resultado tem de reconverter exato, senão a regra não serviu para
+    // nada. Este é o caminho que o gerador anterior fechava com um `throw`.
+    const d = canonicalOklchDetalhe('#0b0dee');
+    expect(d.precisao).toBe('estendida');
+    expect(oklchToHex(parseOklch(d.css)!)).toBe('#0b0dee');
+    // E a forma estendida NÃO passa pela gramática do contrato: é justamente
+    // por isso que a extensão precisa ficar registrada em vez de silenciosa.
+    expect(OKLCH_CANONICO.test(d.css)).toBe(false);
+  });
+
+  it('D6 regra 2: a janela de ±4 passos é a regra, e ela às vezes custa precisão', () => {
+    // Registro de uma consequência MEDIDA da janela normativa, não de um
+    // defeito: em `#167577` a forma exata mais próxima está a 5 passos de `H`
+    // do arredondamento direto, então a janela de ±4 não a alcança e o gerador
+    // fica com uma forma 57% mais distante em OKLab. As duas reconvertem para
+    // o mesmo hex — o custo é de canonicidade, não de cor, e nenhum dos graus
+    // de hoje cai no caso. Se a janela mudar num rev. futuro, este teste é
+    // quem avisa que o valor esperado mudou junto.
+    expect(canonicalOklch('#167577')).toBe('oklch(51.4% 0.082 197.1)');
+    expect(oklchToHex(parseOklch('oklch(51.4% 0.082 197.1)')!)).toBe('#167577');
+    expect(oklchToHex(parseOklch('oklch(51.3% 0.082 196.6)')!)).toBe('#167577');
   });
 
   it('token com grau expõe o grau da base — a semântica não é uma segunda paleta', () => {

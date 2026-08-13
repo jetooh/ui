@@ -82,9 +82,23 @@ export function oklchToHex({ l, c, h }: Oklch): string {
 export const OKLCH_CANONICO =
   /^oklch\((\d{1,3}(?:\.\d)?)% (0|\d\.\d{3}) (\d{1,3}(?:\.\d)?)(?: \/ \d{1,3}%)?\)$/;
 
-/** Parseia uma declaração canônica. Devolve `null` se a string não for canônica. */
+/**
+ * Precisão ESTENDIDA (D6, regra 3): `L` 2 casas / `C` 4 casas / `H` 2 casas.
+ * Só é legítima quando o gerador declara que a estendeu — a gramática do
+ * contrato continua sendo `OKLCH_CANONICO`, e é a asserção de canonicidade
+ * (`forma == gerador(hex)`) que impede a precisão extra de virar folga geral.
+ * Existe aqui para `parseOklch` conseguir ler um token estendido de volta: sem
+ * isso o round-trip do próprio token que precisou da extensão não fecharia.
+ */
+export const OKLCH_ESTENDIDO =
+  /^oklch\((\d{1,3}(?:\.\d{1,2})?)% (0|\d\.\d{4}) (\d{1,3}(?:\.\d{1,2})?)(?: \/ \d{1,3}%)?\)$/;
+
+/**
+ * Parseia uma declaração canônica — ou estendida (D6 regra 3). Devolve `null`
+ * se a string não estiver em nenhuma das duas gramáticas.
+ */
 export function parseOklch(value: string): Oklch | null {
-  const m = OKLCH_CANONICO.exec(value);
+  const m = OKLCH_CANONICO.exec(value) ?? OKLCH_ESTENDIDO.exec(value);
   if (!m) return null;
   return { l: Number(m[1]), c: Number(m[2]), h: Number(m[3]) };
 }
@@ -164,16 +178,91 @@ export function alphaOver(fg: string, alpha: number, bg: string): string {
   return rgbToHex(f.map((c, i) => c * alpha + b[i] * (1 - alpha)));
 }
 
-/** `21` e não `21.0`; `163.1` continua `163.1`. */
-const num = (n: number) => String(Number(n.toFixed(1)));
+// ---------------------------------------------------------------------------
+// ADR-001 D6 — regra de conversão hex → oklch() (JET-117)
+//
+// O gerador mora AQUI, junto do emissor, e não dentro do contract.test.ts:
+// teste que reimplementa o gerador só prova que a cópia concorda com a cópia.
+// ---------------------------------------------------------------------------
 
-/** Formata um triplo já arredondado na gramática canônica do ADR-001. */
-const formatOklch = (l: number, c: number, h: number) =>
-  c === 0 ? `oklch(${num(l)}% 0 0)` : `oklch(${num(l)}% ${c.toFixed(3)} ${num(h)})`;
+/** Casas por eixo. A do contrato é a gramática de D1; a estendida é D6 regra 3. */
+export type Precisao = { l: number; c: number; h: number };
+export const PRECISAO_CONTRATO: Precisao = { l: 1, c: 3, h: 1 };
+export const PRECISAO_ESTENDIDA: Precisao = { l: 2, c: 4, h: 2 };
+
+/** Passos varridos por eixo em torno do arredondamento direto (D6 regra 2). */
+const VIZINHANCA = 4;
+
+/** `21` e não `21.0`; `163.1` continua `163.1`. */
+const num = (n: number, casas: number) => String(Number(n.toFixed(casas)));
+
+/** Arredonda para a grade da precisão — a "grade" que a gramática admite. */
+const naGrade = (n: number, casas: number) => Number(n.toFixed(casas));
+
+/** Formata um triplo já arredondado na gramática da precisão dada. */
+const formatOklch = (l: number, c: number, h: number, p: Precisao) =>
+  c === 0
+    ? `oklch(${num(l, p.l)}% 0 0)`
+    : `oklch(${num(l, p.l)}% ${c.toFixed(p.c)} ${num(h, p.h)})`;
+
+/** Distância euclidiana em OKLab. `L` entra na escala 0..1, como `a` e `b`. */
+const distOklab = (l: number, c: number, h: number, lAlvo: number, aAlvo: number, bAlvo: number) => {
+  const r = (h * Math.PI) / 180;
+  return Math.hypot((l - lAlvo) / 100, c * Math.cos(r) - aAlvo, c * Math.sin(r) - bAlvo);
+};
 
 /**
- * Forma canônica de um hex da camada base — a de MENOR precisão que reconverte
- * EXATO para o mesmo hex.
+ * A busca de D6 regra 2 numa precisão. `null` quando nenhuma forma da
+ * vizinhança reconverte — é o gatilho da regra 3, não um erro.
+ */
+function buscarNaPrecisao(alvo: string, exato: Oklch, p: Precisao): string | null {
+  const rad = (exato.h * Math.PI) / 180;
+  const [aAlvo, bAlvo] = [exato.c * Math.cos(rad), exato.c * Math.sin(rad)];
+  const passo = (casas: number) => 10 ** -casas;
+
+  // D6 regra 1 — ACROMÁTICO TEM PRECEDÊNCIA. Quando `C` arredondado é 0 o
+  // matiz não existe: varrer `H` faria o gerador eleger um matiz arbitrário
+  // para um cinza, e esse matiz vira ruído estável no diff. Só `L` é buscado.
+  const acromatico = naGrade(exato.c, p.c) === 0;
+
+  const candidatos: Array<{ css: string; dist: number; l: number; c: number; h: number }> = [];
+  for (let dl = -VIZINHANCA; dl <= VIZINHANCA; dl++) {
+    const l = naGrade(naGrade(exato.l, p.l) + dl * passo(p.l), p.l);
+    if (l < 0 || l > 100) continue;
+
+    if (acromatico) {
+      const css = formatOklch(l, 0, 0, p);
+      if (oklchToHex(parseOklch(css)!) === alvo) {
+        candidatos.push({ css, dist: distOklab(l, 0, 0, exato.l, aAlvo, bAlvo), l, c: 0, h: 0 });
+      }
+      continue;
+    }
+
+    for (let dc = -VIZINHANCA; dc <= VIZINHANCA; dc++) {
+      const c = naGrade(naGrade(exato.c, p.c) + dc * passo(p.c), p.c);
+      if (c <= 0) continue;
+      for (let dh = -VIZINHANCA; dh <= VIZINHANCA; dh++) {
+        const h = naGrade((naGrade(exato.h, p.h) + dh * passo(p.h) + 360) % 360, p.h);
+        const css = formatOklch(l, c, h, p);
+        if (oklchToHex(parseOklch(css)!) !== alvo) continue;
+        candidatos.push({ css, dist: distOklab(l, c, h, exato.l, aAlvo, bAlvo), l, c, h });
+      }
+    }
+  }
+  if (candidatos.length === 0) return null;
+
+  // Menor distância; desempate DETERMINÍSTICO e numérico (D6): menor `L`,
+  // depois menor `C`, depois menor `H`. Ordenar pela string em vez dos números
+  // faria `10.1%` vir antes de `9.5%` — ordem lexicográfica não é ordem de cor.
+  // Medido: em 2.688 hex nenhum empate de distância chega a acontecer, então
+  // hoje o critério nunca desempata nada. É por isso mesmo que ele precisa
+  // estar escrito — o dia em que empatar não vai avisar.
+  candidatos.sort((x, y) => x.dist - y.dist || x.l - y.l || x.c - y.c || x.h - y.h);
+  return candidatos[0].css;
+}
+
+/**
+ * Forma canônica de um hex da camada base, com a precisão que ela exigiu.
  *
  * Por que não é só arredondar: a gramática do ADR-001 corta em 1 casa de `L`, 3
  * de `C` e 1 de `H`, e para alguns hex o arredondamento ingênuo cai fora do
@@ -183,48 +272,37 @@ const formatOklch = (l: number, c: number, h: number) =>
  * base é a ÚNICA cópia do valor, então uma deriva silenciosa aqui reescreve a
  * cor de todo mundo que referencia o grau, sem nada acusar.
  *
- * Então a busca varre a vizinhança do valor exato dentro da gramática, mantém
- * só os candidatos que reconvertem exato e escolhe o perceptualmente mais
- * próximo do valor real (distância euclidiana em OKLab, com desempate
- * lexicográfico para o resultado não depender da ordem da varredura).
+ * Os três passos de D6, na ordem:
  *
- * Lança se nenhum candidato reconverte exato — silêncio aqui seria a deriva.
+ * 1. `C` arredondado é `0` → `oklch(L% 0 0)`, sem varrer matiz (precedência).
+ * 2. Senão, entre as formas da gramática numa vizinhança de ±4 passos por eixo
+ *    em torno do arredondamento direto, a canônica é a de menor distância em
+ *    OKLab ao valor exato DENTRE as que reconvertem para o hex de origem.
+ * 3. Se nenhuma reconverte, o valor não é representável na precisão do
+ *    contrato: a precisão é estendida para `L` 2 / `C` 4 / `H` 2 casas para
+ *    AQUELE token, e `precisao: 'estendida'` registra a extensão. Aceitar a
+ *    deriva nunca é opção — daí o `throw` quando nem a estendida fecha.
  */
-export function canonicalOklch(hex: string): string {
+export function canonicalOklchDetalhe(hex: string): {
+  css: string;
+  precisao: 'contrato' | 'estendida';
+} {
   const alvo = hex.toLowerCase();
   const exato = hexToOklch(hex);
-  const rad = (exato.h * Math.PI) / 180;
-  const [aAlvo, bAlvo] = [exato.c * Math.cos(rad), exato.c * Math.sin(rad)];
 
-  const candidatos: Array<{ css: string; dist: number }> = [];
-  for (let dl = -3; dl <= 3; dl++) {
-    const l = Number((Math.round(exato.l * 10) / 10 + dl / 10).toFixed(1));
-    if (l < 0 || l > 100) continue;
-    // Cinza: `C 0` e `H 0` (D1). Entra como candidato próprio, sem varrer H.
-    if (Math.abs(exato.c) < 0.0015) {
-      const css = formatOklch(l, 0, 0);
-      if (oklchToHex(parseOklch(css)!) === alvo) {
-        candidatos.push({ css, dist: Math.hypot((l - exato.l) / 100, aAlvo, bAlvo) });
-      }
-    }
-    for (let dc = -3; dc <= 3; dc++) {
-      const c = Number((Math.round(exato.c * 1000) / 1000 + dc / 1000).toFixed(3));
-      if (c <= 0) continue;
-      for (let dh = -5; dh <= 5; dh++) {
-        const h = Number(((Math.round(exato.h * 10) / 10 + dh / 10 + 360) % 360).toFixed(1));
-        const css = formatOklch(l, c, h);
-        if (oklchToHex(parseOklch(css)!) !== alvo) continue;
-        const r = (h * Math.PI) / 180;
-        candidatos.push({
-          css,
-          dist: Math.hypot((l - exato.l) / 100, c * Math.cos(r) - aAlvo, c * Math.sin(r) - bAlvo),
-        });
-      }
-    }
-  }
-  if (candidatos.length === 0) {
-    throw new Error(`nenhuma forma canônica de ${hex} reconverte exato — a gramática do ADR-001 não cobre este hex`);
-  }
-  candidatos.sort((x, y) => x.dist - y.dist || x.css.localeCompare(y.css));
-  return candidatos[0].css;
+  const noContrato = buscarNaPrecisao(alvo, exato, PRECISAO_CONTRATO);
+  if (noContrato) return { css: noContrato, precisao: 'contrato' };
+
+  const estendida = buscarNaPrecisao(alvo, exato, PRECISAO_ESTENDIDA);
+  if (estendida) return { css: estendida, precisao: 'estendida' };
+
+  throw new Error(
+    `nenhuma forma de ${hex} reconverte exato, nem na precisão estendida (D6 regra 3) — ` +
+      'a deriva não é aceitável, então o valor precisa de decisão de arquitetura',
+  );
+}
+
+/** A forma canônica. Ver `canonicalOklchDetalhe` para saber se ela estendeu. */
+export function canonicalOklch(hex: string): string {
+  return canonicalOklchDetalhe(hex).css;
 }
