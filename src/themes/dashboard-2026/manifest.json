@@ -4,18 +4,49 @@
   "description": "Tema de painel administrativo (SaaS) do ecossistema JETOOH: rail lateral escuro + card branco com respiro, roxo de marca, tipografia Plus Jakarta Sans, radius 0.625rem, modo claro + escuro. É o PRIMEIRO tema do design system; outros temas podem coexistir no mesmo pacote (ver ui/THEMES.md).",
   "status": "active",
   "ruler": "platform",
-  "consumers": ["platform", "admin", "devices"],
+  "consumers": [
+    "platform",
+    "admin",
+    "devices"
+  ],
   "package": "@jetooh/ui",
   "tokens": "./tokens.json",
   "casca": [
-    "AppRail", "AppSecondarySidebar", "AppSubNav", "ContentHeader", "AppFooter",
-    "PageFrame", "AppBottomNav", "AppMobileHeader", "UserMenu", "AppUserMenu"
+    "AppRail",
+    "AppSecondarySidebar",
+    "AppSubNav",
+    "ContentHeader",
+    "AppFooter",
+    "PageFrame",
+    "AppBottomNav",
+    "AppMobileHeader",
+    "UserMenu",
+    "AppUserMenu"
   ],
   "components": [
-    "Modal", "Avatar", "Button", "Badge", "Card", "Skeleton", "KpiCard", "Table",
-    "Toast", "StatusDot", "StatusBadge", "DeviceStatusBadge", "Switch", "EmptyState",
-    "Input", "Label", "Separator", "Tooltip", "DropdownMenu", "Select", "ConfirmDialog",
-    "AlertDialog", "DateRangePicker"
+    "Modal",
+    "Avatar",
+    "Button",
+    "Badge",
+    "Card",
+    "Skeleton",
+    "KpiCard",
+    "Table",
+    "Toast",
+    "StatusDot",
+    "StatusBadge",
+    "DeviceStatusBadge",
+    "Switch",
+    "EmptyState",
+    "Input",
+    "Label",
+    "Separator",
+    "Tooltip",
+    "DropdownMenu",
+    "Select",
+    "ConfirmDialog",
+    "AlertDialog",
+    "DateRangePicker"
   ],
   "cssContract": {
     "nota": "DUAS CAMADAS, DUAS REGRAS (JET-106 / ADR-001 D0). (1) ESCALA JETOOH (colors/colorsDark do tokens.json, hex): continua declaração-obrigatória — todo app consumidor DEFINE estes tokens no seu index.css, em claro e escuro, com os valores do tokens.json (régua = platform). (2) CAMADA SEMÂNTICA (semantic do tokens.json, oklch): o PACOTE ENVIA, em themes/dashboard-2026/theme.css. A app não precisa declarar nada; se quiser sobrescrever, o override vira entrada em overridesRegistrados. O @source do pacote gera as utilities no CSS de cada app.",
@@ -69,11 +100,27 @@
     },
     "tokensExternosTailwind": {
       "nota": "Defaults do Tailwind v4 usados direto pelos componentes. NÃO são tokens JETOOH, não entram no tokens.json e não são medidos pelo token-drift — qualquer app com Tailwind v4 já os tem.",
-      "lista": ["amber-50", "amber-200", "amber-500", "amber-700", "red-50", "red-200", "red-400", "red-500", "red-600", "red-700"]
+      "lista": [
+        "amber-50",
+        "amber-200",
+        "amber-500",
+        "amber-700",
+        "red-50",
+        "red-200",
+        "red-400",
+        "red-500",
+        "red-600",
+        "red-700"
+      ]
     },
     "tokensSoEmVariante": {
       "nota": "Tokens JETOOH que o pacote usa APENAS sob variante (hover:, focus:). A app precisa declará-los igual, mas eles ficam fora do token-drift porque a classe BARE não existe no CSS e não dá para medir por getComputedStyle — é a mesma exclusão que o _nota_cobertura do tokens.json descreve.",
-      "lista": ["rail-icon-hover", "rail-icon-hover-text", "roxo-hover", "secondary-text-hover"],
+      "lista": [
+        "rail-icon-hover",
+        "rail-icon-hover-text",
+        "roxo-hover",
+        "secondary-text-hover"
+      ],
       "valoresMedidos": {
         "rail-icon-hover": "#2a2a2a claro / #2a2a42 escuro (platform e devices concordam)",
         "roxo-hover": "#7a33ee (estático; platform emite literal, devices via --color-roxo-hover)",
@@ -83,7 +130,29 @@
     "camadaSemantica": {
       "desde": "JET-106",
       "adr": "ADR-001 rev. 4 (JET-104#document-adr-contrato-css) — D0 entrega, D1 formato, D1.1 base x semantica (referencia, nunca literal), D3 secondary-active-bg, D4 gray-400, D5 os 20 tokens + base estatica x de modo.",
-      "tokens": ["background", "foreground", "card", "card-foreground", "popover", "popover-foreground", "primary", "primary-foreground", "primary-hover", "primary-text", "secondary", "secondary-foreground", "muted", "muted-foreground", "accent", "accent-foreground", "destructive", "border", "input", "ring", "secondary-active-bg"],
+      "tokens": [
+        "background",
+        "foreground",
+        "card",
+        "card-foreground",
+        "popover",
+        "popover-foreground",
+        "primary",
+        "primary-foreground",
+        "primary-hover",
+        "primary-text",
+        "secondary",
+        "secondary-foreground",
+        "muted",
+        "muted-foreground",
+        "accent",
+        "accent-foreground",
+        "destructive",
+        "border",
+        "input",
+        "ring",
+        "secondary-active-bg"
+      ],
       "papeisDoPrimary": {
         "nota": "`--primary` é papel de PREENCHIMENTO, e só. Os outros dois papéis que o shadcn empilhava nele ganharam par próprio na JET-105 (decisão A, riders a e b), porque com o roxo da marca eles reprovam WCAG e com o neutro do scaffold não reprovavam — a divergência escondia o defeito.",
         "preenchimento": "--primary + --primary-foreground (rótulo branco, 4.73:1 nos dois modos)",
@@ -91,7 +160,21 @@
         "texto/link": "--primary-text — `text-primary` mede 4.30:1 sobre page-bg no claro e 3.78:1 sobre o card no escuro. Claro = grau `roxo-forte`, escuro = grau `roxo-claro`: o par troca de GRAU, e os dois graus sao estaticos",
         "guardado por": "src/components/contrast.test.tsx proíbe `text-primary` e `bg-primary/<alpha>` no pacote"
       },
-      "usadoPor": ["Button", "Badge", "Avatar", "Card", "Skeleton", "DropdownMenu", "Select", "Table", "Tooltip", "Separator", "SectionCard", "StatusBadge", "AppSecondarySidebar"],
+      "usadoPor": [
+        "Button",
+        "Badge",
+        "Avatar",
+        "Card",
+        "Skeleton",
+        "DropdownMenu",
+        "Select",
+        "Table",
+        "Tooltip",
+        "Separator",
+        "SectionCard",
+        "StatusBadge",
+        "AppSecondarySidebar"
+      ],
       "valores": "tokens.json → semantic (par claro/escuro por token, cada um como `var(--color-<grau>)` da camada base — a semantica nao escreve valor, D1.1)",
       "entrega": {
         "arquivo": "src/themes/dashboard-2026/theme.css → dist/theme.css",
@@ -101,7 +184,12 @@
       },
       "formato": {
         "regra": "D1 — cor completa em oklch() sempre, na CAMADA BASE, que e a unica que escreve valor (D1.1). `L` em % com ate 1 casa · `C` com 3 casas (ou o literal `0`) · `H` com ate 1 casa · cinza e `C 0` e `H 0`. A forma canonica de um grau sai do GERADOR da D6 (`canonicalOklch` em src/themes/oklch.ts), nao de arredondar: arredondar #34d399 de forma ingenua da #35d399, e sob D1.1 essa deriva de 1/255 reescreveria a cor de todo mundo que referencia o grau. A regra tem 3 passos. (1) `C` arredondado 0 -> `oklch(L% 0 0)`, com PRECEDENCIA: acromatico nao ganha matiz. (2) senao, entre as formas da gramatica numa vizinhanca de +/-4 passos por eixo em torno do arredondamento direto, a canonica e a de MENOR DISTANCIA EM OKLAB ao valor exato DENTRE as que reconvertem para o hex de origem (desempate numerico: menor L, menor C, menor H). (3) se nenhuma reconverte, a precisao DAQUELE grau vai a L 2 / C 4 / H 2 casas e a extensao fica registrada em `base[grau].precisaoEstendida` — aceitar a deriva nunca e opcao. Nenhum dos graus de hoje cai no passo 3, e o contract.test.ts e quem verifica isso.",
-        "proibido": ["tripla HSL crua (ex.: `262 100% 64%`)", "wrapper `hsl(var(--x))`", "valor literal de cor (`oklch(`, `hsl(`, `rgb(`, `#`) do lado direito de um token semantico — so `var(--color-*)` ou `color-mix()` sobre `var()` (D1.1)", "token semantico invariante de modo referenciando grau DE MODO da base (D5)"],
+        "proibido": [
+          "tripla HSL crua (ex.: `262 100% 64%`)",
+          "wrapper `hsl(var(--x))`",
+          "valor literal de cor (`oklch(`, `hsl(`, `rgb(`, `#`) do lado direito de um token semantico — so `var(--color-*)` ou `color-mix()` sobre `var()` (D1.1)",
+          "token semantico invariante de modo referenciando grau DE MODO da base (D5)"
+        ],
         "porque": "A tripla não é uma cor, é dado sem tipo: só vale dentro de um hsl() que alguém lembrou de escrever, e esquecer o wrapper não quebra o build — apaga a cor. Guardado por src/themes/contract.test.ts.",
         "roundTrip": "Sob D1.1 o round-trip mudou de camada e ficou mais forte: o oklch() emitido para cada grau da BASE reconverte EXATO para o hex de `colors`/`colorsDark`, nos dois modos, e o token semantico REFERENCIA o grau em vez de recopiar o valor — provado grau a grau e token a token no contract.test.ts. As 4 conversoes medidas que o ADR publica (#8b47ff, #f3edff, #161625, #6b7280) ficam travadas la como ancora independente da aritmetica."
       },
@@ -120,15 +208,211 @@
         "decisao": "JET-105 (done) — o platform e o admin declaram --primary: oklch(58.6% 0.253 294) e --primary-foreground: oklch(100% 0 0).",
         "porqueOFlipEBarato": "Varredura de Uma nos bundles de produção dos 3 apps: bg-primary aparece 4× em cada, e só dentro do cva de Button e Badge; text-primary 2×, só na variante link; border-primary e ring-primary, 0×. Nenhuma tela do platform usa bg-primary diretamente.",
         "migracaoPendente": {
-          "app": ["platform", "admin"],
-          "acao": "declarar --primary/--primary-foreground canônicos no index.css (ou só importar @jetooh/ui/theme.css e apagar a declaração local)",
-          "bloqueadaPor": "JET-73 (credencial de repo)",
-          "issue": "aberta como filha da JET-106"
+          "app": [
+            "platform",
+            "admin"
+          ],
+          "acao": "declarar --primary/--primary-foreground canonicos no index.css",
+          "estado": "ENTREGUE na JET-114 — platform PR #10, admin PR #3, aguardando merge.",
+          "bloqueadaPor": "JET-114 — pre-requisito de ORDEM: o pin de @jetooh/ui das duas apps e a5d09f5, anterior aos riders da decisao A. Nesse dist o Button/Badge ainda usam hover:bg-primary/80 (3.43:1 com o roxo) e a variante de link crua (4.30:1 claro / 3.78:1 escuro). O pin precisa subir para 57a403d ou mais novo ANTES do merge."
         }
       },
-      "naoMedido": {
-        "nota": "Os outros tokens semânticos do platform NÃO foram medidos contra o canônico — a JET-82 mediu --primary e --ring, e a JET-105 varreu USO de classe nos bundles, não VALOR de token. Ausência de entrada aqui significa 'não conferido', não 'confere'. A varredura de valor depende da JET-73 e tem issue própria.",
-        "issue": "JET-73 (credencial) → varredura de valor do platform"
+      "medido": {
+        "nota": "Varredura de VALOR dos 21 tokens semanticos de platform e admin contra o canonico, nos dois modos — entrega da JET-114. Substitui o `naoMedido`: para estas duas apps, ausencia de entrada em `entradas` agora significa CONFERIDO, nao \"nao conferido\".",
+        "issue": "JET-114",
+        "quando": "2026-08-13",
+        "como": "roundtrip.mjs (anexo da JET-113) sobre o src/index.css de cada app e o dist/theme.css deste pacote. Compara o valor EFETIVO — var() resolvido inclusive dentro de funcao, alpha normalizado entre as 4 escritas da mesma cor — em claro e escuro.",
+        "apps": [
+          "platform",
+          "admin"
+        ],
+        "resultadoIdentico": "platform e admin sao o MESMO scaffold shadcn: os 21 tokens medem IGUAL nos dois, token a token e modo a modo. Um resultado vale pelos dois.",
+        "placar": {
+          "IDENTICO": [
+            "primary",
+            "primary-foreground",
+            "ring"
+          ],
+          "DIVERGE": [
+            "accent",
+            "accent-foreground",
+            "background",
+            "border",
+            "card",
+            "card-foreground",
+            "destructive",
+            "foreground",
+            "input",
+            "muted",
+            "muted-foreground",
+            "popover",
+            "popover-foreground",
+            "secondary",
+            "secondary-foreground"
+          ],
+          "SO_NO_PACOTE": [
+            "primary-hover",
+            "primary-text",
+            "secondary-active-bg"
+          ],
+          "SO_NA_APP": []
+        },
+        "primary": "CONVERGIDO na JET-114 — platform PR #10, admin PR #3. Antes: #171717 claro / #E5E5E5 escuro. Depois: #8B47FF nos dois, rotulo #FFFFFF, 4.73:1.",
+        "ring": "ja era identico antes da JET-114 — medido na JET-82.",
+        "divergentes": {
+          "accent": {
+            "efetivo": {
+              "claro": "#f5f5f5",
+              "escuro": "#262626"
+            },
+            "canonico": {
+              "claro": "#ececed",
+              "escuro": "#1c1c30"
+            }
+          },
+          "accent-foreground": {
+            "efetivo": {
+              "claro": "#171717",
+              "escuro": "#fafafa"
+            },
+            "canonico": {
+              "claro": "#111827",
+              "escuro": "#f9fafb"
+            }
+          },
+          "background": {
+            "efetivo": {
+              "claro": "#ffffff",
+              "escuro": "#0a0a0a"
+            },
+            "canonico": {
+              "claro": "#ffffff",
+              "escuro": "#161625"
+            }
+          },
+          "border": {
+            "efetivo": {
+              "claro": "#e5e5e5",
+              "escuro": "#ffffff@10%"
+            },
+            "canonico": {
+              "claro": "#e5e5e7",
+              "escuro": "#252540"
+            }
+          },
+          "card": {
+            "efetivo": {
+              "claro": "#ffffff",
+              "escuro": "#171717"
+            },
+            "canonico": {
+              "claro": "#ffffff",
+              "escuro": "#161625"
+            }
+          },
+          "card-foreground": {
+            "efetivo": {
+              "claro": "#0a0a0a",
+              "escuro": "#fafafa"
+            },
+            "canonico": {
+              "claro": "#0b0f0c",
+              "escuro": "#f3f4f6"
+            }
+          },
+          "destructive": {
+            "efetivo": {
+              "claro": "#dc2626",
+              "escuro": "#ff6467"
+            },
+            "canonico": {
+              "claro": "#dc2626",
+              "escuro": "#f7453e"
+            }
+          },
+          "foreground": {
+            "efetivo": {
+              "claro": "#0a0a0a",
+              "escuro": "#fafafa"
+            },
+            "canonico": {
+              "claro": "#0b0f0c",
+              "escuro": "#f3f4f6"
+            }
+          },
+          "input": {
+            "efetivo": {
+              "claro": "#e5e5e5",
+              "escuro": "#ffffff@15%"
+            },
+            "canonico": {
+              "claro": "#85858c",
+              "escuro": "#6b6b8f"
+            }
+          },
+          "muted": {
+            "efetivo": {
+              "claro": "#f5f5f5",
+              "escuro": "#262626"
+            },
+            "canonico": {
+              "claro": "#ececed",
+              "escuro": "#1c1c30"
+            }
+          },
+          "muted-foreground": {
+            "efetivo": {
+              "claro": "#737373",
+              "escuro": "#a1a1a1"
+            },
+            "canonico": {
+              "claro": "#6b7280",
+              "escuro": "#9ca3af"
+            }
+          },
+          "popover": {
+            "efetivo": {
+              "claro": "#ffffff",
+              "escuro": "#171717"
+            },
+            "canonico": {
+              "claro": "#ffffff",
+              "escuro": "#161625"
+            }
+          },
+          "popover-foreground": {
+            "efetivo": {
+              "claro": "#0a0a0a",
+              "escuro": "#fafafa"
+            },
+            "canonico": {
+              "claro": "#0b0f0c",
+              "escuro": "#f3f4f6"
+            }
+          },
+          "secondary": {
+            "efetivo": {
+              "claro": "#f5f5f5",
+              "escuro": "#262626"
+            },
+            "canonico": {
+              "claro": "#ececed",
+              "escuro": "#1c1c30"
+            }
+          },
+          "secondary-foreground": {
+            "efetivo": {
+              "claro": "#171717",
+              "escuro": "#fafafa"
+            },
+            "canonico": {
+              "claro": "#111827",
+              "escuro": "#f9fafb"
+            }
+          }
+        },
+        "porqueNaoViraOverride": "Estes 15 sao o default do scaffold shadcn, nao uma decisao de ninguem: nao tem dono, motivo nem prazo, e registrar override para eles seria transformar divida em permissao — o mesmo erro que a JET-105 evitou no --primary. Ficam como MIGRACAO PENDENTE ate uma decisao de cor, e o token-drift sob D0.3 deve acusar os 15 nas duas apps.",
+        "cuidadoAoImportar": "Por isso o caminho curto \"apagar a declaracao local e trocar por @import @jetooh/ui/theme.css\" NAO e migracao de formato em platform/admin: mudaria 15 tokens x 2 modos de cor. Mesmo padrao que a JET-113 mediu no devices (2 de 19 identicos)."
       }
     },
     "lacunasAbertas": {
@@ -156,10 +440,26 @@
       "injetar o <meta name=\"theme-color\"> a partir de BOOT_COLORS.ring no build, em vez do hex escrito à mão no index.html."
     ],
     "mapeamento": {
-      "bg": { "literal": "#0B0F0C", "grau": "colors.preto", "onde": "background do #initial-loading e do <BrandLoading />" },
-      "ring": { "literal": "#8B47FF", "grau": "colors.roxo", "onde": "border-top-color do anel e <meta name=\"theme-color\"> das 3 apps" },
-      "ringTrail": { "literal": "rgba(139, 71, 255, 0.3)", "grau": "colors.roxo a 30%", "onde": "border-right-color do anel" },
-      "logo": { "literal": "#ffffff", "grau": "colors['branco-fixo']", "onde": "fill do logo" }
+      "bg": {
+        "literal": "#0B0F0C",
+        "grau": "colors.preto",
+        "onde": "background do #initial-loading e do <BrandLoading />"
+      },
+      "ring": {
+        "literal": "#8B47FF",
+        "grau": "colors.roxo",
+        "onde": "border-top-color do anel e <meta name=\"theme-color\"> das 3 apps"
+      },
+      "ringTrail": {
+        "literal": "rgba(139, 71, 255, 0.3)",
+        "grau": "colors.roxo a 30%",
+        "onde": "border-right-color do anel"
+      },
+      "logo": {
+        "literal": "#ffffff",
+        "grau": "colors['branco-fixo']",
+        "onde": "fill do logo"
+      }
     },
     "lacunas": {
       "fundoDoSplash": {
