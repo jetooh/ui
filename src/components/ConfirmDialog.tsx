@@ -35,6 +35,11 @@ export function ConfirmDialog({
       onClose={onClose}
       footer={
         <>
+          {/* EXCEÇÃO REGISTRADA (JET-102): "Cancelar" fica em `gray-200`. O
+              rótulo de texto (gray-600 = 7.56:1) identifica o botão, então a
+              borda não é informação exigida pela WCAG 1.4.11 — e escurecê-la
+              colocaria a ação secundária competindo com a primária (sólida),
+              achatando a hierarquia justo no diálogo destrutivo. */}
           <Button
             variant="outline"
             size="default"

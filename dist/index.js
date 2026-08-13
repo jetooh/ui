@@ -202,12 +202,12 @@ var buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/80",
+        default: "bg-primary text-primary-foreground hover:bg-primary-hover",
         outline: "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
         secondary: "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
         ghost: "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
         destructive: "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
-        link: "text-primary underline-offset-4 hover:underline"
+        link: "text-primary-text underline-offset-4 hover:underline"
       },
       // `pointer-coarse:` = só em telas de TOQUE (celular/tablet): os tamanhos
       // "normais" (default/lg/icon/icon-lg) sobem para 40px de alvo, atendendo
@@ -256,12 +256,12 @@ var badgeVariants = cva2(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
+        default: "bg-primary text-primary-foreground [a]:hover:bg-primary-hover",
         secondary: "bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80",
         destructive: "bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive/20",
         outline: "border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground",
         ghost: "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
-        link: "text-primary underline-offset-4 hover:underline"
+        link: "text-primary-text underline-offset-4 hover:underline"
       }
     },
     defaultVariants: {
@@ -455,6 +455,21 @@ function TabLoading() {
   return /* @__PURE__ */ jsx5("div", { className: "flex items-center justify-center py-16", children: /* @__PURE__ */ jsx5("span", { className: "inline-block h-6 w-6 animate-spin rounded-full border-2 border-roxo border-t-transparent" }) });
 }
 
+// src/themes/boot.ts
+var BOOT_COLORS = {
+  /** Fundo do splash de boot. `colors.preto` (valor do modo claro, ver ressalva). */
+  bg: "#0B0F0C",
+  /** Anel de progresso e cor de marca do `<meta name="theme-color">`. `colors.roxo`. */
+  ring: "#8B47FF",
+  /** Rastro do anel: `ring` a 30%. Escrito em rgba() porque o anel gira antes do CSS da app. */
+  ringTrail: "rgba(139, 71, 255, 0.3)",
+  /** Preenchimento do logo. `colors['branco-fixo']` — branco de verdade, nos dois modos. */
+  logo: "#ffffff"
+};
+var BOOT_THEME_STORAGE_KEY = "theme";
+var BOOT_THEME_DARK_VALUE = "dark";
+var BOOT_LOGO_PATH = "M247.26,29.65C67.56,37.31-33.89,241.82,72.17,388.72c104.35,144.53,327.7,117.1,394.22-47.79C527.76,188.81,410.5,22.69,247.26,29.65ZM179.39,365.5c-33.69,1.47-64.42-21.23-76.28-52.12-.85-2.2-4.64-12.97-4.64-14.47v-95.8c32.69-.77,63.54,21.36,75.31,51.4,1.43,3.64,5.61,16.95,5.61,20.24v90.75ZM286.15,296.11c0,2.68-3.87,14.28-5.05,17.43-11.34,30.28-43.02,53.37-75.87,51.97v-173.91c0-2.38,3.44-13.47,4.48-16.31,11.01-30.16,43.87-54.03,76.43-52.53v173.35ZM391.79,365.5c-31.67,1.6-63.55-20.91-75.16-49.86-1.27-3.18-5.75-16.86-5.75-19.53v-92.15c2.97-1.55,8.55-.67,12.01-.21,28.96,3.85,54.16,24.92,64.26,52.05.93,2.5,4.64,13.68,4.64,15.59v94.12Z";
+
 // src/components/BrandLoading.tsx
 import { jsx as jsx6, jsxs as jsxs3 } from "react/jsx-runtime";
 function BrandLoading() {
@@ -462,16 +477,16 @@ function BrandLoading() {
     "div",
     {
       className: "fixed inset-0 z-[99999] flex items-center justify-center",
-      style: { background: "#0B0F0C" },
+      style: { background: BOOT_COLORS.bg },
       children: /* @__PURE__ */ jsxs3("div", { className: "relative flex items-center justify-center", children: [
         /* @__PURE__ */ jsx6(
           "div",
           {
             className: "absolute h-28 w-28 animate-spin rounded-full border-[3px] border-transparent",
-            style: { borderTopColor: "#8B47FF", borderRightColor: "rgba(139,71,255,0.3)" }
+            style: { borderTopColor: BOOT_COLORS.ring, borderRightColor: BOOT_COLORS.ringTrail }
           }
         ),
-        /* @__PURE__ */ jsx6("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 512 512", className: "h-24 w-24 fill-white", children: /* @__PURE__ */ jsx6("path", { d: "M247.26,29.65C67.56,37.31-33.89,241.82,72.17,388.72c104.35,144.53,327.7,117.1,394.22-47.79C527.76,188.81,410.5,22.69,247.26,29.65ZM179.39,365.5c-33.69,1.47-64.42-21.23-76.28-52.12-.85-2.2-4.64-12.97-4.64-14.47v-95.8c32.69-.77,63.54,21.36,75.31,51.4,1.43,3.64,5.61,16.95,5.61,20.24v90.75ZM286.15,296.11c0,2.68-3.87,14.28-5.05,17.43-11.34,30.28-43.02,53.37-75.87,51.97v-173.91c0-2.38,3.44-13.47,4.48-16.31,11.01-30.16,43.87-54.03,76.43-52.53v173.35ZM391.79,365.5c-31.67,1.6-63.55-20.91-75.16-49.86-1.27-3.18-5.75-16.86-5.75-19.53v-92.15c2.97-1.55,8.55-.67,12.01-.21,28.96,3.85,54.16,24.92,64.26,52.05.93,2.5,4.64,13.68,4.64,15.59v94.12Z" }) })
+        /* @__PURE__ */ jsx6("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 512 512", className: "h-24 w-24 fill-white", children: /* @__PURE__ */ jsx6("path", { d: BOOT_LOGO_PATH }) })
       ] })
     }
   );
@@ -713,7 +728,7 @@ function useToast() {
   };
 }
 var ICON = {
-  success: /* @__PURE__ */ jsx9(CheckCircle2, { size: 16, strokeWidth: 1.75, className: "shrink-0 text-verde" }),
+  success: /* @__PURE__ */ jsx9(CheckCircle2, { size: 16, strokeWidth: 1.75, className: "shrink-0 text-verde-dark" }),
   destructive: /* @__PURE__ */ jsx9(AlertCircle, { size: 16, strokeWidth: 1.75, className: "shrink-0 text-status-critico" }),
   info: /* @__PURE__ */ jsx9(Info, { size: 16, strokeWidth: 1.75, className: "shrink-0 text-roxo" }),
   default: null
@@ -780,11 +795,28 @@ function StatusDot({ color, pulse = false, size = "md", className }) {
 // src/components/StatusBadge.tsx
 import { jsx as jsx11, jsxs as jsxs7 } from "react/jsx-runtime";
 var TONES = {
+  // D8 (JET-120): o dot fica AO LADO do rótulo ("Online", "Ativo"), e é o rótulo
+  // que identifica o estado — a marca não é "informação necessária" e a 1.4.11
+  // não a exige, mesma exceção de controle rotulado da JET-102. Por isso ele
+  // segue no grau de PREENCHIMENTO (`bg-verde`), enquanto o `StatusDot` sozinho
+  // e o ícone de sucesso do Toast passaram a `verde-dark`. Escurecer o dot aqui
+  // só sujaria a pílula, e o rótulo dela é `text-verde-dark`.
+  //   D9 (JET-124): a lavagem `bg-verde/10` é TRANSLÚCIDA e esta pílula aceita
+  // `className`, então ela não fica presa ao card branco — resolvida sobre as
+  // três superfícies do tema (branco / page-bg / gray-100) o rótulo media 5.13 /
+  // 4.70 / 4.41 e reprovava a 1.4.3 na terceira. O grau de legibilidade desceu
+  // um passo na rampa emerald (#047857 → #065f46) e agora mede 7.19 / 6.58 /
+  // 6.18. A exceção do dot depende disso: é o rótulo que carrega o estado.
   online: { dot: "bg-verde", pill: "bg-verde/10 text-verde-dark border-verde/20", pulse: true },
   offline: { dot: "bg-red-400", pill: "bg-red-50 text-red-700 border-red-200", pulse: false },
   pairing: { dot: "bg-roxo", pill: "bg-roxo/10 text-roxo border-roxo/20", pulse: true },
   warning: { dot: "bg-amber-500", pill: "bg-amber-50 text-amber-700 border-amber-200", pulse: false },
-  neutral: { dot: "bg-gray-400", pill: "bg-gray-100 text-gray-600 border-gray-200", pulse: false }
+  // D4 (JET-106): o dot do badge CARREGA estado — é conteúdo não-textual, mínimo
+  // 3:1 por WCAG 1.4.11. O cinza 400 cru media 2.20:1 sobre a pílula (gray-100) e
+  // reprovava. `bg-muted-foreground` é o token semântico que expõe o grau
+  // gray-500 (oklch(55.1% 0.023 264)): 4.09:1 claro / 6.57:1 escuro sobre a
+  // pílula. O cinza 400 continua PROIBIDO e fora do contrato — ver contrast.test.tsx.
+  neutral: { dot: "bg-muted-foreground", pill: "bg-gray-100 text-gray-600 border-gray-200", pulse: false }
 };
 function StatusBadge({
   label,
@@ -1022,7 +1054,7 @@ function DateRangePicker({ value, onApply }) {
       {
         onClick: openPicker,
         title: `vs. ${compareLabel(value.compare)} (${fmtRange(comp.from, comp.to)})`,
-        className: "inline-flex max-w-full items-center gap-2 rounded-lg border border-gray-200 bg-branco px-3 py-1.5 text-[13px] text-gray-600 transition-colors hover:border-roxo hover:text-preto pointer-coarse:min-h-10",
+        className: "inline-flex max-w-full items-center gap-2 rounded-lg border border-borda-controle bg-branco px-3 py-1.5 text-[13px] text-gray-600 transition-colors hover:border-roxo hover:text-preto pointer-coarse:min-h-10",
         children: [
           /* @__PURE__ */ jsx13(Calendar, { size: 14, strokeWidth: 1.5, className: "shrink-0 text-gray-500" }),
           /* @__PURE__ */ jsx13("span", { className: "truncate font-medium text-preto", children: presetLabel(value.preset) }),
@@ -1067,6 +1099,15 @@ function DateRangePicker({ value, onApply }) {
             tab === "presets" ? (
               // 1 coluna em telas estreitas (2 colunas de ~150px cortavam
               // rótulos como "Trimestre passado"); `min-h` só a partir de sm.
+              // EXCEÇÃO REGISTRADA (JET-102, decisão de design): os cartões de
+              // opção — estes e os de "Comparar com" abaixo — ficam em
+              // `gray-200`. Cada cartão tem ícone (gray-500, 4.83:1) e rótulo
+              // (gray-600, 7.56:1): é o RÓTULO que identifica o controle, então
+              // a borda não é informação exigida pela WCAG 1.4.11. E o estado
+              // selecionado é `border-roxo` + `bg-roxo/5` + peso — escurecer as
+              // bordas não-selecionadas encolheria justamente o contraste entre
+              // selecionado e não-selecionado, que É exigido pela 1.4.11.
+              // Reavaliar só se o cartão perder o rótulo de texto.
               /* @__PURE__ */ jsx13("div", { className: "grid grid-cols-1 content-start gap-2.5 p-5 sm:min-h-[320px] sm:grid-cols-2", children: PRESETS.map((p) => {
                 const Ic = PRESET_ICONS[p.id] ?? Calendar;
                 const on = draft.preset === p.id;
@@ -1096,7 +1137,7 @@ function DateRangePicker({ value, onApply }) {
                     value: draft.from,
                     max: draft.to || void 0,
                     onChange: (e) => setDraft((d) => ({ ...d, preset: "custom", from: e.target.value })),
-                    className: "h-14 w-full rounded-xl border border-gray-200 px-4 text-[18px] font-bold text-preto focus:border-roxo focus:outline-none focus:ring-2 focus:ring-roxo/20"
+                    className: "h-14 w-full rounded-xl border border-borda-controle px-4 text-[18px] font-bold text-preto focus:border-roxo focus:outline-none focus:ring-2 focus:ring-roxo/20"
                   }
                 )
               ] }),
@@ -1112,7 +1153,7 @@ function DateRangePicker({ value, onApply }) {
                     value: draft.to,
                     min: draft.from || void 0,
                     onChange: (e) => setDraft((d) => ({ ...d, preset: "custom", to: e.target.value })),
-                    className: "h-14 w-full rounded-xl border border-gray-200 px-4 text-[18px] font-bold text-preto focus:border-roxo focus:outline-none focus:ring-2 focus:ring-roxo/20"
+                    className: "h-14 w-full rounded-xl border border-borda-controle px-4 text-[18px] font-bold text-preto focus:border-roxo focus:outline-none focus:ring-2 focus:ring-roxo/20"
                   }
                 )
               ] }),
@@ -1745,7 +1786,7 @@ var Input = React2.forwardRef(({ className, type, ...props }, ref) => {
         // Em telas de toque: `min-h-10` (40px de alvo, o py-2 dá 38) e
         // `text-[16px]` — abaixo de 16px o Safari do iOS DÁ ZOOM ao focar o
         // campo, e o zoom desloca/estoura o layout da página.
-        "flex w-full rounded-lg border border-gray-200 bg-branco px-3 py-2 text-[14px] text-preto outline-hidden transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:min-h-10 pointer-coarse:text-[16px]",
+        "flex w-full rounded-lg border border-borda-controle bg-branco px-3 py-2 text-[14px] text-preto outline-hidden transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:min-h-10 pointer-coarse:text-[16px]",
         className
       ),
       ref,
@@ -1809,7 +1850,7 @@ function DateTimeField({
         {
           size: 15,
           strokeWidth: 1.75,
-          className: "pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+          className: "pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
         }
       ),
       /* @__PURE__ */ jsx26(
@@ -1826,7 +1867,7 @@ function DateTimeField({
         }
       )
     ] }),
-    hint != null && /* @__PURE__ */ jsx26("p", { className: "text-[12px] text-gray-400", children: hint })
+    hint != null && /* @__PURE__ */ jsx26("p", { className: "text-[12px] text-gray-500", children: hint })
   ] });
 }
 
@@ -2158,7 +2199,7 @@ var SelectTrigger = React4.forwardRef(({ className, children, ...props }, ref) =
   {
     ref,
     className: cn(
-      "flex w-full items-center justify-between rounded-lg border border-gray-200 bg-branco px-3 py-2 text-[14px] text-preto outline-hidden transition-colors placeholder:text-gray-400 focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+      "flex w-full items-center justify-between rounded-lg border border-borda-controle bg-branco px-3 py-2 text-[14px] text-preto outline-hidden transition-colors placeholder:text-gray-500 focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
       className
     ),
     ...props,
@@ -2265,7 +2306,7 @@ var NativeSelect = React5.forwardRef(
         className: cn(
           // Mesmo tratamento de toque do Input: 40px de alvo e fonte 16px
           // (evita o zoom automático do Safari iOS ao focar o campo).
-          "flex w-full appearance-none items-center rounded-lg border border-gray-200 bg-branco px-3 py-2 pr-9 text-[14px] text-preto outline-hidden transition-colors focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:min-h-10 pointer-coarse:text-[16px]",
+          "flex w-full appearance-none items-center rounded-lg border border-borda-controle bg-branco px-3 py-2 pr-9 text-[14px] text-preto outline-hidden transition-colors focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:min-h-10 pointer-coarse:text-[16px]",
           className
         ),
         ...props,
@@ -2410,6 +2451,9 @@ var AlertDialogCancel = React6.forwardRef(({ className, ...props }, ref) => /* @
     ref,
     className: cn(
       buttonVariants({ variant: "outline" }),
+      // EXCEÇÃO REGISTRADA (JET-102): mesma do `ConfirmDialog` — o rótulo de
+      // texto (gray-600 = 7.56:1) já identifica o botão, então a borda não é
+      // informação exigida pela WCAG 1.4.11 e `gray-200` fica.
       "mt-2 border-gray-200 px-4 text-[13px] font-medium text-gray-600 hover:border-gray-300 hover:text-preto sm:mt-0",
       className
     ),
@@ -2424,7 +2468,7 @@ function SectionCard({ icon: Icon2, title, action, children, className, bodyClas
   return /* @__PURE__ */ jsxs25(Card, { className: cn("gap-0 overflow-hidden p-0", className), children: [
     /* @__PURE__ */ jsxs25(CardHeader, { className: "items-center border-b border-gray-100 py-4", children: [
       /* @__PURE__ */ jsxs25(CardTitle, { className: "flex items-center gap-2 text-preto", children: [
-        Icon2 && /* @__PURE__ */ jsx34(Icon2, { size: 16, strokeWidth: 1.5, className: "text-gray-400" }),
+        Icon2 && /* @__PURE__ */ jsx34(Icon2, { size: 16, strokeWidth: 1.5, className: "text-muted-foreground" }),
         title
       ] }),
       action && /* @__PURE__ */ jsx34(CardAction, { className: "self-center", children: action })
@@ -2507,7 +2551,7 @@ function DetailHeader({ onBack, backLabel = "Voltar", title, titleAdornment, sta
           variant: "outline",
           size: "icon",
           "aria-label": backLabel,
-          className: "h-8 w-8 shrink-0 border-gray-200 pointer-coarse:h-10 pointer-coarse:w-10",
+          className: "h-8 w-8 shrink-0 border-borda-controle pointer-coarse:h-10 pointer-coarse:w-10",
           onClick: onBack,
           children: /* @__PURE__ */ jsx36(ArrowLeft, { size: 16, strokeWidth: 1.5 })
         }
@@ -2544,6 +2588,10 @@ export {
   AvatarGroup,
   AvatarGroupCount,
   AvatarImage,
+  BOOT_COLORS,
+  BOOT_LOGO_PATH,
+  BOOT_THEME_DARK_VALUE,
+  BOOT_THEME_STORAGE_KEY,
   Badge,
   BrandLoading,
   Button,

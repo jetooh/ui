@@ -101,6 +101,9 @@ const AlertDialogCancel = React.forwardRef<
     ref={ref}
     className={cn(
       buttonVariants({ variant: 'outline' }),
+      // EXCEÇÃO REGISTRADA (JET-102): mesma do `ConfirmDialog` — o rótulo de
+      // texto (gray-600 = 7.56:1) já identifica o botão, então a borda não é
+      // informação exigida pela WCAG 1.4.11 e `gray-200` fica.
       'mt-2 border-gray-200 px-4 text-[13px] font-medium text-gray-600 hover:border-gray-300 hover:text-preto sm:mt-0',
       className
     )}

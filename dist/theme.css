@@ -1,0 +1,165 @@
+/* Tema dashboard-2026 — ENVIADO pelo @jetooh/ui (JET-106 · ADR-001 rev. 4).
+ *
+ * D0.1: o contrato deixou de ser "declaração obrigatória por app" e passou a ser
+ * "defaults-enviados, override-registrado". A app que só faz
+ *
+ *     @import "@jetooh/ui/theme.css";
+ *
+ * recebe o tema inteiro no valor canônico. Sem este arquivo, a app que não
+ * declara herda o default do shadcn (--primary neutro, chroma 0) ou do Tailwind
+ * v4 — que é exatamente a origem da divergência da JET-78.
+ *
+ * DUAS CAMADAS, e a ordem entre elas é a regra (D1.1):
+ *
+ *   1. CAMADA BASE (`@theme` + `.dark` abaixo) — a escala JETOOH. É o ÚNICO
+ *      lugar deste repo em que um valor de cor aparece escrito.
+ *   2. CAMADA SEMÂNTICA (os 20 + `secondary-active-bg`) — nunca escreve valor.
+ *      Cada token é `var(--color-<grau>)` da base, ou um `color-mix()` sobre
+ *      `var()`. Um literal aqui é uma SEGUNDA cópia do valor da marca ao lado
+ *      da que já existe na base: divergem no primeiro ajuste, e ninguém
+ *      descobre até a tela sair errada. É a máquina que produziu a JET-78, e
+ *      src/themes/contract.test.ts reprova o literal estaticamente.
+ *
+ * FONTE ÚNICA dos valores: ./tokens.json. Os hex de `colors`/`colorsDark` são a
+ * origem; o oklch() daqui é DERIVADO deles (`canonicalOklch` em ../oklch.ts) e o
+ * contract.test.ts falha se um único dígito sair de sincronia, nos dois modos.
+ * Não edite números aqui — edite o tokens.json.
+ *
+ * Formato (D1): cor completa em oklch(), sempre. Tripla HSL crua e
+ * `hsl(var(--x))` estão proibidos no contrato e reprovam no contract.test.ts.
+ */
+
+/* ------------------------------------------------------------------------- *
+ * CAMADA BASE — escala JETOOH. Único lugar com valor de cor escrito.
+ *
+ * `@theme` (não `inline`): as utilities da escala (`bg-roxo`, `text-gray-500`,
+ * `border-borda-controle`, …) compilam para `var(--color-x)`, então o bloco
+ * `.dark` abaixo troca o valor em tempo de execução, sem recompilar nada.
+ * ------------------------------------------------------------------------- */
+@theme {
+  --color-branco: oklch(100% 0 0);
+  --color-branco-fixo: oklch(100% 0 0);
+  --color-preto: oklch(16.3% 0.009 152.9);
+  --color-page-bg: oklch(96.7% 0.001 286.4);
+  --color-borda-controle: oklch(61.9% 0.010 286.1);
+  --color-roxo: oklch(58.6% 0.253 294);
+  --color-roxo-forte: oklch(48.7% 0.243 292);
+  --color-roxo-claro: oklch(65.3% 0.197 297.5);
+  --color-verde: oklch(77.3% 0.154 163.1);
+  --color-verde-dark: oklch(43.2% 0.087 166.6);
+  --color-status-critico: oklch(57.7% 0.215 27.3);
+  --color-status-critico-texto: oklch(57.7% 0.215 27.3);
+  --color-secondary-active: oklch(53.3% 0.254 292.8);
+  --color-secondary-text: oklch(37.3% 0.031 259.7);
+  --color-gray-50: oklch(96.7% 0.001 286.4);
+  --color-gray-100: oklch(94.3% 0.001 286.4);
+  --color-gray-200: oklch(92.2% 0.003 286.3);
+  --color-gray-300: oklch(86.7% 0.003 286.3);
+  --color-gray-500: oklch(55.1% 0.023 264.4);
+  --color-gray-600: oklch(44.6% 0.026 256.8);
+  --color-gray-900: oklch(21% 0.032 264.7);
+  --color-rail-bg: oklch(22.6% 0 0);
+  --color-rail-active-bg: oklch(37.3% 0.031 259.7);
+  --color-rail-active-border: oklch(44.6% 0.026 256.8);
+}
+
+/* Base DE MODO: só os graus cujo valor escuro DIFERE do claro. Grau estático
+ * (`roxo`, `roxo-forte`, `roxo-claro`, `branco-fixo`, `rail-active-*`) não
+ * reaparece aqui — repetir o mesmo valor seria a segunda cópia que a D1.1
+ * proíbe, com o agravante de parecer uma decisão de modo. */
+.dark {
+  --color-branco: oklch(20.8% 0.030 283.5);
+  --color-preto: oklch(96.7% 0.003 264.5);
+  --color-page-bg: oklch(15.6% 0.023 283.4);
+  --color-borda-controle: oklch(54.2% 0.056 284.4);
+  --color-verde-dark: oklch(77.3% 0.154 163.1);
+  --color-status-critico-texto: oklch(65% 0.215 27.3);
+  --color-secondary-active: oklch(70.6% 0.167 297.5);
+  --color-secondary-text: oklch(92.8% 0.006 264.5);
+  --color-gray-50: oklch(20.8% 0.030 283.5);
+  --color-gray-100: oklch(23.7% 0.038 283.1);
+  --color-gray-200: oklch(27.8% 0.049 282.7);
+  --color-gray-300: oklch(34.4% 0.056 283.1);
+  --color-gray-500: oklch(71.4% 0.019 261.3);
+  --color-gray-600: oklch(87.2% 0.009 258.3);
+  --color-gray-900: oklch(98.5% 0.002 247.8);
+  --color-rail-bg: oklch(24.7% 0.041 282.9);
+}
+
+/* ------------------------------------------------------------------------- *
+ * CAMADA SEMÂNTICA — referência, nunca literal.
+ * ------------------------------------------------------------------------- */
+
+/* `inline` de propósito: emite `--color-x: var(--x)` em vez de congelar o valor,
+ * então a utility resolve o que estiver na cascata e o par `.dark` funciona. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-text: var(--primary-text);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-secondary-active-bg: var(--secondary-active-bg);
+}
+
+/* Um token cuja REFERÊNCIA é a mesma nos dois modos é declarado uma vez, em
+ * `:root, .dark`. São dois casos diferentes com a mesma escrita, e é a base que
+ * os separa:
+ *   · `--background: var(--color-branco)` VARIA — o grau `branco` é DE MODO
+ *     (#FFFFFF claro, #161625 escuro), então a troca acontece na camada de
+ *     baixo, que é onde ela deve acontecer;
+ *   · `--primary-foreground: var(--color-branco-fixo)` NÃO varia — o grau é
+ *     ESTÁTICO, e é essa diferença que o guard de modo do contract.test.ts
+ *     cobra: token invariante de modo (`invarianteDeModo` no tokens.json) só
+ *     pode referenciar base estática. Escrever `var(--color-branco)` aqui daria,
+ *     no escuro, rótulo #161625 sobre o roxo = 3.78:1. */
+:root,
+.dark {
+  --background: var(--color-branco);
+  --foreground: var(--color-preto);
+  --card: var(--color-branco);
+  --card-foreground: var(--color-preto);
+  --popover: var(--color-branco);
+  --popover-foreground: var(--color-preto);
+  --primary: var(--color-roxo);
+  --primary-foreground: var(--color-branco-fixo);
+  --primary-hover: var(--color-roxo-forte);
+  --secondary: var(--color-gray-100);
+  --secondary-foreground: var(--color-gray-900);
+  --muted: var(--color-gray-100);
+  --muted-foreground: var(--color-gray-500);
+  --accent: var(--color-gray-100);
+  --accent-foreground: var(--color-gray-900);
+  --destructive: var(--color-status-critico-texto);
+  --border: var(--color-gray-200);
+  --input: var(--color-borda-controle);
+  --ring: var(--color-roxo);
+}
+
+/* Os únicos dois que trocam de REFERÊNCIA com o modo. `--primary-text` troca de
+ * grau (os dois são estáticos) porque nenhum dos dois passa nos dois modos:
+ * `roxo-forte` mede 2.47:1 no escuro e `roxo-claro` 3.46:1 no claro. */
+:root {
+  --primary-text: var(--color-roxo-forte);
+  /* D3: derivado de --primary, não hex avulso — acompanha o roxo sozinho. */
+  --secondary-active-bg: color-mix(in oklch, var(--primary) 10%, var(--background));
+}
+
+.dark {
+  --primary-text: var(--color-roxo-claro);
+  --secondary-active-bg: color-mix(in oklch, var(--primary) 15%, transparent);
+}

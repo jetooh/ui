@@ -25,11 +25,15 @@ export function DetailHeader({ onBack, backLabel = 'Voltar', title, titleAdornme
     // linhas. A ação ocupa linha própria no mobile (`w-full`) e volta à direita
     // a partir de `sm`.
     <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+      {/* Voltar em `borda-controle` (JET-102): único controle ícone-só do
+          header. Sem rótulo, o alvo de 32px é a CAIXA, não a seta — e em
+          `gray-200` (1.26:1) a caixa some sobre o branco. É 1 elemento por
+          tela, então escurecer não adiciona peso visual nenhum. */}
       <Button
         variant="outline"
         size="icon"
         aria-label={backLabel}
-        className="h-8 w-8 shrink-0 border-gray-200 pointer-coarse:h-10 pointer-coarse:w-10"
+        className="h-8 w-8 shrink-0 border-borda-controle pointer-coarse:h-10 pointer-coarse:w-10"
         onClick={onBack}
       >
         <ArrowLeft size={16} strokeWidth={1.5} />

@@ -8,12 +8,20 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
-    }
+    },
+    "./theme.css": "./dist/theme.css",
+    "./tokens.json": "./dist/tokens.json",
+    "./manifest.json": "./dist/manifest.json",
+    "./theme-init.js": "./dist/theme-init.js",
+    "./boot.css": "./dist/boot.css",
+    "./boot.html": "./dist/boot.html"
   },
   "files": [
     "dist"
   ],
-  "sideEffects": false,
+  "sideEffects": [
+    "**/*.css"
+  ],
   "publishConfig": {
     "access": "public"
   },
