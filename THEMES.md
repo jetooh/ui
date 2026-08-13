@@ -44,6 +44,37 @@ ui/
    (valores da régua = `platform`). Consumir a casca/componentes de `@jetooh/ui`.
 4. Rodar `node scripts/token-drift.mjs` (no pilot) — não pode divergir do manifesto.
 
+## Acrescentar um token ao tema — a app vem PRIMEIRO
+
+Token novo no `tokens.json` é mudança de **contrato**: a utility (`border-x`,
+`bg-x`, …) só existe no CSS de uma app depois que ela declara `--color-x` no seu
+`index.css`. Por isso a ordem do rollout é fixa — inverter a ordem deixa o
+componente com a classe apontando para uma variável inexistente (no Tailwind v4
+a borda cai para o `currentColor`, ou seja, uma borda quase preta no campo):
+
+1. Token entra no `tokens.json` (claro **e** escuro) e é documentado em
+   `manifest.json → cssContract.tokensNovos` (valor, motivo, ordem de rollout).
+2. **Cada app consumidora** declara `--color-<token>` no `index.css`, nos dois
+   modos, com os valores do `tokens.json`.
+3. Só então o pacote passa a usar a classe e as apps sobem a versão do
+   `@jetooh/ui` (`github:jetooh/ui#<sha>`).
+4. `node scripts/token-drift.mjs` (no pilot) valida claro+escuro em cada app.
+
+> Lembrete: `dist/` é versionado e é o que o Tailwind das apps varre pelo
+> `@source`. Mudou classe em `src/`, **rode `npm run build`** — sem o `dist`
+> regenerado a correção não chega em app nenhuma.
+
+### Tokens de borda: `borda-controle` × `gray-200`
+
+| Uso | Token | Por quê |
+|-----|-------|---------|
+| Borda que **delimita um controle** (`Input`, `Select`, `NativeSelect`, `DateTimeField`, gatilho e campos de data do `DateRangePicker`) | `borda-controle` (`#8b8b93` claro / `#6b6b8f` escuro) | Campo branco dentro de card branco: a borda é a única delimitação da área clicável e WCAG 1.4.11 exige **3:1**. Mede 3.38:1 sobre `branco` e 3.08:1 sobre `page-bg` (escuro: 3.51:1 e 3.84:1). |
+| Borda de **superfície** (card, `PageFrame`, `Modal`, `Toast`, divisores) | `gray-200` | Não delimita controle — 3:1 não é exigido; escurecer sujaria a tela à toa. `gray-200` mede 1.26:1 sobre `branco`. |
+
+Guarda-corpo: `src/components/contrast.test.tsx` calcula os contrastes a partir
+do `tokens.json` (claro e escuro) e reprova se um controle voltar a se delimitar
+com `border-gray-*` sobre `bg-branco`.
+
 ## Criar um tema NOVO (quando surgir um 2º tema)
 
 Enquanto houver 1 tema, ele fica na raiz. **Ao introduzir o 2º tema**, migrar para

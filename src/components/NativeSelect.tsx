@@ -26,7 +26,7 @@ export const NativeSelect = React.forwardRef<HTMLSelectElement, NativeSelectProp
         className={cn(
           // Mesmo tratamento de toque do Input: 40px de alvo e fonte 16px
           // (evita o zoom automático do Safari iOS ao focar o campo).
-          'flex w-full appearance-none items-center rounded-lg border border-gray-200 bg-branco px-3 py-2 pr-9 text-[14px] text-preto outline-hidden transition-colors focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:min-h-10 pointer-coarse:text-[16px]',
+          'flex w-full appearance-none items-center rounded-lg border border-borda-controle bg-branco px-3 py-2 pr-9 text-[14px] text-preto outline-hidden transition-colors focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:min-h-10 pointer-coarse:text-[16px]',
           className,
         )}
         {...props}

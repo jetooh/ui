@@ -1022,7 +1022,7 @@ function DateRangePicker({ value, onApply }) {
       {
         onClick: openPicker,
         title: `vs. ${compareLabel(value.compare)} (${fmtRange(comp.from, comp.to)})`,
-        className: "inline-flex max-w-full items-center gap-2 rounded-lg border border-gray-200 bg-branco px-3 py-1.5 text-[13px] text-gray-600 transition-colors hover:border-roxo hover:text-preto pointer-coarse:min-h-10",
+        className: "inline-flex max-w-full items-center gap-2 rounded-lg border border-borda-controle bg-branco px-3 py-1.5 text-[13px] text-gray-600 transition-colors hover:border-roxo hover:text-preto pointer-coarse:min-h-10",
         children: [
           /* @__PURE__ */ jsx13(Calendar, { size: 14, strokeWidth: 1.5, className: "shrink-0 text-gray-500" }),
           /* @__PURE__ */ jsx13("span", { className: "truncate font-medium text-preto", children: presetLabel(value.preset) }),
@@ -1067,6 +1067,11 @@ function DateRangePicker({ value, onApply }) {
             tab === "presets" ? (
               // 1 coluna em telas estreitas (2 colunas de ~150px cortavam
               // rótulos como "Trimestre passado"); `min-h` só a partir de sm.
+              // Os cartões de preset ficam em `gray-200` de propósito (JET-101):
+              // o token `borda-controle` cobre os CAMPOS (gatilho + datas), onde
+              // a borda é a única delimitação. Escurecer 8 cartões de opção de
+              // uma vez é decisão visual — está na revisão da @Uma, não assumida
+              // aqui.
               /* @__PURE__ */ jsx13("div", { className: "grid grid-cols-1 content-start gap-2.5 p-5 sm:min-h-[320px] sm:grid-cols-2", children: PRESETS.map((p) => {
                 const Ic = PRESET_ICONS[p.id] ?? Calendar;
                 const on = draft.preset === p.id;
@@ -1096,7 +1101,7 @@ function DateRangePicker({ value, onApply }) {
                     value: draft.from,
                     max: draft.to || void 0,
                     onChange: (e) => setDraft((d) => ({ ...d, preset: "custom", from: e.target.value })),
-                    className: "h-14 w-full rounded-xl border border-gray-200 px-4 text-[18px] font-bold text-preto focus:border-roxo focus:outline-none focus:ring-2 focus:ring-roxo/20"
+                    className: "h-14 w-full rounded-xl border border-borda-controle px-4 text-[18px] font-bold text-preto focus:border-roxo focus:outline-none focus:ring-2 focus:ring-roxo/20"
                   }
                 )
               ] }),
@@ -1112,7 +1117,7 @@ function DateRangePicker({ value, onApply }) {
                     value: draft.to,
                     min: draft.from || void 0,
                     onChange: (e) => setDraft((d) => ({ ...d, preset: "custom", to: e.target.value })),
-                    className: "h-14 w-full rounded-xl border border-gray-200 px-4 text-[18px] font-bold text-preto focus:border-roxo focus:outline-none focus:ring-2 focus:ring-roxo/20"
+                    className: "h-14 w-full rounded-xl border border-borda-controle px-4 text-[18px] font-bold text-preto focus:border-roxo focus:outline-none focus:ring-2 focus:ring-roxo/20"
                   }
                 )
               ] }),
@@ -1745,7 +1750,7 @@ var Input = React2.forwardRef(({ className, type, ...props }, ref) => {
         // Em telas de toque: `min-h-10` (40px de alvo, o py-2 dá 38) e
         // `text-[16px]` — abaixo de 16px o Safari do iOS DÁ ZOOM ao focar o
         // campo, e o zoom desloca/estoura o layout da página.
-        "flex w-full rounded-lg border border-gray-200 bg-branco px-3 py-2 text-[14px] text-preto outline-hidden transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:min-h-10 pointer-coarse:text-[16px]",
+        "flex w-full rounded-lg border border-borda-controle bg-branco px-3 py-2 text-[14px] text-preto outline-hidden transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:min-h-10 pointer-coarse:text-[16px]",
         className
       ),
       ref,
@@ -2158,7 +2163,7 @@ var SelectTrigger = React4.forwardRef(({ className, children, ...props }, ref) =
   {
     ref,
     className: cn(
-      "flex w-full items-center justify-between rounded-lg border border-gray-200 bg-branco px-3 py-2 text-[14px] text-preto outline-hidden transition-colors placeholder:text-gray-500 focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+      "flex w-full items-center justify-between rounded-lg border border-borda-controle bg-branco px-3 py-2 text-[14px] text-preto outline-hidden transition-colors placeholder:text-gray-500 focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
       className
     ),
     ...props,
@@ -2265,7 +2270,7 @@ var NativeSelect = React5.forwardRef(
         className: cn(
           // Mesmo tratamento de toque do Input: 40px de alvo e fonte 16px
           // (evita o zoom automático do Safari iOS ao focar o campo).
-          "flex w-full appearance-none items-center rounded-lg border border-gray-200 bg-branco px-3 py-2 pr-9 text-[14px] text-preto outline-hidden transition-colors focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:min-h-10 pointer-coarse:text-[16px]",
+          "flex w-full appearance-none items-center rounded-lg border border-borda-controle bg-branco px-3 py-2 pr-9 text-[14px] text-preto outline-hidden transition-colors focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:min-h-10 pointer-coarse:text-[16px]",
           className
         ),
         ...props,

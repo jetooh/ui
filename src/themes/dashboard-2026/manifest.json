@@ -22,6 +22,16 @@
     "colorsClaro": "colors do tokens.json",
     "colorsEscuro": "colorsDark do tokens.json",
     "radius": "radius do tokens.json (base --radius=0.625rem)",
-    "tokensNaoMedidos": "usados só via variante hover: (rail-icon-hover*, text-gray-400) e red default do Tailwind ficam fora do checador (classe bare não existe)"
+    "tokensNaoMedidos": "usados só via variante hover: (rail-icon-hover*, text-gray-400) e red default do Tailwind ficam fora do checador (classe bare não existe)",
+    "tokensNovos": {
+      "borda-controle": {
+        "desde": "JET-101",
+        "claro": "#8b8b93",
+        "escuro": "#6b6b8f",
+        "usoNoPacote": "border-borda-controle nos controles de formulário (Input, Select, NativeSelect, DateTimeField via Input, gatilho e campos de data do DateRangePicker)",
+        "porque": "WCAG 1.4.11 exige 3:1 para a borda que delimita um controle; gray-200 media 1.26:1 sobre branco",
+        "ordemDeRollout": "A app declara --color-borda-controle no index.css (claro E escuro) ANTES de subir a versão do pacote. Sem a declaração, a utility border-borda-controle não existe no CSS da app e a borda do campo cai para o currentColor do Tailwind v4 — regressão visual. Depois de declarar, rodar node scripts/token-drift.mjs (pilot)."
+      }
+    }
   }
 }

@@ -115,7 +115,7 @@ export function DateRangePicker({ value, onApply }: DateRangePickerProps) {
         title={`vs. ${compareLabel(value.compare)} (${fmtRange(comp.from, comp.to)})`}
         // `max-w-full` + `truncate` nos rótulos: em 360px o gatilho (preset +
         // intervalo por extenso) estourava a largura da página.
-        className="inline-flex max-w-full items-center gap-2 rounded-lg border border-gray-200 bg-branco px-3 py-1.5 text-[13px] text-gray-600 transition-colors hover:border-roxo hover:text-preto pointer-coarse:min-h-10"
+        className="inline-flex max-w-full items-center gap-2 rounded-lg border border-borda-controle bg-branco px-3 py-1.5 text-[13px] text-gray-600 transition-colors hover:border-roxo hover:text-preto pointer-coarse:min-h-10"
       >
         <Calendar size={14} strokeWidth={1.5} className="shrink-0 text-gray-500" />
         <span className="truncate font-medium text-preto">{presetLabel(value.preset)}</span>
@@ -156,6 +156,11 @@ export function DateRangePicker({ value, onApply }: DateRangePickerProps) {
             {tab === "presets" ? (
               // 1 coluna em telas estreitas (2 colunas de ~150px cortavam
               // rótulos como "Trimestre passado"); `min-h` só a partir de sm.
+              // Os cartões de preset ficam em `gray-200` de propósito (JET-101):
+              // o token `borda-controle` cobre os CAMPOS (gatilho + datas), onde
+              // a borda é a única delimitação. Escurecer 8 cartões de opção de
+              // uma vez é decisão visual — está na revisão da @Uma, não assumida
+              // aqui.
               <div className="grid grid-cols-1 content-start gap-2.5 p-5 sm:min-h-[320px] sm:grid-cols-2">
                 {PRESETS.map((p) => {
                   const Ic = PRESET_ICONS[p.id] ?? Calendar
@@ -177,7 +182,7 @@ export function DateRangePicker({ value, onApply }: DateRangePickerProps) {
                   </span>
                   <input type="date" value={draft.from} max={draft.to || undefined}
                     onChange={(e) => setDraft((d) => ({ ...d, preset: "custom", from: e.target.value }))}
-                    className="h-14 w-full rounded-xl border border-gray-200 px-4 text-[18px] font-bold text-preto focus:border-roxo focus:outline-none focus:ring-2 focus:ring-roxo/20" />
+                    className="h-14 w-full rounded-xl border border-borda-controle px-4 text-[18px] font-bold text-preto focus:border-roxo focus:outline-none focus:ring-2 focus:ring-roxo/20" />
                 </label>
                 <label className="block">
                   <span className="mb-1.5 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-gray-500">
@@ -185,7 +190,7 @@ export function DateRangePicker({ value, onApply }: DateRangePickerProps) {
                   </span>
                   <input type="date" value={draft.to} min={draft.from || undefined}
                     onChange={(e) => setDraft((d) => ({ ...d, preset: "custom", to: e.target.value }))}
-                    className="h-14 w-full rounded-xl border border-gray-200 px-4 text-[18px] font-bold text-preto focus:border-roxo focus:outline-none focus:ring-2 focus:ring-roxo/20" />
+                    className="h-14 w-full rounded-xl border border-borda-controle px-4 text-[18px] font-bold text-preto focus:border-roxo focus:outline-none focus:ring-2 focus:ring-roxo/20" />
                 </label>
                 <p className="w-full rounded-xl bg-roxo/5 px-4 py-3.5 text-center text-[14px] font-semibold text-roxo">
                   {draft.from && draft.to ? fmtRange(draft.from, draft.to) : "Selecione as duas datas"}
