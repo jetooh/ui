@@ -100,17 +100,33 @@ a JET-78. Dois guards estáticos (sem render) no `contract.test.ts`:
   — o que a própria D1.1 sugere — de virar rótulo `#161625` sobre o roxo no
   escuro, a 3,78:1.
 
-## Acrescentar um token ao tema — a app vem PRIMEIRO
+## Acrescentar um token ao tema — quem vem primeiro depende do `@import`
 
 > Vale para a **escala JETOOH**. Token semântico novo é outra história: o pacote
 > envia o valor, então basta entrar no `tokens.json → semantic` e no `theme.css`
 > (o `contract.test.ts` cobra os dois em sincronia, nos dois modos).
 
 Token novo no `tokens.json` é mudança de **contrato**: a utility (`border-x`,
-`bg-x`, …) só existe no CSS de uma app depois que ela declara `--color-x` no seu
-`index.css`. Por isso a ordem do rollout é fixa — inverter a ordem deixa o
-componente com a classe apontando para uma variável inexistente (no Tailwind v4
-a borda cai para o `currentColor`, ou seja, uma borda quase preta no campo):
+`bg-x`, …) só existe no CSS de uma app se `--color-x` estiver declarado em algum
+`@theme` que o Tailwind dela enxergue. Senão a classe aponta para uma variável
+inexistente e, no Tailwind v4, a borda cai para o `currentColor` — borda quase
+preta no campo.
+
+**Desde a JET-106 há duas fontes possíveis para esse `@theme`**, e é o que a app
+já tem no `index.css` que decide a ordem do rollout:
+
+- **App que faz `@import "@jetooh/ui/theme.css"`** — o pacote envia a camada base
+  (ver a tabela acima: quem envia é o pacote, nas duas camadas). A utility passa
+  a existir junto com o token, e a ordem deixa de ser crítica: subir o pacote
+  primeiro não produz borda preta. Declarar o token no `index.css` continua
+  válido — a declaração local vem depois do `@import` e vence na cascata — mas
+  vira redundância, e apagá-la é a migração descrita em "Adotar o Dashboard2026".
+- **App que ainda NÃO faz esse `@import`** — nada mudou: sem declaração local não
+  há `--color-x` nenhum, e a app **tem que vir primeiro**.
+
+Enquanto houver uma app dos dois tipos, a ordem abaixo é a que serve para as
+duas, porque declarar antes é inofensivo no primeiro caso e obrigatório no
+segundo:
 
 1. Token entra no `tokens.json` (claro **e** escuro) e é documentado em
    `manifest.json → cssContract.tokensNovos` (valor, motivo, ordem de rollout).
