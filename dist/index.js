@@ -728,7 +728,7 @@ function useToast() {
   };
 }
 var ICON = {
-  success: /* @__PURE__ */ jsx9(CheckCircle2, { size: 16, strokeWidth: 1.75, className: "shrink-0 text-verde" }),
+  success: /* @__PURE__ */ jsx9(CheckCircle2, { size: 16, strokeWidth: 1.75, className: "shrink-0 text-verde-dark" }),
   destructive: /* @__PURE__ */ jsx9(AlertCircle, { size: 16, strokeWidth: 1.75, className: "shrink-0 text-status-critico" }),
   info: /* @__PURE__ */ jsx9(Info, { size: 16, strokeWidth: 1.75, className: "shrink-0 text-roxo" }),
   default: null
@@ -795,6 +795,12 @@ function StatusDot({ color, pulse = false, size = "md", className }) {
 // src/components/StatusBadge.tsx
 import { jsx as jsx11, jsxs as jsxs7 } from "react/jsx-runtime";
 var TONES = {
+  // D8 (JET-120): o dot fica AO LADO do rótulo ("Online", "Ativo"), e é o rótulo
+  // que identifica o estado — a marca não é "informação necessária" e a 1.4.11
+  // não a exige, mesma exceção de controle rotulado da JET-102. Por isso ele
+  // segue no grau de PREENCHIMENTO (`bg-verde`), enquanto o `StatusDot` sozinho
+  // e o ícone de sucesso do Toast passaram a `verde-dark`. Escurecer o dot aqui
+  // só sujaria a pílula, e o rótulo dela já é `text-verde-dark` (5.13:1).
   online: { dot: "bg-verde", pill: "bg-verde/10 text-verde-dark border-verde/20", pulse: true },
   offline: { dot: "bg-red-400", pill: "bg-red-50 text-red-700 border-red-200", pulse: false },
   pairing: { dot: "bg-roxo", pill: "bg-roxo/10 text-roxo border-roxo/20", pulse: true },

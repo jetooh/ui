@@ -98,8 +98,14 @@ export function useToast() {
   }
 }
 
+// D8 (JET-120): o ícone é o que distingue sucesso de erro/neutro — conteúdo
+// não-textual que carrega informação, mínimo 3:1 por WCAG 1.4.11. O grau de
+// preenchimento `verde` media 1.92:1 sobre o card branco do Toast; `verde-dark`
+// é o grau de LEGIBILIDADE do verde e mede 5.48:1 no claro / 9.29:1 no escuro.
+// Os outros dois ícones já passavam sobre o card nos dois modos e não mudam:
+// `status-critico` 4.83 claro / 3.70 escuro, `roxo` 4.73 / 3.78.
 const ICON: Record<ToastVariant, React.ReactNode> = {
-  success: <CheckCircle2 size={16} strokeWidth={1.75} className="shrink-0 text-verde" />,
+  success: <CheckCircle2 size={16} strokeWidth={1.75} className="shrink-0 text-verde-dark" />,
   destructive: <AlertCircle size={16} strokeWidth={1.75} className="shrink-0 text-status-critico" />,
   info: <Info size={16} strokeWidth={1.75} className="shrink-0 text-roxo" />,
   default: null,

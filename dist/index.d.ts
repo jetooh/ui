@@ -178,7 +178,11 @@ declare const SIZES: {
     readonly lg: "h-2.5 w-2.5";
 };
 interface StatusDotProps {
-    /** Classe de cor de fundo, ex.: "bg-verde", "bg-red-400", "bg-roxo". */
+    /**
+     * Classe de cor de fundo, ex.: "bg-verde-dark", "bg-red-400", "bg-roxo".
+     * Dot SOZINHO precisa de 3:1 sobre a superfície (WCAG 1.4.11) — use o grau de
+     * legibilidade (`bg-verde-dark`), não o de preenchimento (`bg-verde`).
+     */
     color: string;
     /** Anel pulsante (animate-ping) — use para estados "vivos" (online/ao vivo). */
     pulse?: boolean;

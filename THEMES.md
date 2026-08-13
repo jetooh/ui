@@ -150,6 +150,11 @@ a JET-78. Dois guards estáticos (sem render) no `contract.test.ts`:
   `verde` e `status-critico` fazem: são graus de preenchimento, e o papel de
   texto ao lado deles (`verde-dark`, `status-critico-texto`) esse sim é de modo.
 
+  > O guard cobrou o que prometia. Ao escrever o `porqueCoincide` do `verde`
+  > apareceu um papel que ninguém tinha medido — o de **marca**, na 1.4.11 — e
+  > ele reprovava. Virou a JET-120 e a D8, abaixo. A justificativa por escrito
+  > não é formalidade: é o momento em que a pergunta "em que papel?" é feita.
+
 ## Acrescentar um token ao tema — quem vem primeiro depende do `@import`
 
 > Vale para a **escala JETOOH**. Token semântico novo é outra história: o pacote
@@ -224,6 +229,48 @@ Guarda-corpo: `src/components/contrast.test.tsx` calcula os contrastes a partir
 do `tokens.json` (claro e escuro), mede o token contra as **três** superfícies
 do envelope (`branco`, `page-bg`, `gray-100`) e reprova se um controle voltar a
 se delimitar com `border-gray-*` sobre `bg-branco`.
+
+### Marca de estado × preenchimento: qual verde (D8 / JET-120)
+
+O verde tem dois graus, e o que decide entre eles é **se a cor é a única coisa
+que carrega a informação**, não se o elemento é texto ou não.
+
+| Papel | Token | Mínimo | Medido (claro / escuro) |
+|---|---|---|---|
+| **Marca** de estado: `StatusDot` **sozinho**, ícone `success` do `Toast` | `verde-dark` (`#047857` claro / `#34d399` escuro) | **3:1** (1.4.11) | 5,48 / 4,99 / 4,65 · 9,29 / 10,17 / 8,68 sobre `branco` / `page-bg` / `gray-100` |
+| **Texto** sobre a lavagem (rótulo do `StatusBadge`, trend do `KpiCard`) | `verde-dark` | 4,5:1 (1.4.3) | 5,13 na lavagem clara · 7,79 na escura |
+| **Preenchimento**: lavagem `bg-verde/10`, `border-verde/20`, dot do `StatusBadge` **rotulado** | `verde` (`#34d399` nos dois modos) | — | não carrega informação: ver a exceção abaixo |
+
+O defeito que a D8 fechou: `bg-verde` era a marca nos dois primeiros call sites e
+media **1,92 / 1,75 / 1,63** no claro — reprovando a 1.4.11 — enquanto passava com
+folga no escuro. É o formato da JET-109 ao contrário: um valor só, e o modo em que
+ele reprova é o que ninguém olhou.
+
+**A saída não foi um grau novo.** O par de que o papel precisa já era o do
+`verde-dark`, e criar um `verde-marca` com os mesmos dois valores seria a segunda
+cópia que a D1.1 proíbe — divergiria no primeiro ajuste da paleta. Como o token já
+existe no contrato e as apps já o declaram (`text-verde-dark` no `KpiCard` e no
+`StatusBadge`), a D8 **não tem rollout de token**: nada a declarar, nada para o
+`token-drift` acusar.
+
+**Por que DE MODO e não estático.** A alternativa levantada na issue era travar a
+marca no valor claro (`#047857`) nos dois modos, o que exigiria um grau estático.
+Passa, mas paga margem no escuro (3,04 no pior caso, contra 8,68) — e a
+invariância da D5 existe para marca sobre **preenchimento sólido**, que não
+inverte com o modo (`--primary-foreground`, `--primary-hover`). Esta fica sobre a
+**superfície da página**, que inverte; então o grau dela inverte junto, como
+`--primary-text` e `status-critico-texto`.
+
+**Exceção registrada — dot rotulado:** dentro do `<StatusBadge>` o dot fica ao
+lado de `Online`/`Ativo`, e é o rótulo que identifica o estado. A marca não é
+"informação necessária" e a 1.4.11 não a exige; escurecer o dot ali só sujaria a
+pílula. É a mesma exceção da JET-102, e o `contrast.test.tsx` a amarra à sua
+condição: se o rótulo da pílula deixar de passar 4,5:1, a exceção cai junto.
+
+> Dívida de nome registrada no `tokens.json`: `verde-dark` agora exerce dois
+> papéis e o nome descreve só o valor claro (no escuro ele é o verde **claro**).
+> Renomear é mudança de contrato com rollout nas 3 apps por zero ganho de
+> acessibilidade — fica registrado em vez de feito.
 
 ## Criar um tema NOVO (quando surgir um 2º tema)
 

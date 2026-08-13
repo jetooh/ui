@@ -432,3 +432,95 @@ describe('render: os campos saem com a borda do token', () => {
     expect(select.className).not.toContain('border-gray-200');
   });
 });
+
+// ---------------------------------------------------------------------------
+// JET-120 / ADR-001 D8 — o verde no papel de MARCA de estado
+// ---------------------------------------------------------------------------
+// Dois call sites em que o verde é a ÚNICA coisa que carrega a informação: o
+// `StatusDot` SOZINHO (sem rótulo ao lado, o ponto É o estado) e o ícone
+// `CheckCircle2` da variante `success` do Toast (é ele que distingue sucesso de
+// erro/neutro). Conteúdo não-textual que carrega informação cai na WCAG 1.4.11,
+// mínimo 3:1 — não na 1.4.3.
+//
+// O grau de PREENCHIMENTO (`verde` = #34d399) reprovava no claro e passava com
+// folga no escuro: o formato de defeito da JET-109 ao contrário — um valor só, e
+// o modo em que ele reprova é o que ninguém olhou. A D8 NÃO criou grau: o papel
+// passou a referenciar `verde-dark`, que já era exatamente o par de que ele
+// precisa. Um grau novo com esses mesmos dois valores seria a segunda cópia que
+// a D1.1 proíbe.
+
+/** Código do componente sem comentário — documentar o defeito não é cometê-lo. */
+const semComentario = (code: string) =>
+  code.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+
+describe('marca de estado em verde: 3:1 sobre a superfície (D8)', () => {
+  // Mesmo envelope da JET-102, e pelo mesmo motivo: um dot solto pode cair no
+  // card, na página ou numa faixa de chip. Medir só a superfície nominal é a
+  // amostragem que deixou este defeito nascer.
+  it.each(FIELD_SURFACES)('claro: verde-dark como marca sobre %s', (surface) => {
+    expect(contrast(tokens.colors['verde-dark'], tokens.colors[surface])).toBeGreaterThanOrEqual(UI_MIN);
+  });
+
+  it.each(FIELD_SURFACES)('escuro: verde-dark como marca sobre %s', (surface) => {
+    expect(contrast(tokens.colorsDark['verde-dark'], tokens.colorsDark[surface])).toBeGreaterThanOrEqual(UI_MIN);
+  });
+
+  it('o grau de preenchimento reprova no claro — guarda o defeito, não só a correção', () => {
+    // "Simplificar" a marca de volta para `verde` volta a reprovar, e só no
+    // claro: no escuro ele passa, que é exatamente o que escondia o buraco.
+    for (const surface of FIELD_SURFACES) {
+      expect(contrast(tokens.colors.verde, tokens.colors[surface])).toBeLessThan(UI_MIN);
+      expect(contrast(tokens.colorsDark.verde, tokens.colorsDark[surface])).toBeGreaterThanOrEqual(UI_MIN);
+    }
+  });
+
+  it('a marca é DE MODO, não invariante: o valor claro sozinho paga margem no escuro', () => {
+    // A JET-120 propunha travar o papel no valor CLARO (#047857) nos dois modos,
+    // o que exigiria um grau ESTÁTICO. Passa — mas por pouco, e a invariância da
+    // D5 existe para marca sobre preenchimento SÓLIDO, que não inverte com o
+    // modo. Esta fica sobre a superfície da página, que inverte; então o grau
+    // dela inverte junto. O par que o `verde-dark` já tem mede estritamente
+    // melhor no escuro, em TODAS as superfícies do envelope.
+    for (const surface of FIELD_SURFACES) {
+      const invariante = contrast(tokens.colors['verde-dark'], tokens.colorsDark[surface]);
+      const deModo = contrast(tokens.colorsDark['verde-dark'], tokens.colorsDark[surface]);
+      expect(`${surface}: ${deModo > invariante}`).toBe(`${surface}: true`);
+    }
+  });
+
+  it('Toast: o ícone de sucesso usa o grau de legibilidade, e os 3 passam sobre o card', () => {
+    const code = semComentario(source('Toast.tsx'));
+    expect(code).toContain('text-verde-dark');
+    expect(code).not.toMatch(/text-verde(?![\w-])/);
+    // O card do Toast é `bg-branco`. A asserção cobre a variante inteira, não só
+    // a corrigida: crítico e info já passavam e continuam passando.
+    for (const escala of [tokens.colors, tokens.colorsDark] as const) {
+      for (const grau of ['verde-dark', 'status-critico', 'roxo'] as const) {
+        expect(contrast((escala as Record<string, string>)[grau], escala.branco)).toBeGreaterThanOrEqual(UI_MIN);
+      }
+    }
+  });
+
+  it('StatusDot: o exemplo canônico do componente não entrega mais o grau que reprova', () => {
+    // O `color` vem do app, então o que o pacote controla aqui é o EXEMPLO — e
+    // era ele que dizia, literal, `<StatusDot color="bg-verde" pulse /> // online`.
+    const code = source('StatusDot.tsx');
+    expect(code).toContain('bg-verde-dark');
+    expect(semComentario(code)).not.toMatch(/bg-verde(?![\w-])/);
+    expect(code.match(/<StatusDot color="bg-verde"/)).toBeNull();
+  });
+
+  it('StatusBadge mantém a exceção: dot ROTULADO segue no grau de preenchimento', () => {
+    // Exceção registrada, mesma da JET-102 (controle rotulado): quem identifica
+    // o estado é o rótulo, então a marca não é "informação necessária" e
+    // escurecê-la só sujaria a pílula. A prova de que o rótulo carrega o estado
+    // é ele próprio passar 4.5:1 sobre a lavagem — se ISSO cair, a exceção cai
+    // junto e o dot volta a ser a única informação.
+    expect(semComentario(source('StatusBadge.tsx'))).toContain('dot: "bg-verde"');
+    for (const escala of [tokens.colors, tokens.colorsDark] as const) {
+      const e = escala as Record<string, string>;
+      const lavagem = alphaOver(e.verde, 0.1, e.branco);
+      expect(contrast(e['verde-dark'], lavagem)).toBeGreaterThanOrEqual(TEXT_MIN);
+    }
+  });
+});

@@ -14,6 +14,12 @@ export type StatusVariant = "online" | "offline" | "pairing" | "warning" | "neut
 // Tom de cada variante: cor do dot + classes da pílula (bg/text/border) + pulso.
 // Régua = platform/devices (mesmos tokens dos badges de status já em produção).
 const TONES: Record<StatusVariant, { dot: string; pill: string; pulse: boolean }> = {
+  // D8 (JET-120): o dot fica AO LADO do rótulo ("Online", "Ativo"), e é o rótulo
+  // que identifica o estado — a marca não é "informação necessária" e a 1.4.11
+  // não a exige, mesma exceção de controle rotulado da JET-102. Por isso ele
+  // segue no grau de PREENCHIMENTO (`bg-verde`), enquanto o `StatusDot` sozinho
+  // e o ícone de sucesso do Toast passaram a `verde-dark`. Escurecer o dot aqui
+  // só sujaria a pílula, e o rótulo dela já é `text-verde-dark` (5.13:1).
   online: { dot: "bg-verde", pill: "bg-verde/10 text-verde-dark border-verde/20", pulse: true },
   offline: { dot: "bg-red-400", pill: "bg-red-50 text-red-700 border-red-200", pulse: false },
   pairing: { dot: "bg-roxo", pill: "bg-roxo/10 text-roxo border-roxo/20", pulse: true },

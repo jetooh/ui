@@ -45,7 +45,15 @@
           "mudaPixel": "SIM, e é o primeiro token deste grupo que muda — no modo escuro da AppSecondarySidebar. É mudança pretendida.",
           "acaoNaApp": "A declaração local de --color-secondary-active no index.css das apps é hoje um `:root` com valor único. Enquanto ela existir, ela GANHA do .dark que o pacote envia (mesma especificidade, e a do app vem depois do @import), então subir a versão do pacote NÃO corrige a app sozinho. A app precisa apagar a declaração local (preferido, D0.1) ou declará-la em PAR — :root #7a33ee e .dark #ad86fa. Rastreado no rollout de index.css da JET-103."
         },
-        "usoNoPacote": "bg/text/border-verde (KpiCard, StatusBadge, StatusDot, Toast), text-verde-dark (KpiCard, StatusBadge), bg/text-status-critico (ConfirmDialog, Toast), text-secondary-active e text-secondary-text (AppSecondarySidebar)",
+        "correcaoDePapel": {
+          "token": "verde → verde-dark (nos call sites de MARCA)",
+          "decisao": "ADR-001 D8 (JET-120)",
+          "porque": "Nenhum VALOR muda: o que muda é qual grau cada papel referencia. `verde` (#34d399) era a única coisa a carregar o estado em dois call sites — StatusDot SOZINHO e o ícone de sucesso do Toast — e como marca media 1.92 / 1.75 / 1.63 sobre branco / page-bg / gray-100 no claro, reprovando os 3:1 da WCAG 1.4.11. No escuro passava com folga (9.29 / 8.68), que é o que escondia o buraco. Os dois papéis passaram a `verde-dark`, que já é o par que eles precisam (5.48 / 4.99 / 4.65 claro, 9.29 / 10.17 / 8.68 escuro). Grau novo com esses mesmos valores seria a segunda cópia que a D1.1 proíbe.",
+          "mudaPixel": "SIM, no modo CLARO: o dot de status solto e o ícone de sucesso do Toast passam de #34d399 para #047857. No escuro não muda nada — verde-dark vale #34d399 lá, exatamente o que já era pintado.",
+          "ordemDeRollout": "NÃO tem rollout de token: `verde-dark` já está no contrato e as apps já o declaram (text-verde-dark no KpiCard e no StatusBadge). Subir a versão do pacote basta para o Toast.",
+          "acaoNaApp": "O `color` do StatusDot vem do APP, então o pacote não alcança esse call site: onde a app renderiza um StatusDot SOZINHO (sem rótulo ao lado), trocar `color=\"bg-verde\"` por `color=\"bg-verde-dark\"`. Dentro do <StatusBadge> não se mexe — o dot fica ao lado do rótulo e segue em bg-verde (exceção registrada, mesma da JET-102)."
+        },
+        "usoNoPacote": "bg/border-verde (KpiCard, StatusBadge), text-verde-dark (KpiCard, StatusBadge, Toast — o ícone de sucesso, D8), bg/text-status-critico (ConfirmDialog, Toast), text-secondary-active e text-secondary-text (AppSecondarySidebar). O StatusDot não fixa cor: ela vem do app pelo prop `color`, e o exemplo canônico do componente é `bg-verde-dark` desde a D8.",
         "ordemDeRollout": "Mesma regra do borda-controle: declarar --color-<token> no index.css (claro E escuro) ANTES de subir a versão do pacote. O 'claro E escuro' não é formalidade: foi declarar só o claro que produziu o defeito da JET-109 no secondary-active."
       }
     },
