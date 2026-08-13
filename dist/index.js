@@ -800,7 +800,13 @@ var TONES = {
   // não a exige, mesma exceção de controle rotulado da JET-102. Por isso ele
   // segue no grau de PREENCHIMENTO (`bg-verde`), enquanto o `StatusDot` sozinho
   // e o ícone de sucesso do Toast passaram a `verde-dark`. Escurecer o dot aqui
-  // só sujaria a pílula, e o rótulo dela já é `text-verde-dark` (5.13:1).
+  // só sujaria a pílula, e o rótulo dela é `text-verde-dark`.
+  //   D9 (JET-124): a lavagem `bg-verde/10` é TRANSLÚCIDA e esta pílula aceita
+  // `className`, então ela não fica presa ao card branco — resolvida sobre as
+  // três superfícies do tema (branco / page-bg / gray-100) o rótulo media 5.13 /
+  // 4.70 / 4.41 e reprovava a 1.4.3 na terceira. O grau de legibilidade desceu
+  // um passo na rampa emerald (#047857 → #065f46) e agora mede 7.19 / 6.58 /
+  // 6.18. A exceção do dot depende disso: é o rótulo que carrega o estado.
   online: { dot: "bg-verde", pill: "bg-verde/10 text-verde-dark border-verde/20", pulse: true },
   offline: { dot: "bg-red-400", pill: "bg-red-50 text-red-700 border-red-200", pulse: false },
   pairing: { dot: "bg-roxo", pill: "bg-roxo/10 text-roxo border-roxo/20", pulse: true },

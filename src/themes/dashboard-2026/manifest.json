@@ -35,7 +35,7 @@
       "verde | verde-dark | status-critico | secondary-active | secondary-text": {
         "desde": "JET-77",
         "porque": "O pacote já emitia estas classes BARE sem que o contrato as declarasse. Uma app nova que não as declare renderiza o componente SEM a cor (a utility não é gerada), e o token-drift não acusava porque o token não existia no tokens.json.",
-        "origemDoValor": "MEDIDO nos bundles de produção de platform (régua) e devices em 2026-08-13, não escolhido aqui. Os dois apps já concordam exatamente, então declarar não muda pixel nenhum em platform/devices — só fecha o contrato para consumidores futuros. VALE PARA TODOS MENOS UM: ver correcaoDeValor.",
+        "origemDoValor": "MEDIDO nos bundles de produção de platform (régua) e devices em 2026-08-13, não escolhido aqui. Os dois apps já concordam exatamente, então declarar não muda pixel nenhum em platform/devices — só fecha o contrato para consumidores futuros. VALE PARA TODOS MENOS DOIS: ver correcaoDeValor (secondary-active escuro, D7) e correcaoDeValorVerdeDark (verde-dark claro, D9). Nos dois o valor medido nas apps era o defeito, não a régua — o que o 'medido' garante é fidelidade ao que está na tela, não conformidade WCAG.",
         "correcaoDeValor": {
           "token": "secondary-active (modo ESCURO)",
           "de": "#7a33ee",
@@ -49,9 +49,19 @@
           "token": "verde → verde-dark (nos call sites de MARCA)",
           "decisao": "ADR-001 D8 (JET-120)",
           "porque": "Nenhum VALOR muda: o que muda é qual grau cada papel referencia. `verde` (#34d399) era a única coisa a carregar o estado em dois call sites — StatusDot SOZINHO e o ícone de sucesso do Toast — e como marca media 1.92 / 1.75 / 1.63 sobre branco / page-bg / gray-100 no claro, reprovando os 3:1 da WCAG 1.4.11. No escuro passava com folga (9.29 / 8.68), que é o que escondia o buraco. Os dois papéis passaram a `verde-dark`, que já é o par que eles precisam (5.48 / 4.99 / 4.65 claro, 9.29 / 10.17 / 8.68 escuro). Grau novo com esses mesmos valores seria a segunda cópia que a D1.1 proíbe.",
-          "mudaPixel": "SIM, no modo CLARO: o dot de status solto e o ícone de sucesso do Toast passam de #34d399 para #047857. No escuro não muda nada — verde-dark vale #34d399 lá, exatamente o que já era pintado.",
-          "ordemDeRollout": "NÃO tem rollout de token: `verde-dark` já está no contrato e as apps já o declaram (text-verde-dark no KpiCard e no StatusBadge). Subir a versão do pacote basta para o Toast.",
+          "mudaPixel": "SIM, no modo CLARO: o dot de status solto e o ícone de sucesso do Toast passam de #34d399 para o grau de legibilidade (que a D9 fechou em #065f46). No escuro não muda nada — verde-dark vale #34d399 lá, exatamente o que já era pintado.",
+          "ordemDeRollout": "NÃO tem rollout de token: `verde-dark` já está no contrato e as apps já o declaram (text-verde-dark no KpiCard e no StatusBadge). Subir a versão do pacote basta para o Toast. ATENÇÃO: o VALOR desse grau mudou depois, na D9 — ver correcaoDeValorVerdeDark, que TEM rollout.",
           "acaoNaApp": "O `color` do StatusDot vem do APP, então o pacote não alcança esse call site: onde a app renderiza um StatusDot SOZINHO (sem rótulo ao lado), trocar `color=\"bg-verde\"` por `color=\"bg-verde-dark\"`. Dentro do <StatusBadge> não se mexe — o dot fica ao lado do rótulo e segue em bg-verde (exceção registrada, mesma da JET-102)."
+        },
+        "correcaoDeValorVerdeDark": {
+          "token": "verde-dark (modo CLARO)",
+          "de": "#047857",
+          "para": "#065f46",
+          "decisao": "ADR-001 rev. 8, D9 (JET-104) — levantado e medido na JET-124",
+          "porque": "Segundo caso em que o valor medido nas apps É o defeito. A D8 mediu a MARCA no envelope inteiro e deixou o papel de TEXTO medido só sobre a superfície nominal: a lavagem `bg-verde/10` resolvida sobre `branco` (5.13:1). A lavagem é translúcida e o <StatusBadge> aceita className, então a pílula também cai sobre page-bg e gray-100 — resolvida ali, #047857 mede 4.70 e 4.41 e REPROVA a 1.4.3 na terceira. #065f46 é emerald-800, UM passo na mesma rampa emerald da base (verde = emerald-400): mede 7.19 / 6.58 / 6.18 como texto na lavagem e 7.68 / 6.99 / 6.51 como marca. Sem grau novo, sem token novo, e serve os dois papéis da D8 de uma vez.",
+          "mudaPixel": "SIM, no modo CLARO, em TODO call site de verde-dark: rótulo da pílula `online` do StatusBadge, trend de alta do KpiCard, ícone de sucesso do Toast e StatusDot solto. É mudança pretendida — verde mais escuro, mesma matiz. No ESCURO não muda nada (#34d399).",
+          "ordemDeRollout": "Mesma regra do grupo: a app atualiza --color-verde-dark no index.css (claro) ANTES de subir a versão do pacote — ou apaga a declaração local e passa a herdar o theme.css do pacote (preferido, D0.1). Enquanto a declaração local existir com #047857, ela GANHA do :root que o pacote envia e a app segue reprovando. Rastreado no rollout de index.css da JET-103.",
+          "acaoNaApp": "Nenhum call site muda de classe: quem já usa text-verde-dark/bg-verde-dark continua igual. O que muda é o VALOR do token. Depois de declarar, rodar node scripts/token-drift.mjs (pilot) — ele vai acusar divergência nesse grau até as 3 apps atualizarem."
         },
         "usoNoPacote": "bg/border-verde (KpiCard, StatusBadge), text-verde-dark (KpiCard, StatusBadge, Toast — o ícone de sucesso, D8), bg/text-status-critico (ConfirmDialog, Toast), text-secondary-active e text-secondary-text (AppSecondarySidebar). O StatusDot não fixa cor: ela vem do app pelo prop `color`, e o exemplo canônico do componente é `bg-verde-dark` desde a D8.",
         "ordemDeRollout": "Mesma regra do borda-controle: declarar --color-<token> no index.css (claro E escuro) ANTES de subir a versão do pacote. O 'claro E escuro' não é formalidade: foi declarar só o claro que produziu o defeito da JET-109 no secondary-active."

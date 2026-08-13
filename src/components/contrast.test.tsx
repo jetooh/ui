@@ -453,6 +453,27 @@ describe('render: os campos saem com a borda do token', () => {
 const semComentario = (code: string) =>
   code.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
 
+/** Grau de legibilidade do verde no modo pedido. */
+const verdeDark = (modo: 'claro' | 'escuro') =>
+  (modo === 'claro' ? tokens.colors : tokens.colorsDark)['verde-dark'].toLowerCase();
+
+/**
+ * Lavagem da pílula `online` RESOLVIDA contra a superfície que estiver atrás
+ * (D9/JET-124). O alpha e o grau saem da classe declarada no próprio
+ * `StatusBadge.tsx` — não de um hex copiado à mão. É a mesma exigência da D7: se
+ * alguém trocar a lavagem para `bg-verde/20` ou apontá-la para outro grau, a
+ * medida acompanha em vez de continuar aprovando a pílula antiga.
+ */
+const lavagemOnline = (modo: 'claro' | 'escuro', atras: (typeof FIELD_SURFACES)[number]) => {
+  const pill = source('StatusBadge.tsx').match(/online:\s*\{[^}]*pill:\s*"([^"]*)"/)?.[1];
+  if (!pill) throw new Error('não achei a classe da pílula `online` no StatusBadge.tsx');
+  const [, grau, pct] = pill.match(/bg-([\w-]+)\/(\d+)(?![\w-])/) ?? [];
+  if (!grau || !pct) throw new Error(`a pílula \`online\` não é mais uma lavagem translúcida: ${pill}`);
+  const escala = (modo === 'claro' ? tokens.colors : tokens.colorsDark) as Record<string, string>;
+  if (!(grau in escala)) throw new Error(`a lavagem da pílula referencia um grau inexistente: ${grau}`);
+  return alphaOver(escala[grau], Number(pct) / 100, escala[atras]);
+};
+
 describe('marca de estado em verde: 3:1 sobre a superfície (D8)', () => {
   // Mesmo envelope da JET-102, e pelo mesmo motivo: um dot solto pode cair no
   // card, na página ou numa faixa de chip. Medir só a superfície nominal é a
@@ -515,12 +536,98 @@ describe('marca de estado em verde: 3:1 sobre a superfície (D8)', () => {
     // o estado é o rótulo, então a marca não é "informação necessária" e
     // escurecê-la só sujaria a pílula. A prova de que o rótulo carrega o estado
     // é ele próprio passar 4.5:1 sobre a lavagem — se ISSO cair, a exceção cai
-    // junto e o dot volta a ser a única informação.
+    // junto e o dot volta a ser a única informação. A medida é no envelope
+    // INTEIRO (D9): era medir só a lavagem sobre `branco` que deixava a exceção
+    // de pé sobre uma superfície em que o rótulo reprovava.
     expect(semComentario(source('StatusBadge.tsx'))).toContain('dot: "bg-verde"');
-    for (const escala of [tokens.colors, tokens.colorsDark] as const) {
-      const e = escala as Record<string, string>;
-      const lavagem = alphaOver(e.verde, 0.1, e.branco);
-      expect(contrast(e['verde-dark'], lavagem)).toBeGreaterThanOrEqual(TEXT_MIN);
+    for (const modo of ['claro', 'escuro'] as const) {
+      for (const surface of FIELD_SURFACES) {
+        expect(contrast(verdeDark(modo), lavagemOnline(modo, surface))).toBeGreaterThanOrEqual(TEXT_MIN);
+      }
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// JET-124 / ADR-001 D9 — o verde no papel de TEXTO, sobre a LAVAGEM
+// ---------------------------------------------------------------------------
+// A D8 fechou a MARCA medindo o envelope inteiro e deixou o TEXTO medido só
+// sobre a superfície NOMINAL: a lavagem `bg-verde/10` resolvida sobre `branco`
+// (#ebfbf5, 5.13:1). Mas a lavagem é translúcida — como a pílula da D7, ela não
+// tem cor até se saber o que está atrás — e o `<StatusBadge>` aceita
+// `className`, então ela cai também sobre `page-bg` e `gray-100`. Ali o
+// emerald-700 (#047857) media 4.70 e **4.41**, e reprovava a 1.4.3 por 0.09.
+//
+// A D9 desce UM passo na mesma rampa emerald que a base já usa (`verde` é
+// emerald-400) e fecha o grau de legibilidade em emerald-800 (#065f46). Não há
+// grau novo nem token novo: o mesmo passo corrige os DOIS papéis da D8.
+
+describe('texto sobre a lavagem da pílula: 4.5:1 no envelope inteiro (D9)', () => {
+  it('a pílula `online` continua sendo texto verde-dark sobre lavagem translúcida', () => {
+    // Se este par deixar de existir, os testes abaixo estariam medindo uma
+    // pílula que não é mais a da tela — e passariam por vacuidade.
+    const code = semComentario(source('StatusBadge.tsx'));
+    expect(code).toMatch(/online:\s*\{[^}]*pill:\s*"bg-verde\/10 text-verde-dark border-verde\/20"/);
+  });
+
+  it.each(FIELD_SURFACES)('claro: rótulo da pílula sobre a lavagem que cai em %s', (surface) => {
+    expect(contrast(verdeDark('claro'), lavagemOnline('claro', surface))).toBeGreaterThanOrEqual(TEXT_MIN);
+  });
+
+  it.each(FIELD_SURFACES)('escuro: rótulo da pílula sobre a lavagem que cai em %s', (surface) => {
+    expect(contrast(verdeDark('escuro'), lavagemOnline('escuro', surface))).toBeGreaterThanOrEqual(TEXT_MIN);
+  });
+
+  it('o emerald-700 anterior reprova sobre gray-100 — guarda o defeito, não só a correção', () => {
+    // "Simplificar" o grau de volta para #047857 volta a reprovar, e SÓ na
+    // terceira superfície: sobre branco ele mede 5.13 e parece são. É por isso
+    // que o envelope é o teste, e não a superfície nominal.
+    const EMERALD_700 = '#047857';
+    expect(contrast(EMERALD_700, lavagemOnline('claro', 'branco'))).toBeGreaterThanOrEqual(TEXT_MIN);
+    expect(contrast(EMERALD_700, lavagemOnline('claro', 'gray-100'))).toBeLessThan(TEXT_MIN);
+  });
+
+  it('medir a lavagem sobre `branco` só não é suficiente: o pior caso é o gray-100', () => {
+    // Trava a ORDEM das superfícies, não só o mínimo. Se um dia `gray-100`
+    // clarear a ponto de deixar de ser o pior caso, o envelope precisa ser
+    // revisto — e é melhor que este teste caia do que a revisão não acontecer.
+    const sobre = (s: (typeof FIELD_SURFACES)[number]) => contrast(verdeDark('claro'), lavagemOnline('claro', s));
+    expect(sobre('gray-100')).toBeLessThan(sobre('page-bg'));
+    expect(sobre('page-bg')).toBeLessThan(sobre('branco'));
+  });
+
+  it('margem: o grau aguenta a lavagem ficar mais densa sem virar defeito de novo', () => {
+    // O passo da rampa (emerald-800) entrega 6.18 no pior caso em vez de raspar
+    // os 4.5 — um grau derivado no fio (#006f4f, 4.98) reprovaria de novo se
+    // alguém subisse a lavagem para /15 ou /20, que é uma mudança de tom, não
+    // de acessibilidade, e ninguém iria remedir.
+    for (const alpha of [0.15, 0.2]) {
+      const lavagem = alphaOver(tokens.colors.verde, alpha, tokens.colors['gray-100']);
+      expect(contrast(verdeDark('claro'), lavagem)).toBeGreaterThanOrEqual(TEXT_MIN);
+    }
+  });
+
+  it('a D9 não é um grau novo: é um passo na rampa que já servia os dois papéis', () => {
+    // O ponto da decisão. Se alguém "resolver" o texto criando um `verde-texto`
+    // ao lado, isto cai: a D1.1 proíbe a segunda cópia, e a marca da D8 mede o
+    // MESMO grau. Um passo que corrige os dois papéis é o que torna a saída
+    // barata — e o teste da marca acima já cobre o papel (b) com o valor novo.
+    expect(tokens.colors).not.toHaveProperty('verde-texto');
+    expect(tokens.colors).not.toHaveProperty('verde-marca');
+    expect(source('StatusBadge.tsx')).toContain('text-verde-dark');
+    expect(source('Toast.tsx')).toContain('text-verde-dark');
+  });
+
+  it('o manifesto registra a correção de VALOR e o rollout que ela obriga', () => {
+    // A D8 não tinha rollout (nenhum valor mudava). A D9 tem: enquanto a app
+    // declarar --color-verde-dark: #047857 no index.css, a declaração local
+    // ganha do theme.css do pacote e a app segue reprovando.
+    const grupo = manifest.cssContract.tokensNovos[
+      'verde | verde-dark | status-critico | secondary-active | secondary-text'
+    ] as unknown as { correcaoDeValorVerdeDark: { de: string; para: string; ordemDeRollout: string } };
+    const c = grupo.correcaoDeValorVerdeDark;
+    expect(c.para).toBe(tokens.colors['verde-dark']);
+    expect(c.de).not.toBe(c.para);
+    expect(c.ordemDeRollout).toMatch(/index\.css/);
   });
 });

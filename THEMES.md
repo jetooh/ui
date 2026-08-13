@@ -237,8 +237,8 @@ que carrega a informação**, não se o elemento é texto ou não.
 
 | Papel | Token | Mínimo | Medido (claro / escuro) |
 |---|---|---|---|
-| **Marca** de estado: `StatusDot` **sozinho**, ícone `success` do `Toast` | `verde-dark` (`#047857` claro / `#34d399` escuro) | **3:1** (1.4.11) | 5,48 / 4,99 / 4,65 · 9,29 / 10,17 / 8,68 sobre `branco` / `page-bg` / `gray-100` |
-| **Texto** sobre a lavagem (rótulo do `StatusBadge`, trend do `KpiCard`) | `verde-dark` | 4,5:1 (1.4.3) | 5,13 na lavagem clara · 7,79 na escura |
+| **Marca** de estado: `StatusDot` **sozinho**, ícone `success` do `Toast` | `verde-dark` (`#065f46` claro / `#34d399` escuro) | **3:1** (1.4.11) | 7,68 / 6,99 / 6,51 · 9,29 / 10,17 / 8,68 sobre `branco` / `page-bg` / `gray-100` |
+| **Texto** sobre a lavagem (rótulo do `StatusBadge`, trend do `KpiCard`) | `verde-dark` | 4,5:1 (1.4.3) | 7,19 / 6,58 / 6,18 na lavagem clara · 7,79 / 8,81 / 7,24 na escura |
 | **Preenchimento**: lavagem `bg-verde/10`, `border-verde/20`, dot do `StatusBadge` **rotulado** | `verde` (`#34d399` nos dois modos) | — | não carrega informação: ver a exceção abaixo |
 
 O defeito que a D8 fechou: `bg-verde` era a marca nos dois primeiros call sites e
@@ -254,7 +254,7 @@ existe no contrato e as apps já o declaram (`text-verde-dark` no `KpiCard` e no
 `token-drift` acusar.
 
 **Por que DE MODO e não estático.** A alternativa levantada na issue era travar a
-marca no valor claro (`#047857`) nos dois modos, o que exigiria um grau estático.
+marca no valor claro (o `#047857` de então) nos dois modos, o que exigiria um grau estático.
 Passa, mas paga margem no escuro (3,04 no pior caso, contra 8,68) — e a
 invariância da D5 existe para marca sobre **preenchimento sólido**, que não
 inverte com o modo (`--primary-foreground`, `--primary-hover`). Esta fica sobre a
@@ -271,6 +271,53 @@ condição: se o rótulo da pílula deixar de passar 4,5:1, a exceção cai junt
 > papéis e o nome descreve só o valor claro (no escuro ele é o verde **claro**).
 > Renomear é mudança de contrato com rollout nas 3 apps por zero ganho de
 > acessibilidade — fica registrado em vez de feito.
+
+### O grau de legibilidade fecha em emerald-800 (D9 / JET-124)
+
+A D8 mediu a **marca** contra o envelope inteiro e deixou o papel de **texto**
+medido só contra a superfície **nominal**: a lavagem `bg-verde/10` resolvida em
+cima de `branco` (`#ebfbf5`, 5,13:1). Mas a lavagem é **translúcida** — vale para
+ela tudo o que a seção acima diz da pílula da sidebar — e o `<StatusBadge>` aceita
+`className`, então a pílula `online` também cai sobre `page-bg` e `gray-100`:
+
+| superfície atrás | lavagem resolvida | `#047857` (D8) | `#065f46` (D9) |
+|---|---|---|---|
+| `branco` `#FFFFFF` | `#ebfbf5` | 5,13:1 ✅ | **7,19:1** |
+| `page-bg` `#f4f4f5` | `#e1f1ec` | 4,70:1 ✅ | **6,58:1** |
+| `gray-100` `#ECECED` | `#daeae5` | **4,41:1** ❌ | **6,18:1** |
+
+No escuro o grau (`#34d399`) já passava nas três (7,79 / 8,81 / 7,24) e **não
+muda**.
+
+**O envelope é o do tema, não o do componente.** A pergunta "em que superfícies
+isto pode cair?" é do tema — as mesmas três de `borda-controle` (JET-102) e da
+marca (D8). Envelope menor por componente é exatamente a amostragem que fez
+nascer a JET-102, a JET-109 e esta.
+
+**A saída é um passo na rampa, não um grau novo.** `verde` é `emerald-400` e
+`verde-dark` era `emerald-700`; a D9 desce **um** passo, para `emerald-800`
+(`#065f46`). O mesmo passo corrige os **dois** papéis da D8 de uma vez (a marca
+sobe para 7,68 / 6,99 / 6,51) e não acrescenta valor nenhum à base. A margem é de
+propósito: 6,18 no pior caso em vez de raspar os 4,5 é o que faz o grau aguentar a
+lavagem ficar mais densa (`/15` = 5,96, `/20` = 5,81) sem virar defeito de novo —
+mudar o tom da lavagem é decisão visual, e ninguém iria remedir contraste por causa
+dela.
+
+**As outras duas saídas, e por que não.** *Tornar a lavagem opaca* mataria a classe
+de defeito, mas custa um grau novo com par de modo, rollout de contrato nas 3 apps
+— e o mesmo teria de ser feito para `bg-roxo/10`. *Exceção medida para `gray-100`*
+é a saída que a JET-102 recusou por escrito: a exceção teria de afirmar que a
+pílula não cai em `gray-100`, e o `className` afirma que cai.
+
+> **Isto tem rollout, ao contrário da D8:** o **valor** de `--color-verde-dark`
+> mudou. Enquanto uma app declarar `#047857` no seu `index.css`, a declaração
+> local vence o `theme.css` do pacote e a app **continua reprovando**. Rastreado
+> na [JET-103](/JET/issues/JET-103), como a correção de `secondary-active` (D7).
+
+O `contrast.test.tsx` resolve a lavagem **a partir da classe declarada no
+`StatusBadge.tsx`** (grau e alpha), não de um hex copiado à mão: trocar a pílula
+para `bg-verde/20` move a medida junto em vez de continuar aprovando a pílula
+antiga.
 
 ## Criar um tema NOVO (quando surgir um 2º tema)
 
