@@ -1745,7 +1745,7 @@ var Input = React2.forwardRef(({ className, type, ...props }, ref) => {
         // Em telas de toque: `min-h-10` (40px de alvo, o py-2 dá 38) e
         // `text-[16px]` — abaixo de 16px o Safari do iOS DÁ ZOOM ao focar o
         // campo, e o zoom desloca/estoura o layout da página.
-        "flex w-full rounded-lg border border-gray-200 bg-branco px-3 py-2 text-[14px] text-preto outline-hidden transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:min-h-10 pointer-coarse:text-[16px]",
+        "flex w-full rounded-lg border border-gray-200 bg-branco px-3 py-2 text-[14px] text-preto outline-hidden transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:min-h-10 pointer-coarse:text-[16px]",
         className
       ),
       ref,
@@ -1809,7 +1809,7 @@ function DateTimeField({
         {
           size: 15,
           strokeWidth: 1.75,
-          className: "pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+          className: "pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
         }
       ),
       /* @__PURE__ */ jsx26(
@@ -1826,7 +1826,7 @@ function DateTimeField({
         }
       )
     ] }),
-    hint != null && /* @__PURE__ */ jsx26("p", { className: "text-[12px] text-gray-400", children: hint })
+    hint != null && /* @__PURE__ */ jsx26("p", { className: "text-[12px] text-gray-500", children: hint })
   ] });
 }
 
@@ -2158,7 +2158,7 @@ var SelectTrigger = React4.forwardRef(({ className, children, ...props }, ref) =
   {
     ref,
     className: cn(
-      "flex w-full items-center justify-between rounded-lg border border-gray-200 bg-branco px-3 py-2 text-[14px] text-preto outline-hidden transition-colors placeholder:text-gray-400 focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+      "flex w-full items-center justify-between rounded-lg border border-gray-200 bg-branco px-3 py-2 text-[14px] text-preto outline-hidden transition-colors placeholder:text-gray-500 focus:border-roxo focus:ring-1 focus:ring-roxo/30 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
       className
     ),
     ...props,
