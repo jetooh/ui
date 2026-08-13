@@ -1,0 +1,97 @@
+/* Camada semântica do tema dashboard-2026 — ENVIADA pelo @jetooh/ui (JET-106).
+ *
+ * D0.1 do ADR-001: o contrato deixou de ser "declaração obrigatória por app" e
+ * passou a ser "defaults-enviados, override-registrado". A app que só faz
+ *
+ *     @import "@jetooh/ui/theme.css";
+ *
+ * recebe os 18 tokens semânticos no valor canônico. Sem este arquivo, a app que
+ * não declara herda o default do shadcn (--primary neutro, chroma 0) ou do
+ * Tailwind v4 — que é exatamente a origem da divergência da JET-78.
+ *
+ * FONTE ÚNICA dos valores: ./tokens.json (bloco `semantic`). Não edite números
+ * aqui — edite o tokens.json; src/themes/contract.test.ts falha se os dois
+ * saírem de sincronia, nos DOIS modos.
+ *
+ * Formato (D1): cor completa em oklch(), sempre. Tripla HSL crua e
+ * `hsl(var(--x))` estão proibidos no contrato e reprovam no contract.test.ts.
+ *
+ * ESCOPO: só a camada semântica. A escala JETOOH (--color-roxo, --color-gray-*,
+ * --color-branco, …) continua declarada pela app, como o cssContract sempre
+ * exigiu — mudar isso é outra issue, não esta.
+ */
+
+/* `inline` de propósito: emite `--color-x: var(--x)` em vez de congelar o valor,
+ * então a utility resolve o que estiver na cascata e o par `.dark` funciona. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-link: var(--link);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-secondary-active-bg: var(--secondary-active-bg);
+}
+
+:root {
+  --background: oklch(100% 0 0);
+  --foreground: oklch(16.3% 0.009 153);
+  --card: oklch(100% 0 0);
+  --card-foreground: oklch(16.3% 0.009 153);
+  --popover: oklch(100% 0 0);
+  --popover-foreground: oklch(16.3% 0.009 153);
+  --primary: oklch(58.6% 0.253 294);
+  --primary-foreground: oklch(100% 0 0);
+  --primary-hover: oklch(48.7% 0.243 292);
+  --link: oklch(48.7% 0.243 292);
+  --secondary: oklch(94.3% 0.001 286);
+  --secondary-foreground: oklch(21% 0.032 265);
+  --muted: oklch(94.3% 0.001 286);
+  --muted-foreground: oklch(55.1% 0.023 264);
+  --accent: oklch(94.3% 0.001 286);
+  --accent-foreground: oklch(21% 0.032 265);
+  --destructive: oklch(57.7% 0.215 27.3);
+  --border: oklch(92.2% 0.003 286);
+  --input: oklch(61.9% 0.010 286);
+  --ring: oklch(58.6% 0.253 294);
+  /* D3: derivado de --primary, não hex avulso — acompanha o roxo sozinho. */
+  --secondary-active-bg: color-mix(in oklch, var(--primary) 10%, var(--background));
+}
+
+.dark {
+  --background: oklch(20.8% 0.030 284);
+  --foreground: oklch(96.7% 0.003 265);
+  --card: oklch(20.8% 0.030 284);
+  --card-foreground: oklch(96.7% 0.003 265);
+  --popover: oklch(20.8% 0.030 284);
+  --popover-foreground: oklch(96.7% 0.003 265);
+  --primary: oklch(58.6% 0.253 294);
+  --primary-foreground: oklch(100% 0 0);
+  --primary-hover: oklch(48.7% 0.243 292);
+  --link: oklch(65.3% 0.197 297.5);
+  --secondary: oklch(23.7% 0.038 283);
+  --secondary-foreground: oklch(98.5% 0.002 248);
+  --muted: oklch(23.7% 0.038 283);
+  --muted-foreground: oklch(71.4% 0.019 261);
+  --accent: oklch(23.7% 0.038 283);
+  --accent-foreground: oklch(98.5% 0.002 248);
+  --destructive: oklch(65% 0.215 27.3);
+  --border: oklch(27.8% 0.049 283);
+  --input: oklch(54.2% 0.056 284);
+  --ring: oklch(58.6% 0.253 294);
+  --secondary-active-bg: color-mix(in oklch, var(--primary) 15%, transparent);
+}

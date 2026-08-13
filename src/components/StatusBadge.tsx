@@ -18,7 +18,12 @@ const TONES: Record<StatusVariant, { dot: string; pill: string; pulse: boolean }
   offline: { dot: "bg-red-400", pill: "bg-red-50 text-red-700 border-red-200", pulse: false },
   pairing: { dot: "bg-roxo", pill: "bg-roxo/10 text-roxo border-roxo/20", pulse: true },
   warning: { dot: "bg-amber-500", pill: "bg-amber-50 text-amber-700 border-amber-200", pulse: false },
-  neutral: { dot: "bg-gray-400", pill: "bg-gray-100 text-gray-600 border-gray-200", pulse: false },
+  // D4 (JET-106): o dot do badge CARREGA estado — é conteúdo não-textual, mínimo
+  // 3:1 por WCAG 1.4.11. O cinza 400 cru media 2.20:1 sobre a pílula (gray-100) e
+  // reprovava. `bg-muted-foreground` é o token semântico que expõe o grau
+  // gray-500 (oklch(55.1% 0.023 264)): 4.09:1 claro / 6.57:1 escuro sobre a
+  // pílula. O cinza 400 continua PROIBIDO e fora do contrato — ver contrast.test.tsx.
+  neutral: { dot: "bg-muted-foreground", pill: "bg-gray-100 text-gray-600 border-gray-200", pulse: false },
 }
 
 export interface StatusBadgeProps {

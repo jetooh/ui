@@ -202,12 +202,12 @@ var buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/80",
+        default: "bg-primary text-primary-foreground hover:bg-primary-hover",
         outline: "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
         secondary: "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
         ghost: "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
         destructive: "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
-        link: "text-primary underline-offset-4 hover:underline"
+        link: "text-link underline-offset-4 hover:underline"
       },
       // `pointer-coarse:` = só em telas de TOQUE (celular/tablet): os tamanhos
       // "normais" (default/lg/icon/icon-lg) sobem para 40px de alvo, atendendo
@@ -256,12 +256,12 @@ var badgeVariants = cva2(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
+        default: "bg-primary text-primary-foreground [a]:hover:bg-primary-hover",
         secondary: "bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80",
         destructive: "bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive/20",
         outline: "border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground",
         ghost: "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
-        link: "text-primary underline-offset-4 hover:underline"
+        link: "text-link underline-offset-4 hover:underline"
       }
     },
     defaultVariants: {
@@ -784,7 +784,12 @@ var TONES = {
   offline: { dot: "bg-red-400", pill: "bg-red-50 text-red-700 border-red-200", pulse: false },
   pairing: { dot: "bg-roxo", pill: "bg-roxo/10 text-roxo border-roxo/20", pulse: true },
   warning: { dot: "bg-amber-500", pill: "bg-amber-50 text-amber-700 border-amber-200", pulse: false },
-  neutral: { dot: "bg-gray-400", pill: "bg-gray-100 text-gray-600 border-gray-200", pulse: false }
+  // D4 (JET-106): o dot do badge CARREGA estado — é conteúdo não-textual, mínimo
+  // 3:1 por WCAG 1.4.11. O cinza 400 cru media 2.20:1 sobre a pílula (gray-100) e
+  // reprovava. `bg-muted-foreground` é o token semântico que expõe o grau
+  // gray-500 (oklch(55.1% 0.023 264)): 4.09:1 claro / 6.57:1 escuro sobre a
+  // pílula. O cinza 400 continua PROIBIDO e fora do contrato — ver contrast.test.tsx.
+  neutral: { dot: "bg-muted-foreground", pill: "bg-gray-100 text-gray-600 border-gray-200", pulse: false }
 };
 function StatusBadge({
   label,
@@ -2436,7 +2441,7 @@ function SectionCard({ icon: Icon2, title, action, children, className, bodyClas
   return /* @__PURE__ */ jsxs25(Card, { className: cn("gap-0 overflow-hidden p-0", className), children: [
     /* @__PURE__ */ jsxs25(CardHeader, { className: "items-center border-b border-gray-100 py-4", children: [
       /* @__PURE__ */ jsxs25(CardTitle, { className: "flex items-center gap-2 text-preto", children: [
-        Icon2 && /* @__PURE__ */ jsx34(Icon2, { size: 16, strokeWidth: 1.5, className: "text-gray-400" }),
+        Icon2 && /* @__PURE__ */ jsx34(Icon2, { size: 16, strokeWidth: 1.5, className: "text-muted-foreground" }),
         title
       ] }),
       action && /* @__PURE__ */ jsx34(CardAction, { className: "self-center", children: action })

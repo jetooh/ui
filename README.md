@@ -29,12 +29,26 @@ do pacote, senão as classes usadas aqui não entram no CSS:
 ```css
 /* index.css do app, logo após @import "tailwindcss" */
 @source "../node_modules/@jetooh/ui/dist";
+@import "@jetooh/ui/theme.css";
 ```
 
-Tokens exigidos no tema do app (já existem em platform e devices): paleta
-`branco/preto/roxo` (+ `roxo-hover`), `verde`/`verde-dark`, `status-critico`,
-`gray-*`, os tokens semânticos shadcn (`--primary/--border/--muted/--card`…) e a
-animação `animate-fade-in-up`.
+São **duas camadas, com regras diferentes** (JET-106 / ADR-001):
+
+- **Camada semântica** (`--primary`, `--border`, `--muted`, `--card`, `--input`,
+  `--ring`, … os 18 do shadcn + `--secondary-active-bg`, `--primary-hover` e
+  `--link`): o **pacote envia**, via
+  `@jetooh/ui/theme.css`. A app não precisa declarar nada. Sem esse `@import`, a
+  app herda o default do shadcn (`--primary` neutro) ou do Tailwind v4 — que é a
+  origem da divergência da JET-78. Se a app precisar divergir, o override tem que
+  ser registrado em `cssContract.overridesRegistrados` no `manifest.json`.
+- **Escala JETOOH** (`branco`/`preto`/`roxo` + `roxo-hover`, `verde`/`verde-dark`,
+  `status-critico`, `borda-controle`, `gray-*`) e a animação `animate-fade-in-up`:
+  continuam **declaradas pela app**, em claro e escuro, com os valores de
+  `src/themes/dashboard-2026/tokens.json`. Já existem em platform e devices.
+
+Formato canônico dos valores: **cor completa em `oklch()`**. Tripla HSL crua
+(`262 100% 64%`) e o wrapper `hsl(var(--x))` estão proibidos no contrato e
+reprovam em `src/themes/contract.test.ts`.
 
 ## Peer deps
 

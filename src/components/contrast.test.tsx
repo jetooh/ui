@@ -14,13 +14,14 @@
 // virou o token `borda-controle` na JET-101 — os testes de borda abaixo medem o
 // token contra as DUAS superfícies onde um campo aparece (branco do card e
 // page-bg), em claro e escuro.
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
 import tokens from '../themes/dashboard-2026/tokens.json';
 import manifest from '../themes/dashboard-2026/manifest.json';
+import { oklchToHex, parseOklch } from '../themes/oklch';
 import { Input } from './Input';
 import { NativeSelect } from './NativeSelect';
 import { DateTimeField } from './DateTimeField';
@@ -84,6 +85,138 @@ describe('controles de formulário não usam gray-400 em texto/ícone', () => {
     // `bg-gray-400` (preenchimento) não é texto e não entra na regra.
     const offenders = code.match(/(?:placeholder:)?text-gray-400/g) ?? [];
     expect(offenders).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// JET-106 / ADR-001 D4 — gray-400 sai do pacote inteiro, sem virar token
+// ---------------------------------------------------------------------------
+// A saída fácil seria declarar gray-400 como "token de ícone decorativo". O ADR
+// recusa: seria um nome sancionado a um passo de virar texto de novo, que é o
+// modo de falha que a JET-99 já pagou. Os 2 usos restantes migraram para o token
+// semântico `muted-foreground`, que expõe o MESMO grau `gray-500` que a JET-99
+// mediu — e este bloco trava as duas pontas: o valor e o call site.
+const semantic = tokens.semantic as unknown as Record<string, { claro: string; escuro: string }>;
+/** Hex efetivo de um token semântico, para medir WCAG sobre valores oklch. */
+const sem = (token: string, modo: 'claro' | 'escuro') =>
+  oklchToHex(parseOklch(semantic[token][modo])!);
+
+describe('gray-400 saiu dos 2 usos e continua fora do contrato (D4)', () => {
+  it('gray-400 não aparece em NENHUM componente do pacote', () => {
+    const offenders = readdirSync(resolve(process.cwd(), 'src/components'))
+      .filter((f) => /\.tsx?$/.test(f) && !f.includes('.test.'))
+      .filter((f) => /(?:bg|text|border|fill|stroke)-gray-400/.test(source(f)));
+    expect(offenders).toEqual([]);
+  });
+
+  it('e continua PROIBIDO como token — a migração não o reabilitou', () => {
+    expect(tokens.colors).not.toHaveProperty('gray-400');
+    expect(tokens.semantic).not.toHaveProperty('gray-400');
+  });
+
+  it('SectionCard: o ícone decorativo usa text-muted-foreground', () => {
+    expect(source('SectionCard.tsx')).toContain('text-muted-foreground');
+  });
+
+  it('StatusBadge: o dot neutro carrega estado, então precisa de 3:1 sobre a pílula', () => {
+    // WCAG 1.4.11: o dot é conteúdo NÃO-TEXTUAL (é ele que diz o estado), medido
+    // contra o fundo da própria pílula (gray-100). gray-400 media 2.20:1 ali.
+    expect(source('StatusBadge.tsx')).toContain('dot: "bg-muted-foreground"');
+    expect(contrast(sem('muted-foreground', 'claro'), tokens.colors['gray-100'])).toBeGreaterThanOrEqual(UI_MIN);
+    expect(contrast(sem('muted-foreground', 'escuro'), tokens.colorsDark['gray-100'])).toBeGreaterThanOrEqual(UI_MIN);
+    expect(contrast(GRAY_400, tokens.colors['gray-100'])).toBeLessThan(UI_MIN);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// JET-106 — mínimos WCAG da camada semântica que o pacote agora ENVIA
+// ---------------------------------------------------------------------------
+// Sob D0.1 o valor destes tokens é responsabilidade do pacote, não da app. Então
+// o mínimo de contraste passa a ser guardável aqui — e é onde o `--destructive`
+// escuro se justifica: o grau de preenchimento (#dc2626) reprova a 3.70:1 como
+// TEXTO no escuro, e o token deriva o mesmo C/H com L mais alto até passar.
+describe('camada semântica: os pares que o pacote envia atingem o mínimo WCAG', () => {
+  const PARES_DE_TEXTO = [
+    { fg: 'foreground', bg: 'background', o_que: 'texto base' },
+    { fg: 'card-foreground', bg: 'card', o_que: 'texto do cartão' },
+    { fg: 'popover-foreground', bg: 'popover', o_que: 'texto do popover' },
+    { fg: 'secondary-foreground', bg: 'secondary', o_que: 'texto sobre a superfície sutil' },
+    { fg: 'accent-foreground', bg: 'accent', o_que: 'texto sobre o realce' },
+    { fg: 'muted-foreground', bg: 'background', o_que: 'texto auxiliar' },
+    { fg: 'primary-foreground', bg: 'primary', o_que: 'texto sobre o roxo da marca' },
+    { fg: 'destructive', bg: 'background', o_que: 'texto destrutivo' },
+  ] as const;
+
+  it.each(PARES_DE_TEXTO)('$o_que: $fg sobre $bg (claro e escuro, mín. 4.5:1)', ({ fg, bg }) => {
+    expect(contrast(sem(fg, 'claro'), sem(bg, 'claro'))).toBeGreaterThanOrEqual(TEXT_MIN);
+    expect(contrast(sem(fg, 'escuro'), sem(bg, 'escuro'))).toBeGreaterThanOrEqual(TEXT_MIN);
+  });
+
+  it('destructive: o escuro PRECISOU derivar — o grau de preenchimento reprova como texto', () => {
+    // Guarda o motivo, não só o resultado: se alguém "simplificar" o escuro de
+    // volta para o status-critico, este teste diz por que não dá.
+    expect(contrast(tokens.colorsDark['status-critico'], sem('background', 'escuro'))).toBeLessThan(TEXT_MIN);
+    expect(sem('destructive', 'claro')).toBe(tokens.colors['status-critico'].toLowerCase());
+  });
+
+  // -------------------------------------------------------------------------
+  // JET-105 (opção A) — `--primary` é papel de PREENCHIMENTO, e só
+  // -------------------------------------------------------------------------
+  // Com `--primary` neutro (o scaffold do shadcn) os outros dois papéis que ele
+  // acumulava passavam por acidente: preto a 80% continua escuro, e preto como
+  // texto sobra contraste. Com o roxo da marca os dois reprovam. O defeito não
+  // nasceu do flip — ele estava escondido pela divergência.
+  const SUPERFICIES_CLARAS = ['branco', 'page-bg'] as const;
+  const SUPERFICIES_ESCURAS = ['branco', 'page-bg'] as const;
+
+  it('o pacote não usa --primary com alpha nem como texto', () => {
+    const componentes = readdirSync(resolve(process.cwd(), 'src/components'))
+      .filter((f) => /\.tsx?$/.test(f) && !f.includes('.test.'));
+    // `bg-primary/80` resolvia #a26cff no claro: rótulo branco a 3.43:1.
+    expect(componentes.filter((f) => /bg-primary\/\d/.test(source(f)))).toEqual([]);
+    // `text-primary` reprova sobre page-bg no claro e sobre o card no escuro.
+    // `(?![\w-])` para não confundir com `text-primary-foreground`, que é o
+    // rótulo SOBRE o preenchimento e continua correto.
+    expect(componentes.filter((f) => /text-primary(?![\w-])/.test(source(f)))).toEqual([]);
+  });
+
+  it('primary-hover: rótulo branco sobre o preenchimento sólido do hover (4.5:1)', () => {
+    // Sólido de propósito: sobre preenchimento opaco o contraste do rótulo não
+    // depende da superfície atrás, então um valor serve nos dois modos.
+    for (const modo of ['claro', 'escuro'] as const) {
+      expect(contrast(sem('primary-foreground', modo), sem('primary-hover', modo))).toBeGreaterThanOrEqual(TEXT_MIN);
+    }
+  });
+
+  it('link: o par de texto passa 4.5:1 sobre card e page-bg, nos dois modos', () => {
+    for (const surface of SUPERFICIES_CLARAS) {
+      expect(contrast(sem('link', 'claro'), tokens.colors[surface])).toBeGreaterThanOrEqual(TEXT_MIN);
+    }
+    for (const surface of SUPERFICIES_ESCURAS) {
+      expect(contrast(sem('link', 'escuro'), tokens.colorsDark[surface])).toBeGreaterThanOrEqual(TEXT_MIN);
+    }
+  });
+
+  it('e o par de link PRECISA ser assimétrico — nenhum dos dois valores serve sozinho', () => {
+    // Guarda o motivo: sem isto, "simplificar" o par para um valor só volta a
+    // reprovar em um dos modos, que é o defeito mais caro de achar.
+    expect(contrast(sem('link', 'claro'), tokens.colorsDark.branco)).toBeLessThan(TEXT_MIN);
+    expect(contrast(sem('link', 'escuro'), tokens.colors.branco)).toBeLessThan(TEXT_MIN);
+    // E o roxo do preenchimento não serve para nenhum dos dois: é o ponto todo.
+    expect(contrast(sem('primary', 'claro'), tokens.colors['page-bg'])).toBeLessThan(TEXT_MIN);
+    expect(contrast(sem('primary', 'escuro'), tokens.colorsDark.branco)).toBeLessThan(TEXT_MIN);
+  });
+
+  it('input e ring delimitam controle: 3:1 sobre as três superfícies (WCAG 1.4.11)', () => {
+    // `--input` expõe o mesmo grau `borda-controle` que a JET-101/JET-102 fechou;
+    // este teste garante que a camada semântica não reintroduza a borda de
+    // 1.26:1 por baixo, via `border-input`/`focus-visible:border-ring`.
+    for (const surface of FIELD_SURFACES) {
+      expect(contrast(sem('input', 'claro'), tokens.colors[surface])).toBeGreaterThanOrEqual(UI_MIN);
+      expect(contrast(sem('input', 'escuro'), tokens.colorsDark[surface])).toBeGreaterThanOrEqual(UI_MIN);
+    }
+    expect(contrast(sem('ring', 'claro'), sem('background', 'claro'))).toBeGreaterThanOrEqual(UI_MIN);
+    expect(contrast(sem('ring', 'escuro'), sem('background', 'escuro'))).toBeGreaterThanOrEqual(UI_MIN);
   });
 });
 

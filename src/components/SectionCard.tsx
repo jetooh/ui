@@ -24,7 +24,11 @@ export function SectionCard({ icon: Icon, title, action, children, className, bo
     <Card className={cn('gap-0 overflow-hidden p-0', className)}>
       <CardHeader className="items-center border-b border-gray-100 py-4">
         <CardTitle className="flex items-center gap-2 text-preto">
-          {Icon && <Icon size={16} strokeWidth={1.5} className="text-gray-400" />}
+          {/* D4 (JET-106): ícone DECORATIVO — não carrega informação que o título
+              ao lado já não dê. Era o cinza 400 cru, que a JET-99 proibiu e o
+              contrato não declara; vai para `text-muted-foreground`, um dos 18
+              semânticos, que expõe o grau gray-500 (4.83:1 claro / 7.04:1 escuro). */}
+          {Icon && <Icon size={16} strokeWidth={1.5} className="text-muted-foreground" />}
           {title}
         </CardTitle>
         {action && <CardAction className="self-center">{action}</CardAction>}
