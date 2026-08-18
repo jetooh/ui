@@ -44,4 +44,91 @@ describe('UserMenu', () => {
     fireEvent.click(screen.getByRole('switch', { name: 'Alternar tema escuro' }));
     expect(onToggleTheme).toHaveBeenCalledTimes(1);
   });
+
+  const apps = [
+    { slug: 'platform', name: 'Platform', icon: 'monitor', url: 'https://platform.jetooh.com' },
+    { slug: 'devices', name: 'Devices', icon: 'presentation', url: 'https://devices.jetooh.com' },
+  ];
+
+  it('sem `apps`, não mostra a seção "Trocar de app" (retrocompat)', () => {
+    render(<UserMenu name="Ana" email="ana@jetooh.com" initials="A" onLogout={() => {}} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Menu do usuário' }));
+    expect(screen.queryByText('Trocar de app')).not.toBeInTheDocument();
+  });
+
+  it('com só o app atual na lista, não mostra a seção (nada para trocar)', () => {
+    render(
+      <UserMenu
+        name="Ana"
+        initials="A"
+        apps={[apps[0]]}
+        currentAppSlug="platform"
+        onLogout={() => {}}
+      />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Menu do usuário' }));
+    expect(screen.queryByText('Trocar de app')).not.toBeInTheDocument();
+  });
+
+  it('mostra skeleton enquanto `appsLoading`, sem listar apps', () => {
+    render(<UserMenu name="Ana" initials="A" appsLoading apps={[]} onLogout={() => {}} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Menu do usuário' }));
+    expect(screen.getByText('Trocar de app')).toBeInTheDocument();
+    expect(screen.queryByText('Platform')).not.toBeInTheDocument();
+  });
+
+  it('destaca o app atual (aria-current, não clicável) e navega ao clicar nos outros', () => {
+    const originalLocation = window.location;
+    // @ts-expect-error -- substituir por um objeto simples só para capturar o href
+    delete window.location;
+    // @ts-expect-error
+    window.location = { href: '' };
+
+    render(
+      <UserMenu
+        name="Ana"
+        initials="A"
+        apps={apps}
+        currentAppSlug="platform"
+        onLogout={() => {}}
+      />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Menu do usuário' }));
+
+    const current = screen.getByRole('menuitem', { name: /Platform/ });
+    expect(current).toHaveAttribute('aria-current', 'true');
+    expect(current.tagName).toBe('DIV');
+
+    const other = screen.getByRole('menuitem', { name: /Devices/ });
+    expect(other.tagName).toBe('BUTTON');
+    fireEvent.click(other);
+    expect(window.location.href).toBe('https://devices.jetooh.com');
+
+    window.location = originalLocation;
+  });
+
+  it('bloqueia navegação para um app.url fora do ecossistema jetooh.com', () => {
+    const originalLocation = window.location;
+    // @ts-expect-error
+    delete window.location;
+    // @ts-expect-error
+    window.location = { href: '' };
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    render(
+      <UserMenu
+        name="Ana"
+        initials="A"
+        apps={[{ slug: 'evil', name: 'Evil', icon: null, url: 'https://evil.example.com' }]}
+        onLogout={() => {}}
+      />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Menu do usuário' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: /Evil/ }));
+    expect(window.location.href).toBe('');
+    expect(errorSpy).toHaveBeenCalled();
+
+    errorSpy.mockRestore();
+    window.location = originalLocation;
+  });
 });

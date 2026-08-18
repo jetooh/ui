@@ -86,4 +86,23 @@ describe('AppUserMenu', () => {
     fireEvent.click(screen.getByRole('switch', { name: 'Alternar tema escuro' }));
     expect(onToggleTheme).toHaveBeenCalledTimes(1);
   });
+
+  it('repassa `apps`/`currentAppSlug` para a seção "Trocar de app" do UserMenu', () => {
+    render(
+      <AppUserMenu
+        name="Ana"
+        initials="A"
+        apps={[
+          { slug: 'platform', name: 'Platform', icon: 'monitor', url: 'https://platform.jetooh.com' },
+          { slug: 'admin', name: 'Admin', icon: null, url: 'https://admin.jetooh.com' },
+        ]}
+        currentAppSlug="platform"
+        onLogout={() => {}}
+      />,
+    );
+    open();
+    expect(screen.getByText('Trocar de app')).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: /Platform/ })).toHaveAttribute('aria-current', 'true');
+    expect(screen.getByRole('menuitem', { name: /Admin/ })).toBeInTheDocument();
+  });
 });

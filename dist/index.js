@@ -1575,8 +1575,46 @@ function AppMobileHeader({ onMenuToggle, logoSrc = "/icone.svg", actions, userMe
 
 // src/components/UserMenu.tsx
 import { useState as useState3 } from "react";
-import { LogOut, User, Moon, Sun as Sun2 } from "lucide-react";
+import { LogOut, User, Moon, Sun as Sun2, Check } from "lucide-react";
+
+// src/lib/app-switcher-icon.ts
+import { LayoutGrid, Monitor, Presentation, LayoutTemplate, ShieldCheck, UserRound } from "lucide-react";
+var ICONS = {
+  monitor: Monitor,
+  presentation: Presentation,
+  "layout-template": LayoutTemplate,
+  "user-round": UserRound,
+  shield: ShieldCheck
+};
+function appSwitcherIcon(name) {
+  return name && ICONS[name] || LayoutGrid;
+}
+
+// src/lib/safe-app-url.ts
+var ALLOWED_SUFFIX = ".jetooh.com";
+var LOCAL_HOSTS = /* @__PURE__ */ new Set(["localhost", "127.0.0.1"]);
+function isSafeAppUrl(url) {
+  let parsed;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return false;
+  }
+  const { hostname, protocol } = parsed;
+  if (LOCAL_HOSTS.has(hostname)) return protocol === "http:" || protocol === "https:";
+  if (protocol !== "https:") return false;
+  return hostname === "jetooh.com" || hostname.endsWith(ALLOWED_SUFFIX);
+}
+
+// src/components/UserMenu.tsx
 import { Fragment as Fragment2, jsx as jsx21, jsxs as jsxs16 } from "react/jsx-runtime";
+function openApp(url) {
+  if (!isSafeAppUrl(url)) {
+    console.error("[UserMenu] host fora do ecossistema, redirect bloqueado:", url);
+    return;
+  }
+  window.location.href = url;
+}
 function UserMenu({
   name,
   email,
@@ -1584,6 +1622,9 @@ function UserMenu({
   initials,
   items: items2,
   accountHref,
+  apps,
+  currentAppSlug,
+  appsLoading,
   isDark,
   onToggleTheme,
   onLogout,
@@ -1594,12 +1635,19 @@ function UserMenu({
     ...accountHref ? [{ label: "Minha Conta", icon: User, href: accountHref }] : [],
     ...items2 ?? []
   ];
-  const rich = Boolean(email || menuItems.length > 0 || onToggleTheme);
+  const switchableApps = apps ?? [];
+  const hasAppsToSwitch = switchableApps.length > 1 || switchableApps.length === 1 && switchableApps[0].slug !== currentAppSlug;
+  const showAppSwitcher = Boolean(appsLoading || hasAppsToSwitch);
+  const rich = Boolean(email || menuItems.length > 0 || showAppSwitcher || onToggleTheme);
   const avatarCls = avatarSize === "md" ? "h-10 w-10" : "h-8 w-8";
   const runItem = (it) => {
     setOpen(false);
     if (it.onClick) it.onClick();
     else if (it.href) window.location.href = it.href;
+  };
+  const runApp = (app) => {
+    setOpen(false);
+    openApp(app.url);
   };
   return /* @__PURE__ */ jsxs16("div", { className: "relative ml-1", children: [
     /* @__PURE__ */ jsx21(
@@ -1622,11 +1670,48 @@ function UserMenu({
         "div",
         {
           role: "menu",
-          className: "absolute right-0 top-10 z-50 w-60 overflow-hidden rounded-xl border border-gray-200 bg-branco py-1.5 shadow-lg",
+          className: "absolute right-0 top-10 z-50 max-h-[80vh] w-60 overflow-x-hidden overflow-y-auto rounded-xl border border-gray-200 bg-branco py-1.5 shadow-lg",
           children: [
             (name || email) && /* @__PURE__ */ jsxs16("div", { className: "border-b border-gray-100 px-4 py-3", children: [
               /* @__PURE__ */ jsx21("p", { className: "text-sm font-medium text-preto", children: name || "\u2014" }),
               email && /* @__PURE__ */ jsx21("p", { className: "text-xs text-gray-500", children: email })
+            ] }),
+            showAppSwitcher && /* @__PURE__ */ jsxs16("div", { className: "border-b border-gray-100 py-1.5", children: [
+              /* @__PURE__ */ jsx21("p", { className: "px-4 pb-1 pt-0.5 text-[11px] font-bold uppercase tracking-widest text-muted-foreground", children: "Trocar de app" }),
+              appsLoading ? /* @__PURE__ */ jsxs16("div", { className: "space-y-1.5 px-4 py-1", "aria-hidden": "true", children: [
+                /* @__PURE__ */ jsx21(Skeleton, { className: "h-8 w-full rounded-lg" }),
+                /* @__PURE__ */ jsx21(Skeleton, { className: "h-8 w-full rounded-lg" })
+              ] }) : switchableApps.map((app) => {
+                const Icon2 = appSwitcherIcon(app.icon);
+                const isCurrent = app.slug === currentAppSlug;
+                return isCurrent ? /* @__PURE__ */ jsxs16(
+                  "div",
+                  {
+                    role: "menuitem",
+                    "aria-current": "true",
+                    "aria-disabled": "true",
+                    className: "flex w-full items-center gap-3 rounded-lg bg-roxo/5 px-4 py-2 text-[13px] font-medium text-roxo",
+                    children: [
+                      /* @__PURE__ */ jsx21(Icon2, { size: 15, strokeWidth: 1.5 }),
+                      /* @__PURE__ */ jsx21("span", { className: "flex-1 text-left", children: app.name }),
+                      /* @__PURE__ */ jsx21(Check, { size: 15, strokeWidth: 2 })
+                    ]
+                  },
+                  app.slug
+                ) : /* @__PURE__ */ jsxs16(
+                  "button",
+                  {
+                    role: "menuitem",
+                    onClick: () => runApp(app),
+                    className: "flex w-full items-center gap-3 px-4 py-2 text-[13px] text-gray-600 transition-colors hover:bg-gray-50 hover:text-preto",
+                    children: [
+                      /* @__PURE__ */ jsx21(Icon2, { size: 15, strokeWidth: 1.5 }),
+                      app.name
+                    ]
+                  },
+                  app.slug
+                );
+              })
             ] }),
             /* @__PURE__ */ jsxs16("div", { className: "py-1.5", children: [
               menuItems.map((it, i) => {
@@ -1680,7 +1765,7 @@ function UserMenu({
         "div",
         {
           role: "menu",
-          className: "absolute right-0 top-10 z-50 w-44 overflow-hidden rounded-xl border border-gray-100 bg-branco py-1.5 shadow-lg",
+          className: "absolute right-0 top-10 z-50 max-h-[80vh] w-44 overflow-x-hidden overflow-y-auto rounded-xl border border-gray-100 bg-branco py-1.5 shadow-lg",
           children: /* @__PURE__ */ jsxs16(
             "button",
             {
@@ -1715,6 +1800,9 @@ function AppUserMenu({
   onProfile,
   onSettings,
   extraItems,
+  apps,
+  currentAppSlug,
+  appsLoading,
   isDark,
   onToggleTheme,
   onLogout,
@@ -1733,6 +1821,9 @@ function AppUserMenu({
       avatarUrl,
       initials,
       items: items2,
+      apps,
+      currentAppSlug,
+      appsLoading,
       isDark,
       onToggleTheme,
       onLogout,
@@ -2189,7 +2280,7 @@ function DropdownMenuShortcut({
 // src/components/Select.tsx
 import * as React4 from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
-import { Check, ChevronDown as ChevronDown3, ChevronUp } from "lucide-react";
+import { Check as Check2, ChevronDown as ChevronDown3, ChevronUp } from "lucide-react";
 import { jsx as jsx30, jsxs as jsxs21 } from "react/jsx-runtime";
 var Select = SelectPrimitive.Root;
 var SelectGroup = SelectPrimitive.Group;
@@ -2277,7 +2368,7 @@ var SelectItem = React4.forwardRef(({ className, children, ...props }, ref) => /
     ),
     ...props,
     children: [
-      /* @__PURE__ */ jsx30("span", { className: "absolute left-2 flex h-3.5 w-3.5 items-center justify-center", children: /* @__PURE__ */ jsx30(SelectPrimitive.ItemIndicator, { children: /* @__PURE__ */ jsx30(Check, { className: "h-4 w-4" }) }) }),
+      /* @__PURE__ */ jsx30("span", { className: "absolute left-2 flex h-3.5 w-3.5 items-center justify-center", children: /* @__PURE__ */ jsx30(SelectPrimitive.ItemIndicator, { children: /* @__PURE__ */ jsx30(Check2, { className: "h-4 w-4" }) }) }),
       /* @__PURE__ */ jsx30(SelectPrimitive.ItemText, { children })
     ]
   }
