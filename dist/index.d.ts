@@ -414,6 +414,13 @@ interface UserMenuItem {
     /** Alternativa a onClick: navega para um href (link). */
     href?: string;
 }
+/** Um app do ecossistema, para a seção "Trocar de app" (formato de `GET /me/apps`). */
+interface UserMenuApp {
+    slug: string;
+    name: string;
+    icon: string | null;
+    url: string;
+}
 interface UserMenuProps {
     name?: string;
     email?: string;
@@ -424,6 +431,16 @@ interface UserMenuProps {
     items?: UserMenuItem[];
     /** Atalho: adiciona um item "Minha Conta" (ícone User) que navega para o href. */
     accountHref?: string;
+    /**
+     * Apps para a seção "Trocar de app" (entre o cabeçalho e os itens canônicos).
+     * Ausente, vazio, ou só o app atual (nada para trocar) = seção não aparece —
+     * retrocompatível, nenhuma app quebra ao repinar o pacote antes de adotar isto.
+     */
+    apps?: UserMenuApp[];
+    /** Slug do app atual — destaca a linha correspondente e a deixa não-clicável. */
+    currentAppSlug?: string;
+    /** true enquanto `apps` ainda está carregando — mostra skeleton em vez de nada. */
+    appsLoading?: boolean;
     /** Tema atual escuro? Quando `onToggleTheme` existe, mostra o toggle de tema. */
     isDark?: boolean;
     /** Alterna o tema claro/escuro. Se ausente, o toggle de tema não aparece. */
@@ -432,7 +449,7 @@ interface UserMenuProps {
     /** Tamanho do avatar: "sm" (h-8, mobile, default) ou "md" (h-10, header). */
     avatarSize?: "sm" | "md";
 }
-declare function UserMenu({ name, email, avatarUrl, initials, items, accountHref, isDark, onToggleTheme, onLogout, avatarSize, }: UserMenuProps): React.JSX.Element;
+declare function UserMenu({ name, email, avatarUrl, initials, items, accountHref, apps, currentAppSlug, appsLoading, isDark, onToggleTheme, onLogout, avatarSize, }: UserMenuProps): React.JSX.Element;
 
 /** Rótulos canônicos dos itens padrão — iguais em todas as apps do tema. */
 declare const USER_MENU_PROFILE_LABEL = "Minha Conta";
@@ -449,6 +466,15 @@ interface AppUserMenuProps {
     onSettings?: () => void;
     /** Itens específicos da app, sempre depois dos padrão (ex.: Idioma). */
     extraItems?: UserMenuItem[];
+    /**
+     * Apps do ecossistema para a seção "Trocar de app" (resposta de `GET /me/apps`).
+     * Ausente/vazio = seção não aparece — retrocompatível.
+     */
+    apps?: UserMenuApp[];
+    /** Slug do app atual (a app que está chamando o `AppUserMenu`). */
+    currentAppSlug?: string;
+    /** true enquanto `apps` ainda está carregando — mostra skeleton na seção. */
+    appsLoading?: boolean;
     /** Tema atual escuro? Com `onToggleTheme`, mostra o switch de tema. */
     isDark?: boolean;
     onToggleTheme?: () => void;
@@ -456,7 +482,7 @@ interface AppUserMenuProps {
     /** "md" (h-10) no header desktop; "sm" (h-8) no header mobile. Default: "md". */
     avatarSize?: "sm" | "md";
 }
-declare function AppUserMenu({ name, email, avatarUrl, initials, onProfile, onSettings, extraItems, isDark, onToggleTheme, onLogout, avatarSize, }: AppUserMenuProps): React.JSX.Element;
+declare function AppUserMenu({ name, email, avatarUrl, initials, onProfile, onSettings, extraItems, apps, currentAppSlug, appsLoading, isDark, onToggleTheme, onLogout, avatarSize, }: AppUserMenuProps): React.JSX.Element;
 
 interface EmptyStateProps {
     icon: LucideIcon;

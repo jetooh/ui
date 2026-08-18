@@ -5,16 +5,18 @@
 // seja idêntico em platform, admin e devices.
 //
 // Ordem canônica do menu:
-//   [nome + e-mail] · Minha Conta · Configurações · (extras da app) · Tema Escuro · Sair
+//   [nome + e-mail] · Trocar de app (se `apps`) · Minha Conta · Configurações ·
+//   (extras da app) · Tema Escuro · Sair
 //
 // Cada app passa só os CALLBACKS do que ela tem: sem `onProfile` o item "Minha
 // Conta" não aparece (ex.: admin, que é área interna e não tem painel pessoal);
 // sem `onSettings` idem. Itens específicos de uma app (ex.: "Idioma" no platform,
 // "Voltar ao admin" durante impersonation) entram por `extraItems`, sempre DEPOIS
-// dos padrão — nunca substituindo/renomeando os canônicos.
+// dos padrão — nunca substituindo/renomeando os canônicos. Sem `apps`, a seção
+// "Trocar de app" não aparece.
 import { Settings, User } from "lucide-react"
 
-import { UserMenu, type UserMenuItem } from "./UserMenu"
+import { UserMenu, type UserMenuItem, type UserMenuApp } from "./UserMenu"
 
 /** Rótulos canônicos dos itens padrão — iguais em todas as apps do tema. */
 export const USER_MENU_PROFILE_LABEL = "Minha Conta"
@@ -32,6 +34,15 @@ export interface AppUserMenuProps {
   onSettings?: () => void
   /** Itens específicos da app, sempre depois dos padrão (ex.: Idioma). */
   extraItems?: UserMenuItem[]
+  /**
+   * Apps do ecossistema para a seção "Trocar de app" (resposta de `GET /me/apps`).
+   * Ausente/vazio = seção não aparece — retrocompatível.
+   */
+  apps?: UserMenuApp[]
+  /** Slug do app atual (a app que está chamando o `AppUserMenu`). */
+  currentAppSlug?: string
+  /** true enquanto `apps` ainda está carregando — mostra skeleton na seção. */
+  appsLoading?: boolean
   /** Tema atual escuro? Com `onToggleTheme`, mostra o switch de tema. */
   isDark?: boolean
   onToggleTheme?: () => void
@@ -48,6 +59,9 @@ export function AppUserMenu({
   onProfile,
   onSettings,
   extraItems,
+  apps,
+  currentAppSlug,
+  appsLoading,
   isDark,
   onToggleTheme,
   onLogout,
@@ -66,6 +80,9 @@ export function AppUserMenu({
       avatarUrl={avatarUrl}
       initials={initials}
       items={items}
+      apps={apps}
+      currentAppSlug={currentAppSlug}
+      appsLoading={appsLoading}
       isDark={isDark}
       onToggleTheme={onToggleTheme}
       onLogout={onLogout}
