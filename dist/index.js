@@ -1670,7 +1670,7 @@ function UserMenu({
         "div",
         {
           role: "menu",
-          className: "absolute right-0 top-10 z-50 w-60 overflow-hidden rounded-xl border border-gray-200 bg-branco py-1.5 shadow-lg",
+          className: "absolute right-0 top-10 z-50 max-h-[80vh] w-60 overflow-x-hidden overflow-y-auto rounded-xl border border-gray-200 bg-branco py-1.5 shadow-lg",
           children: [
             (name || email) && /* @__PURE__ */ jsxs16("div", { className: "border-b border-gray-100 px-4 py-3", children: [
               /* @__PURE__ */ jsx21("p", { className: "text-sm font-medium text-preto", children: name || "\u2014" }),
@@ -1765,7 +1765,7 @@ function UserMenu({
         "div",
         {
           role: "menu",
-          className: "absolute right-0 top-10 z-50 w-44 overflow-hidden rounded-xl border border-gray-100 bg-branco py-1.5 shadow-lg",
+          className: "absolute right-0 top-10 z-50 max-h-[80vh] w-44 overflow-x-hidden overflow-y-auto rounded-xl border border-gray-100 bg-branco py-1.5 shadow-lg",
           children: /* @__PURE__ */ jsxs16(
             "button",
             {
