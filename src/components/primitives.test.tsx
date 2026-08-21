@@ -45,10 +45,9 @@ describe('Button', () => {
 });
 
 describe('AppFooter', () => {
-  it('mostra copyright e links institucionais', () => {
+  it('mostra só o copyright, sem links mortos', () => {
     render(<AppFooter />);
     expect(screen.getByText(/Jetooh\. Todos os direitos reservados/)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Termos de Uso' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Website' })).toBeInTheDocument();
+    expect(screen.queryAllByRole('link')).toHaveLength(0);
   });
 });
