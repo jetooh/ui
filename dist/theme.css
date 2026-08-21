@@ -163,3 +163,34 @@
   --primary-text: var(--color-roxo-claro);
   --secondary-active-bg: color-mix(in oklch, var(--primary) 15%, transparent);
 }
+
+/* ------------------------------------------------------------------------- *
+ * CURSOR — todo elemento clicável do tema mostra a mãozinha (JET-256, regra
+ * do dono via JET-251: o print mostrava os itens do SUBMENU sem cursor de
+ * mãozinha no hover). Em `@layer base` de propósito: fica ABAIXO das
+ * utilities do Tailwind na cascata, então um `cursor-grab`/`cursor-wait`/
+ * `cursor-progress`/`cursor-not-allowed` explícito de qualquer app continua
+ * vencendo (drag handle, estado de carregamento, opção bloqueada) — isto só
+ * entra como PADRÃO para quem não declarou cursor nenhum, que era exatamente
+ * o caso do `<button>` do submenu: o navegador não dá `cursor: pointer` de
+ * graça a um `<button>` nativo (ao contrário de `<a href>`), e nada aqui
+ * declarava a utility. Cobre de uma vez toda a casca (rail, sidebar
+ * secundária, sub nav mobile, bottom nav, menu do usuário, abas) sem precisar
+ * caçar cursor em cada componente.
+ * ------------------------------------------------------------------------- */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="tab"]:not([aria-disabled="true"]),
+  [role="menuitem"]:not([aria-disabled="true"]):not([data-disabled]),
+  [role="option"]:not([data-disabled]),
+  a[href] {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [aria-disabled="true"],
+  [data-disabled] {
+    cursor: not-allowed;
+  }
+}
