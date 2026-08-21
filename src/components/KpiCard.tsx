@@ -15,6 +15,13 @@ export interface KpiCardProps {
   trend?: string | null
   trendUp?: boolean
   hint?: string
+  // Contador puro (ex.: "163.934" exibições) NUNCA pode quebrar no meio do
+  // número — vira ilegível de relance. Default `false`: mantém `break-words`,
+  // aceitável para valor composto (ex.: "R$ 3.482.995,00", que tem espaço
+  // para quebrar E prefere isso a ser cortado pelo `overflow-hidden` do
+  // Card). `true` troca para `whitespace-nowrap` — use em KPIs cujo valor é
+  // sempre um único token numérico.
+  valueNoWrap?: boolean
 }
 
 export function KpiCard({
@@ -26,6 +33,7 @@ export function KpiCard({
   trend,
   trendUp,
   hint,
+  valueNoWrap = false,
 }: KpiCardProps) {
   return (
     <Card className="gap-0">
@@ -40,8 +48,14 @@ export function KpiCard({
           <span className="text-xs font-medium uppercase tracking-wider text-gray-500">{label}</span>
           {/* `break-words` é a última barreira: se ainda assim não couber (card
               muito estreito num grid de 4-5 colunas), o valor QUEBRA a linha em
-              vez de sumir cortado pelo `overflow-hidden` do Card. */}
-          <span className="break-words text-2xl font-bold tracking-tight text-preto">{value}</span>
+              vez de sumir cortado pelo `overflow-hidden` do Card. `valueNoWrap`
+              troca para `whitespace-nowrap` (contador puro, nunca quebra o
+              número — ver `KpiCardProps.valueNoWrap`). */}
+          <span
+            className={`${valueNoWrap ? "whitespace-nowrap" : "break-words"} text-2xl font-bold tracking-tight text-preto`}
+          >
+            {value}
+          </span>
           {trend && (
             <span
               className={`flex items-center gap-1 text-xs font-medium ${trendUp ? "text-verde-dark" : "text-red-600"}`}

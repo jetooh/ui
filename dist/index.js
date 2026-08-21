@@ -503,12 +503,19 @@ function KpiCard({
   iconColor = "text-roxo",
   trend,
   trendUp,
-  hint
+  hint,
+  valueNoWrap = false
 }) {
   return /* @__PURE__ */ jsx7(Card, { className: "gap-0", children: /* @__PURE__ */ jsxs4(CardHeader, { className: "flex flex-row items-start justify-between gap-2", children: [
     /* @__PURE__ */ jsxs4("div", { className: "flex min-w-0 flex-col gap-1", children: [
       /* @__PURE__ */ jsx7("span", { className: "text-xs font-medium uppercase tracking-wider text-gray-500", children: label }),
-      /* @__PURE__ */ jsx7("span", { className: "break-words text-2xl font-bold tracking-tight text-preto", children: value }),
+      /* @__PURE__ */ jsx7(
+        "span",
+        {
+          className: `${valueNoWrap ? "whitespace-nowrap" : "break-words"} text-2xl font-bold tracking-tight text-preto`,
+          children: value
+        }
+      ),
       trend && /* @__PURE__ */ jsxs4(
         "span",
         {

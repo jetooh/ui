@@ -98,8 +98,9 @@ interface KpiCardProps {
     trend?: string | null;
     trendUp?: boolean;
     hint?: string;
+    valueNoWrap?: boolean;
 }
-declare function KpiCard({ label, value, icon: Icon, iconBg, iconColor, trend, trendUp, hint, }: KpiCardProps): React.JSX.Element;
+declare function KpiCard({ label, value, icon: Icon, iconBg, iconColor, trend, trendUp, hint, valueNoWrap, }: KpiCardProps): React.JSX.Element;
 declare function KpiGrid({ children, className, cols, }: {
     children: ReactNode;
     className?: string;
