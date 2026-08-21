@@ -91,3 +91,7 @@ export { SegmentedTabs } from './components/SegmentedTabs';
 export type { SegmentedTabItem, SegmentedTabsProps } from './components/SegmentedTabs';
 export { DetailHeader } from './components/DetailHeader';
 export type { DetailHeaderProps } from './components/DetailHeader';
+export { AppGlobalSearch } from './components/AppGlobalSearch';
+export type {
+  AppGlobalSearchProps, AppGlobalSearchLabels, SearchFilterOption, SearchResultItem,
+} from './components/AppGlobalSearch';

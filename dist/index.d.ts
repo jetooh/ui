@@ -685,4 +685,47 @@ interface DetailHeaderProps {
 }
 declare function DetailHeader({ onBack, backLabel, title, titleAdornment, status, action }: DetailHeaderProps): React.JSX.Element;
 
-export { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, AppBottomNav, type AppBottomNavProps, AppFooter, AppMobileHeader, type AppMobileHeaderProps, AppRail, type AppRailProps, AppSecondarySidebar, type AppSecondarySidebarProps, AppSubNav, type AppSubNavProps, AppUserMenu, type AppUserMenuProps, Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, BOOT_COLORS, BOOT_LOGO_PATH, BOOT_THEME_DARK_VALUE, BOOT_THEME_STORAGE_KEY, Badge, type BottomNavItem, BrandLoading, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, type Compare, ConfirmDialog, type ConfirmDialogProps, ContentHeader, type ContentHeaderProps, DateRangePicker, type DateRangePickerProps, DateTimeField, type DateTimeFieldProps, DetailHeader, type DetailHeaderProps, type DeviceStatus, DeviceStatusBadge, type DeviceStatusBadgeProps, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, EmptyState, type EmptyStateProps, Input, type InputProps, KpiCard, type KpiCardProps, KpiGrid, Label, Loading, Modal, type ModalProps, NativeSelect, type NativeSelectProps, PRESETS, PageFrame, type PageFrameProps, type RailItem, type RangeValue, SearchEmptyState, SectionCard, type SectionCardProps, type SegmentedTabItem, SegmentedTabs, type SegmentedTabsProps, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, Separator, type SidebarNavItem, type SidebarSection, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, StatusBadge, type StatusBadgeProps, StatusDot, type StatusDotProps, type StatusVariant, Switch, type SwitchProps, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, USER_MENU_PROFILE_LABEL, USER_MENU_SETTINGS_LABEL, UserMenu, type UserMenuItem, type UserMenuProps, badgeVariants, buttonVariants, cn, comparisonRange, computePreset, defaultRange, deviceStatusMeta, toast, useToast };
+interface SearchFilterOption {
+    key: string;
+    label: string;
+    icon: LucideIcon;
+}
+interface SearchResultItem {
+    id: string;
+    icon: LucideIcon;
+    label: string;
+    category: string;
+    onSelect: () => void;
+}
+interface AppGlobalSearchLabels {
+    placeholder?: string;
+    filterBy?: string;
+    recentSearches?: string;
+    quickActions?: string;
+    noResults?: string;
+    close?: string;
+    navigate?: string;
+    open?: string;
+}
+interface AppGlobalSearchProps {
+    open: boolean;
+    onClose: () => void;
+    query: string;
+    onQueryChange: (query: string) => void;
+    /** Categorias de filtro. Ausente/vazio = sem sidebar/chips (busca sem categorias). */
+    filters?: SearchFilterOption[];
+    activeFilter?: string;
+    onFilterChange?: (key: string) => void;
+    /** Resultados para `query` não-vazia — já filtrados/carregados pela app. */
+    results?: SearchResultItem[];
+    /** Mostrados quando `query === ""`. */
+    recentItems?: SearchResultItem[];
+    /** Mostrados quando `query === ""` e o filtro ativo é "all"/ausente. */
+    quickActions?: SearchResultItem[];
+    isLoading?: boolean;
+    labels?: AppGlobalSearchLabels;
+    className?: string;
+}
+declare const AppGlobalSearch: React.NamedExoticComponent<AppGlobalSearchProps>;
+
+export { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, AppBottomNav, type AppBottomNavProps, AppFooter, AppGlobalSearch, type AppGlobalSearchLabels, type AppGlobalSearchProps, AppMobileHeader, type AppMobileHeaderProps, AppRail, type AppRailProps, AppSecondarySidebar, type AppSecondarySidebarProps, AppSubNav, type AppSubNavProps, AppUserMenu, type AppUserMenuProps, Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, BOOT_COLORS, BOOT_LOGO_PATH, BOOT_THEME_DARK_VALUE, BOOT_THEME_STORAGE_KEY, Badge, type BottomNavItem, BrandLoading, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, type Compare, ConfirmDialog, type ConfirmDialogProps, ContentHeader, type ContentHeaderProps, DateRangePicker, type DateRangePickerProps, DateTimeField, type DateTimeFieldProps, DetailHeader, type DetailHeaderProps, type DeviceStatus, DeviceStatusBadge, type DeviceStatusBadgeProps, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, EmptyState, type EmptyStateProps, Input, type InputProps, KpiCard, type KpiCardProps, KpiGrid, Label, Loading, Modal, type ModalProps, NativeSelect, type NativeSelectProps, PRESETS, PageFrame, type PageFrameProps, type RailItem, type RangeValue, SearchEmptyState, type SearchFilterOption, type SearchResultItem, SectionCard, type SectionCardProps, type SegmentedTabItem, SegmentedTabs, type SegmentedTabsProps, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, Separator, type SidebarNavItem, type SidebarSection, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, StatusBadge, type StatusBadgeProps, StatusDot, type StatusDotProps, type StatusVariant, Switch, type SwitchProps, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, USER_MENU_PROFILE_LABEL, USER_MENU_SETTINGS_LABEL, UserMenu, type UserMenuItem, type UserMenuProps, badgeVariants, buttonVariants, cn, comparisonRange, computePreset, defaultRange, deviceStatusMeta, toast, useToast };
