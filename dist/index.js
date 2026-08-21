@@ -1206,7 +1206,7 @@ function DateRangePicker({ value, onApply }) {
 // src/components/AppRail.tsx
 import { memo } from "react";
 import { ChevronRight } from "lucide-react";
-import { jsx as jsx14, jsxs as jsxs9 } from "react/jsx-runtime";
+import { Fragment, jsx as jsx14, jsxs as jsxs9 } from "react/jsx-runtime";
 var AppRail = memo(function AppRail2({
   items: items2,
   bottomItems,
@@ -1217,25 +1217,48 @@ var AppRail = memo(function AppRail2({
   onExpand,
   hideOnMobile
 }) {
-  const renderItem = (item) => /* @__PURE__ */ jsxs9(
-    "button",
-    {
-      title: item.label,
-      "aria-current": activeId === item.id ? "page" : void 0,
-      onClick: () => onNavigate(item.id),
-      onMouseEnter: () => onPrefetch?.(item.id),
-      className: cn(
-        "group/rail-item relative flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-150",
-        activeId === item.id ? "border border-rail-active-border bg-rail-active-bg text-white" : "text-[#9CA3AF] hover:bg-rail-icon-hover hover:text-rail-icon-hover-text"
-      ),
-      children: [
-        /* @__PURE__ */ jsx14(item.icon, { size: 20, strokeWidth: 1.5 }),
-        item.badge != null && item.badge > 0 && /* @__PURE__ */ jsx14("span", { className: "absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold leading-none text-white ring-2 ring-rail-bg", children: item.badge > 9 ? "9+" : item.badge }),
-        /* @__PURE__ */ jsx14("span", { className: "pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-rail-bg px-2.5 py-1.5 text-[11px] font-medium text-white opacity-0 shadow-lg transition-opacity group-hover/rail-item:opacity-100", children: item.label })
-      ]
-    },
-    item.id
-  );
+  const renderItem = (item) => {
+    const itemClassName = cn(
+      "group/rail-item relative flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-150",
+      activeId === item.id ? "border border-rail-active-border bg-rail-active-bg text-white" : "text-[#9CA3AF] hover:bg-rail-icon-hover hover:text-rail-icon-hover-text"
+    );
+    const content = /* @__PURE__ */ jsxs9(Fragment, { children: [
+      /* @__PURE__ */ jsx14(item.icon, { size: 20, strokeWidth: 1.5 }),
+      item.badge != null && item.badge > 0 && /* @__PURE__ */ jsx14("span", { className: "absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold leading-none text-white ring-2 ring-rail-bg", children: item.badge > 9 ? "9+" : item.badge }),
+      /* @__PURE__ */ jsx14("span", { className: "pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-rail-bg px-2.5 py-1.5 text-[11px] font-medium text-white opacity-0 shadow-lg transition-opacity group-hover/rail-item:opacity-100", children: item.label })
+    ] });
+    if (item.href) {
+      return /* @__PURE__ */ jsx14(
+        "a",
+        {
+          href: item.href,
+          title: item.label,
+          "aria-current": activeId === item.id ? "page" : void 0,
+          onClick: (e) => {
+            if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+            e.preventDefault();
+            onNavigate(item.id);
+          },
+          onMouseEnter: () => onPrefetch?.(item.id),
+          className: itemClassName,
+          children: content
+        },
+        item.id
+      );
+    }
+    return /* @__PURE__ */ jsx14(
+      "button",
+      {
+        title: item.label,
+        "aria-current": activeId === item.id ? "page" : void 0,
+        onClick: () => onNavigate(item.id),
+        onMouseEnter: () => onPrefetch?.(item.id),
+        className: itemClassName,
+        children: content
+      },
+      item.id
+    );
+  };
   return /* @__PURE__ */ jsxs9(
     "div",
     {
@@ -1378,7 +1401,7 @@ var AppSubNav = memo2(function AppSubNav2({
 
 // src/components/ContentHeader.tsx
 import { ChevronDown as ChevronDown2 } from "lucide-react";
-import { Fragment, jsx as jsx16, jsxs as jsxs11 } from "react/jsx-runtime";
+import { Fragment as Fragment2, jsx as jsx16, jsxs as jsxs11 } from "react/jsx-runtime";
 function ContentHeader({
   icon: Icon2,
   moduleTitle,
@@ -1400,7 +1423,7 @@ function ContentHeader({
           /* @__PURE__ */ jsxs11("div", { className: "min-w-0", children: [
             /* @__PURE__ */ jsxs11("div", { className: "flex min-w-0 items-center gap-1", children: [
               /* @__PURE__ */ jsx16("h1", { className: "truncate text-xl font-bold text-preto xl:text-2xl", children: moduleTitle }),
-              subTitle && /* @__PURE__ */ jsxs11(Fragment, { children: [
+              subTitle && /* @__PURE__ */ jsxs11(Fragment2, { children: [
                 /* @__PURE__ */ jsx16(ChevronDown2, { size: 16, strokeWidth: 1.5, className: "shrink-0 -rotate-90 text-gray-300" }),
                 /* @__PURE__ */ jsx16("span", { className: "truncate text-xl font-bold text-preto xl:text-2xl", children: subTitle })
               ] })
@@ -1614,7 +1637,7 @@ function isSafeAppUrl(url) {
 }
 
 // src/components/UserMenu.tsx
-import { Fragment as Fragment2, jsx as jsx21, jsxs as jsxs16 } from "react/jsx-runtime";
+import { Fragment as Fragment3, jsx as jsx21, jsxs as jsxs16 } from "react/jsx-runtime";
 function openApp(url) {
   if (!isSafeAppUrl(url)) {
     console.error("[UserMenu] host fora do ecossistema, redirect bloqueado:", url);
@@ -1671,7 +1694,7 @@ function UserMenu({
         ] })
       }
     ),
-    open && /* @__PURE__ */ jsxs16(Fragment2, { children: [
+    open && /* @__PURE__ */ jsxs16(Fragment3, { children: [
       /* @__PURE__ */ jsx21("div", { className: "fixed inset-0 z-40", onClick: () => setOpen(false) }),
       rich ? /* @__PURE__ */ jsxs16(
         "div",
@@ -2418,7 +2441,7 @@ NativeSelect.displayName = "NativeSelect";
 
 // src/components/ConfirmDialog.tsx
 import { Loader2 } from "lucide-react";
-import { Fragment as Fragment3, jsx as jsx32, jsxs as jsxs23 } from "react/jsx-runtime";
+import { Fragment as Fragment4, jsx as jsx32, jsxs as jsxs23 } from "react/jsx-runtime";
 function ConfirmDialog({
   open,
   title,
@@ -2435,7 +2458,7 @@ function ConfirmDialog({
     {
       open,
       onClose,
-      footer: /* @__PURE__ */ jsxs23(Fragment3, { children: [
+      footer: /* @__PURE__ */ jsxs23(Fragment4, { children: [
         /* @__PURE__ */ jsx32(
           Button,
           {

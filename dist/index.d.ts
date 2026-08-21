@@ -277,6 +277,8 @@ interface RailItem {
     id: string;
     label: string;
     icon: LucideIcon;
+    /** URL real do item (opcional). Presente = renderiza <a href>; ausente = <button> (compat). */
+    href?: string;
     /** Contador de notificação (bolinha vermelha). Ausente/0 = sem badge. */
     badge?: number;
 }

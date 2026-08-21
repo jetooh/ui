@@ -1,7 +1,9 @@
 // Rail de navegação canônico do ecossistema (a "casca" do menu lateral).
 // Estrutura/estilo/a11y ÚNICOS; cada app passa SEUS itens + o item ativo + como
-// navegar (router-agnóstico: botão + onNavigate(id)). Badge de notificação e
-// botão de expandir são opcionais. Régua = platform (icon-rail).
+// navegar. Item com `href` renderiza <a> real (Ctrl/Cmd+clique abre em nova
+// aba, copiar link funciona) e navega client-side via onNavigate no clique
+// normal; item sem `href` continua <button> (router-agnóstico, compat).
+// Badge de notificação e botão de expandir são opcionais. Régua = platform (icon-rail).
 import { memo } from "react"
 import { ChevronRight, type LucideIcon } from "lucide-react"
 
@@ -11,6 +13,8 @@ export interface RailItem {
   id: string
   label: string
   icon: LucideIcon
+  /** URL real do item (opcional). Presente = renderiza <a href>; ausente = <button> (compat). */
+  href?: string
   /** Contador de notificação (bolinha vermelha). Ausente/0 = sem badge. */
   badge?: number
 }
@@ -39,33 +43,64 @@ export const AppRail = memo(function AppRail({
   onExpand,
   hideOnMobile,
 }: AppRailProps) {
-  const renderItem = (item: RailItem) => (
-    <button
-      key={item.id}
-      title={item.label}
-      aria-current={activeId === item.id ? "page" : undefined}
-      onClick={() => onNavigate(item.id)}
-      onMouseEnter={() => onPrefetch?.(item.id)}
-      className={cn(
-        "group/rail-item relative flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-150",
-        activeId === item.id
-          ? "border border-rail-active-border bg-rail-active-bg text-white"
-          : "text-[#9CA3AF] hover:bg-rail-icon-hover hover:text-rail-icon-hover-text",
-      )}
-    >
-      <item.icon size={20} strokeWidth={1.5} />
-      {item.badge != null && item.badge > 0 && (
-        <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold leading-none text-white ring-2 ring-rail-bg">
-          {item.badge > 9 ? "9+" : item.badge}
+  const renderItem = (item: RailItem) => {
+    const itemClassName = cn(
+      "group/rail-item relative flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-150",
+      activeId === item.id
+        ? "border border-rail-active-border bg-rail-active-bg text-white"
+        : "text-[#9CA3AF] hover:bg-rail-icon-hover hover:text-rail-icon-hover-text",
+    )
+    const content = (
+      <>
+        <item.icon size={20} strokeWidth={1.5} />
+        {item.badge != null && item.badge > 0 && (
+          <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold leading-none text-white ring-2 ring-rail-bg">
+            {item.badge > 9 ? "9+" : item.badge}
+          </span>
+        )}
+        {/* bg-rail-bg (escuro nos 2 temas), NÃO bg-gray-900 — gray-900 inverte no
+            dark (#F9FAFB) e o text-white sumiria (branco no branco). */}
+        <span className="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-rail-bg px-2.5 py-1.5 text-[11px] font-medium text-white opacity-0 shadow-lg transition-opacity group-hover/rail-item:opacity-100">
+          {item.label}
         </span>
-      )}
-      {/* bg-rail-bg (escuro nos 2 temas), NÃO bg-gray-900 — gray-900 inverte no
-          dark (#F9FAFB) e o text-white sumiria (branco no branco). */}
-      <span className="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-rail-bg px-2.5 py-1.5 text-[11px] font-medium text-white opacity-0 shadow-lg transition-opacity group-hover/rail-item:opacity-100">
-        {item.label}
-      </span>
-    </button>
-  )
+      </>
+    )
+
+    if (item.href) {
+      return (
+        <a
+          key={item.id}
+          href={item.href}
+          title={item.label}
+          aria-current={activeId === item.id ? "page" : undefined}
+          onClick={(e) => {
+            // Ctrl/Cmd/Shift/Alt+clique ou clique do meio: deixa o navegador
+            // abrir em nova aba/janela (comportamento nativo do <a href>).
+            if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+            e.preventDefault()
+            onNavigate(item.id)
+          }}
+          onMouseEnter={() => onPrefetch?.(item.id)}
+          className={itemClassName}
+        >
+          {content}
+        </a>
+      )
+    }
+
+    return (
+      <button
+        key={item.id}
+        title={item.label}
+        aria-current={activeId === item.id ? "page" : undefined}
+        onClick={() => onNavigate(item.id)}
+        onMouseEnter={() => onPrefetch?.(item.id)}
+        className={itemClassName}
+      >
+        {content}
+      </button>
+    )
+  }
 
   return (
     <div

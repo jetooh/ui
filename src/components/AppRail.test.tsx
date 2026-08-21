@@ -42,4 +42,37 @@ describe('AppRail', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Expandir menu' }));
     expect(onExpand).toHaveBeenCalled();
   });
+
+  describe('item com href', () => {
+    const linkedItems: RailItem[] = [
+      { id: '/dashboard', label: 'Dashboard', href: '/dashboard', icon: Home },
+      { id: '/devices', label: 'Dispositivos', href: '/devices', icon: Monitor },
+    ];
+
+    it('renderiza <a href> real em vez de <button>', () => {
+      render(<AppRail items={linkedItems} activeId="/devices" onNavigate={() => {}} />);
+      const link = screen.getByRole('link', { name: 'Dispositivos' });
+      expect(link).toHaveAttribute('href', '/devices');
+      expect(link).toHaveAttribute('aria-current', 'page');
+      expect(screen.queryByRole('button', { name: 'Dispositivos' })).not.toBeInTheDocument();
+    });
+
+    it('clique normal previne o reload e navega client-side via onNavigate', () => {
+      const onNavigate = vi.fn();
+      render(<AppRail items={linkedItems} activeId="/dashboard" onNavigate={onNavigate} />);
+      const link = screen.getByRole('link', { name: 'Dispositivos' });
+      const event = fireEvent.click(link);
+      expect(onNavigate).toHaveBeenCalledWith('/devices');
+      expect(event).toBe(false); // preventDefault() foi chamado (sem reload)
+    });
+
+    it('Ctrl/Cmd+clique não chama onNavigate nem previne o default (abre em nova aba)', () => {
+      const onNavigate = vi.fn();
+      render(<AppRail items={linkedItems} activeId="/dashboard" onNavigate={onNavigate} />);
+      const link = screen.getByRole('link', { name: 'Dispositivos' });
+      const event = fireEvent.click(link, { ctrlKey: true });
+      expect(onNavigate).not.toHaveBeenCalled();
+      expect(event).toBe(true); // preventDefault() NÃO foi chamado
+    });
+  });
 });
