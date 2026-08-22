@@ -1581,7 +1581,7 @@ function AppMobileHeader({ onMenuToggle, logoSrc = "/icone.svg", actions, userMe
 }
 
 // src/components/UserMenu.tsx
-import { useState as useState3 } from "react";
+import { useEffect as useEffect4, useRef as useRef2, useState as useState3 } from "react";
 import { LogOut, User, Moon, Sun as Sun2, Check } from "lucide-react";
 
 // src/lib/app-switcher-icon.ts
@@ -1614,7 +1614,7 @@ function isSafeAppUrl(url) {
 }
 
 // src/components/UserMenu.tsx
-import { Fragment as Fragment3, jsx as jsx22, jsxs as jsxs16 } from "react/jsx-runtime";
+import { jsx as jsx22, jsxs as jsxs16 } from "react/jsx-runtime";
 function openApp(url) {
   if (!isSafeAppUrl(url)) {
     console.error("[UserMenu] host fora do ecossistema, redirect bloqueado:", url);
@@ -1638,6 +1638,28 @@ function UserMenu({
   avatarSize = "sm"
 }) {
   const [open, setOpen] = useState3(false);
+  const containerRef = useRef2(null);
+  const triggerRef = useRef2(null);
+  useEffect4(() => {
+    if (!open) return;
+    const handlePointerDown = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open]);
   const menuItems = [
     ...accountHref ? [{ label: "Minha Conta", icon: User, href: accountHref }] : [],
     ...items2 ?? []
@@ -1656,10 +1678,11 @@ function UserMenu({
     setOpen(false);
     openApp(app.url);
   };
-  return /* @__PURE__ */ jsxs16("div", { className: "relative ml-1", children: [
+  return /* @__PURE__ */ jsxs16("div", { className: "relative ml-1", ref: containerRef, children: [
     /* @__PURE__ */ jsx22(
       "button",
       {
+        ref: triggerRef,
         onClick: () => setOpen((v) => !v),
         "aria-haspopup": "menu",
         "aria-expanded": open,
@@ -1671,109 +1694,85 @@ function UserMenu({
         ] })
       }
     ),
-    open && /* @__PURE__ */ jsxs16(Fragment3, { children: [
-      /* @__PURE__ */ jsx22("div", { className: "fixed inset-0 z-40", onClick: () => setOpen(false) }),
-      rich ? /* @__PURE__ */ jsxs16(
-        "div",
-        {
-          role: "menu",
-          className: "absolute right-0 top-10 z-50 max-h-[80vh] w-60 overflow-x-hidden overflow-y-auto rounded-xl border border-gray-200 bg-branco py-1.5 shadow-lg",
-          children: [
-            (name || email) && /* @__PURE__ */ jsxs16("div", { className: "border-b border-gray-100 px-4 py-3", children: [
-              /* @__PURE__ */ jsx22("p", { className: "text-sm font-medium text-preto", children: name || "\u2014" }),
-              email && /* @__PURE__ */ jsx22("p", { className: "text-xs text-gray-500", children: email })
-            ] }),
-            showAppSwitcher && /* @__PURE__ */ jsxs16("div", { className: "border-b border-gray-100 py-1.5", children: [
-              /* @__PURE__ */ jsx22("p", { className: "px-4 pb-1 pt-0.5 text-[11px] font-bold uppercase tracking-widest text-muted-foreground", children: "Trocar de app" }),
-              appsLoading ? /* @__PURE__ */ jsxs16("div", { className: "space-y-1.5 px-4 py-1", "aria-hidden": "true", children: [
-                /* @__PURE__ */ jsx22(Skeleton, { className: "h-8 w-full rounded-lg" }),
-                /* @__PURE__ */ jsx22(Skeleton, { className: "h-8 w-full rounded-lg" })
-              ] }) : switchableApps.map((app) => {
-                const Icon2 = appSwitcherIcon(app.icon);
-                const isCurrent = app.slug === currentAppSlug;
-                return isCurrent ? /* @__PURE__ */ jsxs16(
-                  "div",
-                  {
-                    role: "menuitem",
-                    "aria-current": "true",
-                    "aria-disabled": "true",
-                    className: "flex w-full items-center gap-3 rounded-lg bg-roxo/5 px-4 py-2 text-[13px] font-medium text-roxo",
-                    children: [
-                      /* @__PURE__ */ jsx22(Icon2, { size: 15, strokeWidth: 1.5 }),
-                      /* @__PURE__ */ jsx22("span", { className: "flex-1 text-left", children: app.name }),
-                      /* @__PURE__ */ jsx22(Check, { size: 15, strokeWidth: 2 })
-                    ]
-                  },
-                  app.slug
-                ) : /* @__PURE__ */ jsxs16(
-                  "button",
-                  {
-                    role: "menuitem",
-                    onClick: () => runApp(app),
-                    className: "flex w-full items-center gap-3 px-4 py-2 text-[13px] text-gray-600 transition-colors hover:bg-gray-50 hover:text-preto",
-                    children: [
-                      /* @__PURE__ */ jsx22(Icon2, { size: 15, strokeWidth: 1.5 }),
-                      app.name
-                    ]
-                  },
-                  app.slug
-                );
-              })
-            ] }),
-            /* @__PURE__ */ jsxs16("div", { className: "py-1.5", children: [
-              menuItems.map((it, i) => {
-                const Icon2 = it.icon;
-                return /* @__PURE__ */ jsxs16(
-                  "button",
-                  {
-                    role: "menuitem",
-                    onClick: () => runItem(it),
-                    className: "flex w-full items-center gap-3 px-4 py-2 text-[13px] text-gray-600 transition-colors hover:bg-gray-50 hover:text-preto",
-                    children: [
-                      Icon2 && /* @__PURE__ */ jsx22(Icon2, { size: 15, strokeWidth: 1.5 }),
-                      it.label
-                    ]
-                  },
-                  `${it.label}-${i}`
-                );
-              }),
-              onToggleTheme && /* @__PURE__ */ jsxs16("div", { className: "flex w-full items-center gap-3 px-4 py-2 text-[13px] text-gray-600", children: [
-                isDark ? /* @__PURE__ */ jsx22(Sun2, { size: 15, strokeWidth: 1.5 }) : /* @__PURE__ */ jsx22(Moon, { size: 15, strokeWidth: 1.5 }),
-                /* @__PURE__ */ jsx22("span", { className: "flex-1 text-left", children: "Tema Escuro" }),
-                /* @__PURE__ */ jsx22(
-                  Switch,
-                  {
-                    checked: Boolean(isDark),
-                    onCheckedChange: () => onToggleTheme(),
-                    size: "sm",
-                    label: "Alternar tema escuro"
-                  }
-                )
-              ] })
-            ] }),
-            /* @__PURE__ */ jsx22("div", { className: "border-t border-gray-100 pt-1.5", children: /* @__PURE__ */ jsxs16(
-              "button",
-              {
-                role: "menuitem",
-                onClick: () => {
-                  setOpen(false);
-                  onLogout();
+    open && (rich ? /* @__PURE__ */ jsxs16(
+      "div",
+      {
+        role: "menu",
+        className: "absolute right-0 top-10 z-50 max-h-[80vh] w-60 overflow-x-hidden overflow-y-auto rounded-xl border border-gray-200 bg-branco py-1.5 shadow-lg",
+        children: [
+          (name || email) && /* @__PURE__ */ jsxs16("div", { className: "border-b border-gray-100 px-4 py-3", children: [
+            /* @__PURE__ */ jsx22("p", { className: "text-sm font-medium text-preto", children: name || "\u2014" }),
+            email && /* @__PURE__ */ jsx22("p", { className: "text-xs text-gray-500", children: email })
+          ] }),
+          showAppSwitcher && /* @__PURE__ */ jsxs16("div", { className: "border-b border-gray-100 py-1.5", children: [
+            /* @__PURE__ */ jsx22("p", { className: "px-4 pb-1 pt-0.5 text-[11px] font-bold uppercase tracking-widest text-muted-foreground", children: "Trocar de app" }),
+            appsLoading ? /* @__PURE__ */ jsxs16("div", { className: "space-y-1.5 px-4 py-1", "aria-hidden": "true", children: [
+              /* @__PURE__ */ jsx22(Skeleton, { className: "h-8 w-full rounded-lg" }),
+              /* @__PURE__ */ jsx22(Skeleton, { className: "h-8 w-full rounded-lg" })
+            ] }) : switchableApps.map((app) => {
+              const Icon2 = appSwitcherIcon(app.icon);
+              const isCurrent = app.slug === currentAppSlug;
+              return isCurrent ? /* @__PURE__ */ jsxs16(
+                "div",
+                {
+                  role: "menuitem",
+                  "aria-current": "true",
+                  "aria-disabled": "true",
+                  className: "flex w-full items-center gap-3 rounded-lg bg-roxo/5 px-4 py-2 text-[13px] font-medium text-roxo",
+                  children: [
+                    /* @__PURE__ */ jsx22(Icon2, { size: 15, strokeWidth: 1.5 }),
+                    /* @__PURE__ */ jsx22("span", { className: "flex-1 text-left", children: app.name }),
+                    /* @__PURE__ */ jsx22(Check, { size: 15, strokeWidth: 2 })
+                  ]
                 },
-                className: "flex w-full items-center gap-3 px-4 py-2 text-[13px] text-gray-600 transition-colors hover:bg-gray-50 hover:text-preto",
-                children: [
-                  /* @__PURE__ */ jsx22(LogOut, { size: 15, strokeWidth: 1.5 }),
-                  "Sair"
-                ]
-              }
-            ) })
-          ]
-        }
-      ) : /* @__PURE__ */ jsx22(
-        "div",
-        {
-          role: "menu",
-          className: "absolute right-0 top-10 z-50 max-h-[80vh] w-44 overflow-x-hidden overflow-y-auto rounded-xl border border-gray-100 bg-branco py-1.5 shadow-lg",
-          children: /* @__PURE__ */ jsxs16(
+                app.slug
+              ) : /* @__PURE__ */ jsxs16(
+                "button",
+                {
+                  role: "menuitem",
+                  onClick: () => runApp(app),
+                  className: "flex w-full items-center gap-3 px-4 py-2 text-[13px] text-gray-600 transition-colors hover:bg-gray-50 hover:text-preto",
+                  children: [
+                    /* @__PURE__ */ jsx22(Icon2, { size: 15, strokeWidth: 1.5 }),
+                    app.name
+                  ]
+                },
+                app.slug
+              );
+            })
+          ] }),
+          /* @__PURE__ */ jsxs16("div", { className: "py-1.5", children: [
+            menuItems.map((it, i) => {
+              const Icon2 = it.icon;
+              return /* @__PURE__ */ jsxs16(
+                "button",
+                {
+                  role: "menuitem",
+                  onClick: () => runItem(it),
+                  className: "flex w-full items-center gap-3 px-4 py-2 text-[13px] text-gray-600 transition-colors hover:bg-gray-50 hover:text-preto",
+                  children: [
+                    Icon2 && /* @__PURE__ */ jsx22(Icon2, { size: 15, strokeWidth: 1.5 }),
+                    it.label
+                  ]
+                },
+                `${it.label}-${i}`
+              );
+            }),
+            onToggleTheme && /* @__PURE__ */ jsxs16("div", { className: "flex w-full items-center gap-3 px-4 py-2 text-[13px] text-gray-600", children: [
+              isDark ? /* @__PURE__ */ jsx22(Sun2, { size: 15, strokeWidth: 1.5 }) : /* @__PURE__ */ jsx22(Moon, { size: 15, strokeWidth: 1.5 }),
+              /* @__PURE__ */ jsx22("span", { className: "flex-1 text-left", children: "Tema Escuro" }),
+              /* @__PURE__ */ jsx22(
+                Switch,
+                {
+                  checked: Boolean(isDark),
+                  onCheckedChange: () => onToggleTheme(),
+                  size: "sm",
+                  label: "Alternar tema escuro"
+                }
+              )
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx22("div", { className: "border-t border-gray-100 pt-1.5", children: /* @__PURE__ */ jsxs16(
             "button",
             {
               role: "menuitem",
@@ -1787,10 +1786,31 @@ function UserMenu({
                 "Sair"
               ]
             }
-          )
-        }
-      )
-    ] })
+          ) })
+        ]
+      }
+    ) : /* @__PURE__ */ jsx22(
+      "div",
+      {
+        role: "menu",
+        className: "absolute right-0 top-10 z-50 max-h-[80vh] w-44 overflow-x-hidden overflow-y-auto rounded-xl border border-gray-100 bg-branco py-1.5 shadow-lg",
+        children: /* @__PURE__ */ jsxs16(
+          "button",
+          {
+            role: "menuitem",
+            onClick: () => {
+              setOpen(false);
+              onLogout();
+            },
+            className: "flex w-full items-center gap-3 px-4 py-2 text-[13px] text-gray-600 transition-colors hover:bg-gray-50 hover:text-preto",
+            children: [
+              /* @__PURE__ */ jsx22(LogOut, { size: 15, strokeWidth: 1.5 }),
+              "Sair"
+            ]
+          }
+        )
+      }
+    ))
   ] });
 }
 
@@ -2418,7 +2438,7 @@ NativeSelect.displayName = "NativeSelect";
 
 // src/components/ConfirmDialog.tsx
 import { Loader2 } from "lucide-react";
-import { Fragment as Fragment4, jsx as jsx33, jsxs as jsxs23 } from "react/jsx-runtime";
+import { Fragment as Fragment3, jsx as jsx33, jsxs as jsxs23 } from "react/jsx-runtime";
 function ConfirmDialog({
   open,
   title,
@@ -2435,7 +2455,7 @@ function ConfirmDialog({
     {
       open,
       onClose,
-      footer: /* @__PURE__ */ jsxs23(Fragment4, { children: [
+      footer: /* @__PURE__ */ jsxs23(Fragment3, { children: [
         /* @__PURE__ */ jsx33(
           Button,
           {
@@ -2663,9 +2683,9 @@ function DetailHeader({ onBack, backLabel = "Voltar", title, titleAdornment, sta
 }
 
 // src/components/AppGlobalSearch.tsx
-import { useEffect as useEffect4, useRef as useRef2, memo as memo5 } from "react";
+import { useEffect as useEffect5, useRef as useRef3, memo as memo5 } from "react";
 import { Search, X as X4, ArrowRight } from "lucide-react";
-import { Fragment as Fragment5, jsx as jsx38, jsxs as jsxs28 } from "react/jsx-runtime";
+import { Fragment as Fragment4, jsx as jsx38, jsxs as jsxs28 } from "react/jsx-runtime";
 var DEFAULT_LABELS = {
   placeholder: "Buscar...",
   filterBy: "Filtrar por",
@@ -2712,11 +2732,11 @@ var AppGlobalSearch = memo5(function AppGlobalSearch2({
   className
 }) {
   const t = { ...DEFAULT_LABELS, ...labels };
-  const inputRef = useRef2(null);
-  useEffect4(() => {
+  const inputRef = useRef3(null);
+  useEffect5(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 50);
   }, [open]);
-  useEffect4(() => {
+  useEffect5(() => {
     if (!open) return;
     const handleKeyDown = (e) => {
       if (e.key === "Escape") onClose();
@@ -2758,7 +2778,7 @@ var AppGlobalSearch = memo5(function AppGlobalSearch2({
       ] }),
       /* @__PURE__ */ jsx38("div", { className: "border-t border-gray-100" }),
       /* @__PURE__ */ jsxs28("div", { className: "flex flex-col sm:flex-row sm:min-h-[420px]", children: [
-        filters.length > 0 && /* @__PURE__ */ jsxs28(Fragment5, { children: [
+        filters.length > 0 && /* @__PURE__ */ jsxs28(Fragment4, { children: [
           /* @__PURE__ */ jsx38("div", { className: "flex gap-1.5 overflow-x-auto border-b border-gray-100 px-4 py-2.5 sm:hidden", children: filters.map((filter) => /* @__PURE__ */ jsxs28(
             "button",
             {
@@ -2800,7 +2820,7 @@ var AppGlobalSearch = memo5(function AppGlobalSearch2({
             )) })
           ] })
         ] }),
-        /* @__PURE__ */ jsx38("div", { className: "flex-1 overflow-y-auto", children: showEmptyQuery ? /* @__PURE__ */ jsxs28(Fragment5, { children: [
+        /* @__PURE__ */ jsx38("div", { className: "flex-1 overflow-y-auto", children: showEmptyQuery ? /* @__PURE__ */ jsxs28(Fragment4, { children: [
           recentItems.length > 0 && /* @__PURE__ */ jsxs28("div", { className: "p-3", children: [
             /* @__PURE__ */ jsx38("p", { className: "mb-1.5 px-2 text-[10px] font-semibold uppercase tracking-widest text-gray-500", children: t.recentSearches }),
             /* @__PURE__ */ jsx38("div", { className: "flex flex-col gap-0.5", children: recentItems.map((item) => /* @__PURE__ */ jsx38(ResultRow, { item, onClose }, item.id)) })

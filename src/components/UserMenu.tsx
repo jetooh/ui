@@ -7,7 +7,7 @@
 //  • RICO (header desktop): passe `email`, `items`, `accountHref` e/ou
 //    `onToggleTheme` → popover com header (nome+email), itens, toggle de tema e
 //    "Sair" — igual ao menu do avatar do platform/devices.
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { LogOut, User, Moon, Sun, Check, type LucideIcon } from "lucide-react"
 
 import { Avatar, AvatarImage, AvatarFallback } from "./Avatar"
@@ -83,6 +83,38 @@ export function UserMenu({
   avatarSize = "sm",
 }: UserMenuProps) {
   const [open, setOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+
+  // Fecha ao tocar/clicar fora e no Escape — via listener no `document`, não um
+  // backdrop `fixed inset-0`. O backdrop falhava sempre que algum elemento da
+  // casca (rail, sidebar) tinha z-index >= o dele (ex.: AppRail é z-50, o
+  // backdrop era z-40): o clique era capturado por esse elemento antes de
+  // chegar ao backdrop, e o menu nunca fechava (JET-264). `pointerdown` no
+  // `document` não depende de stacking context — dispara pelo bubbling, seja
+  // qual for o elemento clicado.
+  useEffect(() => {
+    if (!open) return
+
+    const handlePointerDown = (e: PointerEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false)
+        triggerRef.current?.focus()
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown)
+    document.addEventListener("keydown", handleKeyDown)
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown)
+      document.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [open])
 
   // Itens efetivos: "Minha Conta" (accountHref) na frente dos itens passados.
   const menuItems: UserMenuItem[] = [
@@ -112,8 +144,9 @@ export function UserMenu({
   }
 
   return (
-    <div className="relative ml-1">
+    <div className="relative ml-1" ref={containerRef}>
       <button
+        ref={triggerRef}
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="menu"
         aria-expanded={open}
@@ -129,10 +162,7 @@ export function UserMenu({
       </button>
 
       {open && (
-        <>
-          {/* Backdrop para fechar ao tocar fora. */}
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          {rich ? (
+        rich ? (
             <div
               role="menu"
               className="absolute right-0 top-10 z-50 max-h-[80vh] w-60 overflow-x-hidden overflow-y-auto rounded-xl border border-gray-200 bg-branco py-1.5 shadow-lg"
@@ -241,8 +271,7 @@ export function UserMenu({
                 Sair
               </button>
             </div>
-          )}
-        </>
+          )
       )}
     </div>
   )
