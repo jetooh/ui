@@ -559,13 +559,13 @@ function KpiGrid({
 
 // src/components/KpiHeroPanel.tsx
 import { jsx as jsx8, jsxs as jsxs5 } from "react/jsx-runtime";
-function KpiHeroPanel({ title, action, children, cols = 4, className }) {
+function KpiHeroPanel({ title, action, children, cols = 4, className, gridClassName }) {
   return /* @__PURE__ */ jsxs5("div", { className: cn("rounded-2xl border-l-[3px] border-l-roxo bg-gray-50/60 p-4", className), children: [
     (title || action) && /* @__PURE__ */ jsxs5("div", { className: "mb-3 flex items-center justify-between gap-2", children: [
       title && /* @__PURE__ */ jsx8("span", { className: "text-xs font-semibold uppercase tracking-wider text-gray-500", children: title }),
       action
     ] }),
-    /* @__PURE__ */ jsx8(KpiGrid, { cols, children })
+    /* @__PURE__ */ jsx8(KpiGrid, { cols, className: gridClassName, children })
   ] });
 }
 

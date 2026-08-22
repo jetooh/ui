@@ -34,4 +34,13 @@ describe('KpiHeroPanel', () => {
     );
     expect(container.querySelector('.border-l-roxo')).not.toBeNull();
   });
+
+  it('gridClassName repassa ao KpiGrid interno (ex.: override de colunas no mobile)', () => {
+    const { container } = render(
+      <KpiHeroPanel gridClassName="grid-cols-2 lg:items-stretch">
+        <KpiCard label="X" value="1" icon={Monitor} />
+      </KpiHeroPanel>,
+    );
+    expect(container.querySelector('.grid-cols-2')).not.toBeNull();
+  });
 });

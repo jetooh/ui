@@ -11,6 +11,8 @@ export interface KpiHeroPanelProps {
   children: ReactNode
   cols?: 3 | 4 | 5
   className?: string
+  /** Classe extra repassada ao `KpiGrid` interno (ex.: override de colunas no mobile). */
+  gridClassName?: string
 }
 
 // Painel de KPI "hero" — a faixa de destaque acima do conteúdo de uma página de
@@ -19,7 +21,7 @@ export interface KpiHeroPanelProps {
 // cru): mesmo painel cinza claro, com o MESMO acento lateral roxo já usado em
 // outras faixas de destaque do tema (ex.: "faixa de alcance ao vivo" do devices)
 // — não inventa linguagem visual nova, reaproveita a que já existe.
-export function KpiHeroPanel({ title, action, children, cols = 4, className }: KpiHeroPanelProps) {
+export function KpiHeroPanel({ title, action, children, cols = 4, className, gridClassName }: KpiHeroPanelProps) {
   return (
     <div className={cn("rounded-2xl border-l-[3px] border-l-roxo bg-gray-50/60 p-4", className)}>
       {(title || action) && (
@@ -28,7 +30,7 @@ export function KpiHeroPanel({ title, action, children, cols = 4, className }: K
           {action}
         </div>
       )}
-      <KpiGrid cols={cols}>{children}</KpiGrid>
+      <KpiGrid cols={cols} className={gridClassName}>{children}</KpiGrid>
     </div>
   )
 }

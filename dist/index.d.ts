@@ -115,8 +115,10 @@ interface KpiHeroPanelProps {
     children: ReactNode;
     cols?: 3 | 4 | 5;
     className?: string;
+    /** Classe extra repassada ao `KpiGrid` interno (ex.: override de colunas no mobile). */
+    gridClassName?: string;
 }
-declare function KpiHeroPanel({ title, action, children, cols, className }: KpiHeroPanelProps): React.JSX.Element;
+declare function KpiHeroPanel({ title, action, children, cols, className, gridClassName }: KpiHeroPanelProps): React.JSX.Element;
 
 declare function Table({ className, ...props }: React.ComponentProps<"table">): React.JSX.Element;
 declare function TableHeader({ className, ...props }: React.ComponentProps<"thead">): React.JSX.Element;
