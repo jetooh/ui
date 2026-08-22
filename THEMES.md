@@ -329,6 +329,32 @@ O `contrast.test.tsx` resolve a lavagem **a partir da classe declarada no
 para `bg-verde/20` move a medida junto em vez de continuar aprovando a pílula
 antiga.
 
+### O par de AVISO — âmbar (D10 / JET-298)
+
+Mesmo formato do verde acima, achado na auditoria de dark-mode do `devices`
+(2026-08-21): o `StatusBadge` já tinha um `variant="warning"` cru (paleta âmbar
+do Tailwind, grau 500 no dot e 50/700/200 na pílula), sem par escuro — nunca
+declarado no contrato, então nenhuma app sabia que precisava declará-lo.
+
+| Papel | Token | Mínimo | Medido (claro / escuro) |
+|---|---|---|---|
+| **Marca**/texto sobre a lavagem | `aviso-texto` (`#92400E` claro / `#F59E0B` escuro) | 3:1 (1.4.11) e 4,5:1 (1.4.3) | marca: 7,09/6,45/6,01 claro · 8,32/9,11/7,77 escuro — texto na lavagem: 6,08/5,55/5,19 claro · 7,07/7,97/6,57 escuro (sobre `branco`/`page-bg`/`gray-100`) |
+| **Preenchimento**: lavagem `bg-aviso/10`, `border-aviso/20`, dot da pílula | `aviso` (`#F59E0B` nos dois modos) | — | não carrega informação sozinho: como marca reprova no claro (2,15/1,95/1,82), mesma exceção do `verde` |
+
+**Diferença do verde: nasceu no contrato antes de ter um call-site em produção
+com o par certo.** `admin` já consumia `variant="warning"` (CatalogPage,
+ModerationPage) com a paleta crua; o claro escolhido (`#92400E`) é o MESMO hex
+que essas telas já pintavam (`text-amber-800`), então o defeito era só a
+ausência de par escuro — igual ao `verde-dark` antes da D8.
+
+**Rollout não-uniforme (checado 2026-08-22):** `platform`/`devices` importam
+`@jetooh/ui/theme.css` e recebem os dois graus automaticamente ao repinar;
+`admin` ainda não importa `theme.css` (modelo pré-JET-106) e precisa declarar
+`--color-aviso`/`--color-aviso-texto` (+ o par `:root`/`.dark` de
+`--base-aviso-texto`) no próprio `index.css` ANTES do repin ter efeito nas 2
+telas que já usam `variant="warning"` — ver `manifest.json` →
+`cssContract.tokensNovos["aviso | aviso-texto"]`.
+
 ## Criar um tema NOVO (quando surgir um 2º tema)
 
 Enquanto houver 1 tema, ele fica na raiz. **Ao introduzir o 2º tema**, migrar para

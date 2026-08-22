@@ -193,7 +193,7 @@ declare const SIZES: {
 };
 interface StatusDotProps {
     /**
-     * Classe de cor de fundo, ex.: "bg-verde-dark", "bg-red-400", "bg-roxo".
+     * Classe de cor de fundo, ex.: "bg-verde-dark", "bg-status-critico", "bg-roxo".
      * Dot SOZINHO precisa de 3:1 sobre a superfície (WCAG 1.4.11) — use o grau de
      * legibilidade (`bg-verde-dark`), não o de preenchimento (`bg-verde`).
      */

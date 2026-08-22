@@ -51,6 +51,8 @@
   --color-status-critico-texto: oklch(57.7% 0.215 27.3);
   --color-secondary-active: oklch(53.3% 0.254 292.8);
   --color-secondary-text: oklch(37.3% 0.031 259.7);
+  --color-aviso: oklch(76.9% 0.165 69.9);
+  --color-aviso-texto: oklch(47.3% 0.125 46.1);
   --color-gray-50: oklch(96.7% 0.001 286.4);
   --color-gray-100: oklch(94.3% 0.001 286.4);
   --color-gray-200: oklch(92.2% 0.003 286.3);
@@ -74,6 +76,7 @@
   --color-borda-controle: oklch(54.2% 0.056 284.4);
   --color-verde-dark: oklch(77.3% 0.154 163.1);
   --color-status-critico-texto: oklch(65% 0.215 27.3);
+  --color-aviso-texto: oklch(76.9% 0.165 69.9);
   --color-secondary-active: oklch(70.6% 0.167 297.5);
   --color-secondary-text: oklch(92.8% 0.006 264.5);
   --color-gray-50: oklch(20.8% 0.030 283.5);

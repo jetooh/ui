@@ -827,9 +827,20 @@ var TONES = {
   // um passo na rampa emerald (#047857 → #065f46) e agora mede 7.19 / 6.58 /
   // 6.18. A exceção do dot depende disso: é o rótulo que carrega o estado.
   online: { dot: "bg-verde", pill: "bg-verde/10 text-verde-dark border-verde/20", pulse: true },
-  offline: { dot: "bg-red-400", pill: "bg-red-50 text-red-700 border-red-200", pulse: false },
+  // D10 (JET-298): era a paleta vermelha crua do Tailwind (grau 400 no dot,
+  // 50/700/200 na pílula) — sem par escuro (zero `dark:` no pacote, então o
+  // Tailwind nunca troca o valor). `status-critico`/`status-critico-texto` já
+  // são o par medido pela JET-99/JET-101 para exatamente este papel (marca
+  // sólida + texto sobre lavagem), então a pílula passa a inverter igual à
+  // `online`/`warning`.
+  offline: { dot: "bg-status-critico", pill: "bg-status-critico/10 text-status-critico-texto border-status-critico/20", pulse: false },
   pairing: { dot: "bg-roxo", pill: "bg-roxo/10 text-roxo border-roxo/20", pulse: true },
-  warning: { dot: "bg-amber-500", pill: "bg-amber-50 text-amber-700 border-amber-200", pulse: false },
+  // D10 (JET-298): era a paleta âmbar crua do Tailwind (grau 500 no dot,
+  // 50/700/200 na pílula) — mesmo defeito do offline acima. `aviso`/`aviso-texto`
+  // são o par novo do contrato (tokens.json), medido no mesmo envelope
+  // (branco/page-bg/gray-100), com o dot mantendo o MESMO pixel do claro
+  // (grau `aviso` = mesmo hex que o grau 500 cru de antes).
+  warning: { dot: "bg-aviso", pill: "bg-aviso/10 text-aviso-texto border-aviso/20", pulse: false },
   // D4 (JET-106): o dot do badge CARREGA estado — é conteúdo não-textual, mínimo
   // 3:1 por WCAG 1.4.11. O cinza 400 cru media 2.20:1 sobre a pílula (gray-100) e
   // reprovava. `bg-muted-foreground` é o token semântico que expõe o grau

@@ -631,3 +631,82 @@ describe('texto sobre a lavagem da pílula: 4.5:1 no envelope inteiro (D9)', () 
     expect(c.ordemDeRollout).toMatch(/index\.css/);
   });
 });
+
+// ---------------------------------------------------------------------------
+// JET-298 / D10 — par de AVISO (âmbar): mesmo formato de `verde`/`verde-dark`.
+// ---------------------------------------------------------------------------
+// Achado na varredura de dark-mode do `devices` (JET-298): o StatusBadge do
+// PACOTE já tinha um `warning` cru (`bg-amber-500` / `bg-amber-50 text-amber-700
+// border-amber-200`) sem par escuro — mesmo defeito de `verde`/`status-critico`
+// antes da JET-77, só que este nunca tinha sido achado. `aviso` é o grau de
+// preenchimento/lavagem (decorativo, não carrega estado sozinho); `aviso-texto`
+// é o grau de legibilidade (marca-sozinha 3:1 + texto-sobre-lavagem 4.5:1),
+// medido no MESMO envelope (branco/page-bg/gray-100) e a mesma metodologia D8/D9.
+
+/** Grau de legibilidade do aviso no modo pedido. */
+const avisoTexto = (modo: 'claro' | 'escuro') =>
+  (modo === 'claro' ? tokens.colors : tokens.colorsDark)['aviso-texto'].toLowerCase();
+
+/** Lavagem da pílula `warning` resolvida contra a superfície atrás (mesma técnica de `lavagemOnline`). */
+const lavagemWarning = (modo: 'claro' | 'escuro', atras: (typeof FIELD_SURFACES)[number]) => {
+  const pill = source('StatusBadge.tsx').match(/warning:\s*\{[^}]*pill:\s*"([^"]*)"/)?.[1];
+  if (!pill) throw new Error('não achei a classe da pílula `warning` no StatusBadge.tsx');
+  const [, grau, pct] = pill.match(/bg-([\w-]+)\/(\d+)(?![\w-])/) ?? [];
+  if (!grau || !pct) throw new Error(`a pílula \`warning\` não é mais uma lavagem translúcida: ${pill}`);
+  const escala = (modo === 'claro' ? tokens.colors : tokens.colorsDark) as Record<string, string>;
+  if (!(grau in escala)) throw new Error(`a lavagem da pílula referencia um grau inexistente: ${grau}`);
+  return alphaOver(escala[grau], Number(pct) / 100, escala[atras]);
+};
+
+describe('marca de aviso: 3:1 sobre a superfície (D10)', () => {
+  it.each(FIELD_SURFACES)('claro: aviso-texto como marca sobre %s', (surface) => {
+    expect(contrast(tokens.colors['aviso-texto'], tokens.colors[surface])).toBeGreaterThanOrEqual(UI_MIN);
+  });
+
+  it.each(FIELD_SURFACES)('escuro: aviso-texto como marca sobre %s', (surface) => {
+    expect(contrast(tokens.colorsDark['aviso-texto'], tokens.colorsDark[surface])).toBeGreaterThanOrEqual(UI_MIN);
+  });
+
+  it('o grau decorativo (`aviso`) reprova como marca sozinha no claro — mesmo formato de defeito do `verde` (D8)', () => {
+    // `aviso` coincide entre claro/escuro (D7/porqueCoincide, mesmo valor
+    // #F59E0B nos dois): no ESCURO ele passa com folga porque a superfície
+    // está escura e QUALQUER amber clara contrasta bem ali — é exatamente o
+    // formato de defeito que escondia o buraco do `verde` antes da D8. Só o
+    // claro reprova, e é por isso que nenhum call site pode usar `aviso`
+    // sozinho como marca: o grau certo para isso é `aviso-texto`.
+    for (const surface of FIELD_SURFACES) {
+      expect(contrast(tokens.colors.aviso, tokens.colors[surface])).toBeLessThan(UI_MIN);
+      expect(contrast(tokens.colorsDark.aviso, tokens.colorsDark[surface])).toBeGreaterThanOrEqual(UI_MIN);
+    }
+  });
+
+  it('StatusBadge: variant="warning" usa o dot decorativo (`bg-aviso`) e a lavagem/texto no grau de legibilidade', () => {
+    const code = semComentario(source('StatusBadge.tsx'));
+    expect(code).toContain('dot: "bg-aviso"');
+    expect(code).toMatch(/warning:\s*\{[^}]*pill:\s*"bg-aviso\/10 text-aviso-texto border-aviso\/20"/);
+    expect(code).not.toMatch(/amber-/);
+  });
+});
+
+describe('texto sobre a lavagem do aviso: 4.5:1 no envelope inteiro (D10)', () => {
+  it.each(FIELD_SURFACES)('claro: rótulo da pílula `warning` sobre a lavagem que cai em %s', (surface) => {
+    expect(contrast(avisoTexto('claro'), lavagemWarning('claro', surface))).toBeGreaterThanOrEqual(TEXT_MIN);
+  });
+
+  it.each(FIELD_SURFACES)('escuro: rótulo da pílula `warning` sobre a lavagem que cai em %s', (surface) => {
+    expect(contrast(avisoTexto('escuro'), lavagemWarning('escuro', surface))).toBeGreaterThanOrEqual(TEXT_MIN);
+  });
+
+  it('o claro é o MESMO hex que o `devices` já usa em `text-amber-800` cru — o defeito era só a ausência de par escuro', () => {
+    expect(tokens.colors['aviso-texto']).toBe('#92400E');
+  });
+
+  it('o manifesto registra o token novo e o rollout não-uniforme entre platform/devices (automático) e admin (manual)', () => {
+    const grupo = manifest.cssContract.tokensNovos['aviso | aviso-texto'] as unknown as {
+      ordemDeRollout: string;
+      usoNoPacote: string;
+    };
+    expect(grupo.ordemDeRollout).toMatch(/admin/);
+    expect(grupo.usoNoPacote).toMatch(/StatusBadge/);
+  });
+});
