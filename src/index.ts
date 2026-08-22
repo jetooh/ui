@@ -14,6 +14,8 @@ export {
 export { BrandLoading } from './components/BrandLoading';
 export { KpiCard, KpiGrid } from './components/KpiCard';
 export type { KpiCardProps } from './components/KpiCard';
+export { KpiHeroPanel } from './components/KpiHeroPanel';
+export type { KpiHeroPanelProps } from './components/KpiHeroPanel';
 export {
   Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption,
 } from './components/Table';
