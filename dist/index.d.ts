@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React$1 from 'react';
 import { ReactNode } from 'react';
 import { Avatar as Avatar$1 } from '@base-ui/react/avatar';
 import * as class_variance_authority_types from 'class-variance-authority/types';
@@ -42,52 +42,52 @@ interface ModalProps {
  * wrapper `animate-fade-in-up` da casca) cria containing-block e prende o
  * `position: fixed` à área de conteúdo. O portal escapa desses ancestrais.
  */
-declare function Modal({ open, onClose, title, description, children, footer, size }: ModalProps): React.ReactPortal | null;
+declare function Modal({ open, onClose, title, description, children, footer, size }: ModalProps): React$1.ReactPortal | null;
 
 declare function Avatar({ className, size, ...props }: Avatar$1.Root.Props & {
     size?: 'default' | 'sm' | 'lg';
-}): React.JSX.Element;
-declare function AvatarImage({ className, ...props }: Avatar$1.Image.Props): React.JSX.Element;
-declare function AvatarFallback({ className, ...props }: Avatar$1.Fallback.Props): React.JSX.Element;
-declare function AvatarBadge({ className, ...props }: React.ComponentProps<'span'>): React.JSX.Element;
-declare function AvatarGroup({ className, ...props }: React.ComponentProps<'div'>): React.JSX.Element;
-declare function AvatarGroupCount({ className, ...props }: React.ComponentProps<'div'>): React.JSX.Element;
+}): React$1.JSX.Element;
+declare function AvatarImage({ className, ...props }: Avatar$1.Image.Props): React$1.JSX.Element;
+declare function AvatarFallback({ className, ...props }: Avatar$1.Fallback.Props): React$1.JSX.Element;
+declare function AvatarBadge({ className, ...props }: React$1.ComponentProps<'span'>): React$1.JSX.Element;
+declare function AvatarGroup({ className, ...props }: React$1.ComponentProps<'div'>): React$1.JSX.Element;
+declare function AvatarGroupCount({ className, ...props }: React$1.ComponentProps<'div'>): React$1.JSX.Element;
 
 declare const buttonVariants: (props?: ({
     variant?: "link" | "default" | "outline" | "secondary" | "ghost" | "destructive" | null | undefined;
     size?: "sm" | "lg" | "default" | "xs" | "icon" | "icon-xs" | "icon-sm" | "icon-lg" | null | undefined;
 } & class_variance_authority_types.ClassProp) | undefined) => string;
-declare function Button({ className, variant, size, ...props }: Button$1.Props & VariantProps<typeof buttonVariants>): React.JSX.Element;
+declare function Button({ className, variant, size, ...props }: Button$1.Props & VariantProps<typeof buttonVariants>): React$1.JSX.Element;
 
 declare const badgeVariants: (props?: ({
     variant?: "link" | "default" | "outline" | "secondary" | "ghost" | "destructive" | null | undefined;
 } & class_variance_authority_types.ClassProp) | undefined) => string;
-declare function Badge({ className, variant, render, ...props }: useRender.ComponentProps<"span"> & VariantProps<typeof badgeVariants>): React.ReactElement<any, string | React.JSXElementConstructor<any>>;
+declare function Badge({ className, variant, render, ...props }: useRender.ComponentProps<"span"> & VariantProps<typeof badgeVariants>): React$1.ReactElement<any, string | React$1.JSXElementConstructor<any>>;
 
-declare function Card({ className, size, ...props }: React.ComponentProps<"div"> & {
+declare function Card({ className, size, ...props }: React$1.ComponentProps<"div"> & {
     size?: "default" | "sm";
-}): React.JSX.Element;
-declare function CardHeader({ className, ...props }: React.ComponentProps<"div">): React.JSX.Element;
-declare function CardTitle({ className, ...props }: React.ComponentProps<"div">): React.JSX.Element;
-declare function CardDescription({ className, ...props }: React.ComponentProps<"div">): React.JSX.Element;
-declare function CardAction({ className, ...props }: React.ComponentProps<"div">): React.JSX.Element;
-declare function CardContent({ className, ...props }: React.ComponentProps<"div">): React.JSX.Element;
-declare function CardFooter({ className, ...props }: React.ComponentProps<"div">): React.JSX.Element;
+}): React$1.JSX.Element;
+declare function CardHeader({ className, ...props }: React$1.ComponentProps<"div">): React$1.JSX.Element;
+declare function CardTitle({ className, ...props }: React$1.ComponentProps<"div">): React$1.JSX.Element;
+declare function CardDescription({ className, ...props }: React$1.ComponentProps<"div">): React$1.JSX.Element;
+declare function CardAction({ className, ...props }: React$1.ComponentProps<"div">): React$1.JSX.Element;
+declare function CardContent({ className, ...props }: React$1.ComponentProps<"div">): React$1.JSX.Element;
+declare function CardFooter({ className, ...props }: React$1.ComponentProps<"div">): React$1.JSX.Element;
 
-declare function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>): React.JSX.Element;
-declare function SkeletonKpiCard(): React.JSX.Element;
+declare function Skeleton({ className, ...props }: React$1.HTMLAttributes<HTMLDivElement>): React$1.JSX.Element;
+declare function SkeletonKpiCard(): React$1.JSX.Element;
 declare function SkeletonTableRow({ cols }: {
     cols?: number;
-}): React.JSX.Element;
+}): React$1.JSX.Element;
 declare function SkeletonTable({ rows, cols }: {
     rows?: number;
     cols?: number;
-}): React.JSX.Element;
-declare function Loading(): React.JSX.Element;
+}): React$1.JSX.Element;
+declare function Loading(): React$1.JSX.Element;
 declare const SkeletonPage: typeof Loading;
-declare function TabLoading(): React.JSX.Element;
+declare function TabLoading(): React$1.JSX.Element;
 
-declare function BrandLoading(): React.JSX.Element;
+declare function BrandLoading(): React$1.JSX.Element;
 
 interface KpiCardProps {
     label: string;
@@ -100,12 +100,12 @@ interface KpiCardProps {
     hint?: string;
     valueNoWrap?: boolean;
 }
-declare function KpiCard({ label, value, icon: Icon, iconBg, iconColor, trend, trendUp, hint, valueNoWrap, }: KpiCardProps): React.JSX.Element;
+declare function KpiCard({ label, value, icon: Icon, iconBg, iconColor, trend, trendUp, hint, valueNoWrap, }: KpiCardProps): React$1.JSX.Element;
 declare function KpiGrid({ children, className, cols, }: {
     children: ReactNode;
     className?: string;
     cols?: 3 | 4 | 5;
-}): React.JSX.Element;
+}): React$1.JSX.Element;
 
 interface KpiHeroPanelProps {
     /** Título curto do painel (ex.: "Visão geral" — opcional, painel funciona sem). */
@@ -118,27 +118,27 @@ interface KpiHeroPanelProps {
     /** Classe extra repassada ao `KpiGrid` interno (ex.: override de colunas no mobile). */
     gridClassName?: string;
 }
-declare function KpiHeroPanel({ title, action, children, cols, className, gridClassName }: KpiHeroPanelProps): React.JSX.Element;
+declare function KpiHeroPanel({ title, action, children, cols, className, gridClassName }: KpiHeroPanelProps): React$1.JSX.Element;
 
-declare function Table({ className, ...props }: React.ComponentProps<"table">): React.JSX.Element;
-declare function TableHeader({ className, ...props }: React.ComponentProps<"thead">): React.JSX.Element;
-declare function TableBody({ className, ...props }: React.ComponentProps<"tbody">): React.JSX.Element;
-declare function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">): React.JSX.Element;
-declare function TableRow({ className, ...props }: React.ComponentProps<"tr">): React.JSX.Element;
-declare function TableHead({ className, ...props }: React.ComponentProps<"th">): React.JSX.Element;
-declare function TableCell({ className, ...props }: React.ComponentProps<"td">): React.JSX.Element;
-declare function TableCaption({ className, ...props }: React.ComponentProps<"caption">): React.JSX.Element;
+declare function Table({ className, ...props }: React$1.ComponentProps<"table">): React$1.JSX.Element;
+declare function TableHeader({ className, ...props }: React$1.ComponentProps<"thead">): React$1.JSX.Element;
+declare function TableBody({ className, ...props }: React$1.ComponentProps<"tbody">): React$1.JSX.Element;
+declare function TableFooter({ className, ...props }: React$1.ComponentProps<"tfoot">): React$1.JSX.Element;
+declare function TableRow({ className, ...props }: React$1.ComponentProps<"tr">): React$1.JSX.Element;
+declare function TableHead({ className, ...props }: React$1.ComponentProps<"th">): React$1.JSX.Element;
+declare function TableCell({ className, ...props }: React$1.ComponentProps<"td">): React$1.JSX.Element;
+declare function TableCaption({ className, ...props }: React$1.ComponentProps<"caption">): React$1.JSX.Element;
 
 type ToastVariant = "default" | "destructive" | "success" | "info";
 interface ToastOptions {
-    title?: React.ReactNode;
-    description?: React.ReactNode;
+    title?: React$1.ReactNode;
+    description?: React$1.ReactNode;
     variant?: ToastVariant | "outline";
 }
 interface ToastItem {
     id: string;
-    title?: React.ReactNode;
-    description?: React.ReactNode;
+    title?: React$1.ReactNode;
+    description?: React$1.ReactNode;
     variant: ToastVariant;
 }
 declare function baseToast(opts: ToastOptions): {
@@ -147,17 +147,17 @@ declare function baseToast(opts: ToastOptions): {
     update: (next: ToastOptions) => void;
 };
 declare const toast: typeof baseToast & {
-    success: (message: React.ReactNode) => {
+    success: (message: React$1.ReactNode) => {
         id: string;
         dismiss: () => void;
         update: (next: ToastOptions) => void;
     };
-    error: (message: React.ReactNode) => {
+    error: (message: React$1.ReactNode) => {
         id: string;
         dismiss: () => void;
         update: (next: ToastOptions) => void;
     };
-    info: (message: React.ReactNode) => {
+    info: (message: React$1.ReactNode) => {
         id: string;
         dismiss: () => void;
         update: (next: ToastOptions) => void;
@@ -166,17 +166,17 @@ declare const toast: typeof baseToast & {
 declare function useToast(): {
     toasts: ToastItem[];
     toast: typeof baseToast & {
-        success: (message: React.ReactNode) => {
+        success: (message: React$1.ReactNode) => {
             id: string;
             dismiss: () => void;
             update: (next: ToastOptions) => void;
         };
-        error: (message: React.ReactNode) => {
+        error: (message: React$1.ReactNode) => {
             id: string;
             dismiss: () => void;
             update: (next: ToastOptions) => void;
         };
-        info: (message: React.ReactNode) => {
+        info: (message: React$1.ReactNode) => {
             id: string;
             dismiss: () => void;
             update: (next: ToastOptions) => void;
@@ -184,7 +184,7 @@ declare function useToast(): {
     };
     dismiss: (id?: string) => void;
 };
-declare function Toaster(): React.ReactPortal | null;
+declare function Toaster(): React$1.ReactPortal | null;
 
 declare const SIZES: {
     readonly sm: "h-1.5 w-1.5";
@@ -204,7 +204,7 @@ interface StatusDotProps {
     /** Extras no wrapper (ex.: "mr-1.5" quando fica antes de um label). */
     className?: string;
 }
-declare function StatusDot({ color, pulse, size, className }: StatusDotProps): React.JSX.Element;
+declare function StatusDot({ color, pulse, size, className }: StatusDotProps): React$1.JSX.Element;
 
 type StatusVariant = "online" | "offline" | "pairing" | "warning" | "neutral";
 interface StatusBadgeProps {
@@ -220,7 +220,7 @@ interface StatusBadgeProps {
     size?: "sm" | "md";
     className?: string;
 }
-declare function StatusBadge({ label, variant, color, pillClassName, pulse, size, className, }: StatusBadgeProps): React.JSX.Element;
+declare function StatusBadge({ label, variant, color, pillClassName, pulse, size, className, }: StatusBadgeProps): React$1.JSX.Element;
 type DeviceStatus = "online" | "offline" | "pairing" | (string & {});
 /**
  * Mapa canônico de status de device → rótulo PT + variante + pulso.
@@ -238,7 +238,7 @@ interface DeviceStatusBadgeProps {
     className?: string;
 }
 /** Badge de status de device pronto: recebe só o status e resolve rótulo/tom. */
-declare function DeviceStatusBadge({ status, size, className }: DeviceStatusBadgeProps): React.JSX.Element;
+declare function DeviceStatusBadge({ status, size, className }: DeviceStatusBadgeProps): React$1.JSX.Element;
 
 declare const TRACK: {
     readonly sm: "h-5 w-9";
@@ -258,7 +258,7 @@ interface SwitchProps {
     id?: string;
     className?: string;
 }
-declare function Switch({ checked, onCheckedChange, disabled, size, label, color, id, className, }: SwitchProps): React.JSX.Element;
+declare function Switch({ checked, onCheckedChange, disabled, size, label, color, id, className, }: SwitchProps): React$1.JSX.Element;
 
 type Compare = "period" | "year";
 interface RangeValue {
@@ -284,7 +284,7 @@ interface DateRangePickerProps {
     value: RangeValue;
     onApply: (v: RangeValue) => void;
 }
-declare function DateRangePicker({ value, onApply }: DateRangePickerProps): React.JSX.Element;
+declare function DateRangePicker({ value, onApply }: DateRangePickerProps): React$1.JSX.Element;
 
 interface RailItem {
     id: string;
@@ -308,7 +308,7 @@ interface AppRailProps {
     /** Esconde no mobile (`hidden lg:flex`). Default: sempre visível. */
     hideOnMobile?: boolean;
 }
-declare const AppRail: React.NamedExoticComponent<AppRailProps>;
+declare const AppRail: React$1.NamedExoticComponent<AppRailProps>;
 
 interface SidebarNavItem {
     /** Identificador do item — rota (`/config/roles`) ou chave de página (`settings.team`). */
@@ -338,7 +338,7 @@ interface AppSecondarySidebarProps {
     hideOnMobile?: boolean;
     className?: string;
 }
-declare const AppSecondarySidebar: React.NamedExoticComponent<AppSecondarySidebarProps>;
+declare const AppSecondarySidebar: React$1.NamedExoticComponent<AppSecondarySidebarProps>;
 interface AppSubNavProps {
     /** Itens (flat) do domínio/módulo ativo. Com 0 ou 1 item a barra não renderiza. */
     items: SidebarNavItem[];
@@ -351,7 +351,7 @@ interface AppSubNavProps {
  * topo do conteúdo). O bottom-nav mostra só os domínios; aqui os subitens ficam
  * alcançáveis. Some quando o domínio tem 1 rota só.
  */
-declare const AppSubNav: React.NamedExoticComponent<AppSubNavProps>;
+declare const AppSubNav: React$1.NamedExoticComponent<AppSubNavProps>;
 
 interface ContentHeaderProps {
     /** Ícone do módulo — vai na caixa roxa (rounded-xl bg-roxo/10 text-roxo). */
@@ -368,9 +368,9 @@ interface ContentHeaderProps {
     children?: ReactNode;
     className?: string;
 }
-declare function ContentHeader({ icon: Icon, moduleTitle, subTitle, description, customLeft, children, className, }: ContentHeaderProps): React.JSX.Element;
+declare function ContentHeader({ icon: Icon, moduleTitle, subTitle, description, customLeft, children, className, }: ContentHeaderProps): React$1.JSX.Element;
 
-declare const AppFooter: React.NamedExoticComponent<object>;
+declare const AppFooter: React$1.NamedExoticComponent<object>;
 
 interface PageFrameProps {
     /** Rail de navegação (AppRail). */
@@ -397,7 +397,7 @@ interface PageFrameProps {
     /** key do bloco de conteúdo (reinicia o animate-fade-in-up ao trocar de página). */
     contentKey?: string;
 }
-declare function PageFrame({ rail, mobileHeader, extras, header, mobileTitle, footer, mobileBottomNav, children, mainId, contentAreaClassName, fullBleed, contentKey, }: PageFrameProps): React.JSX.Element;
+declare function PageFrame({ rail, mobileHeader, extras, header, mobileTitle, footer, mobileBottomNav, children, mainId, contentAreaClassName, fullBleed, contentKey, }: PageFrameProps): React$1.JSX.Element;
 
 interface BottomNavItem {
     id: string;
@@ -409,7 +409,7 @@ interface AppBottomNavProps {
     activeId: string;
     onNavigate: (id: string) => void;
 }
-declare const AppBottomNav: React.NamedExoticComponent<AppBottomNavProps>;
+declare const AppBottomNav: React$1.NamedExoticComponent<AppBottomNavProps>;
 
 interface AppMobileHeaderProps {
     /** Se fornecido, mostra o botão de hambúrguer à esquerda do logo. */
@@ -420,7 +420,7 @@ interface AppMobileHeaderProps {
     /** Menu do usuário (avatar + Sair) — normalmente <UserMenu/>. */
     userMenu: ReactNode;
 }
-declare function AppMobileHeader({ onMenuToggle, logoSrc, actions, userMenu }: AppMobileHeaderProps): React.JSX.Element;
+declare function AppMobileHeader({ onMenuToggle, logoSrc, actions, userMenu }: AppMobileHeaderProps): React$1.JSX.Element;
 
 interface UserMenuItem {
     label: string;
@@ -465,7 +465,7 @@ interface UserMenuProps {
     /** Tamanho do avatar: "sm" (h-8, mobile, default) ou "md" (h-10, header). */
     avatarSize?: "sm" | "md";
 }
-declare function UserMenu({ name, email, avatarUrl, initials, items, accountHref, apps, currentAppSlug, appsLoading, isDark, onToggleTheme, onLogout, avatarSize, }: UserMenuProps): React.JSX.Element;
+declare function UserMenu({ name, email, avatarUrl, initials, items, accountHref, apps, currentAppSlug, appsLoading, isDark, onToggleTheme, onLogout, avatarSize, }: UserMenuProps): React$1.JSX.Element;
 
 /** Rótulos canônicos dos itens padrão — iguais em todas as apps do tema. */
 declare const USER_MENU_PROFILE_LABEL = "Minha Conta";
@@ -498,7 +498,7 @@ interface AppUserMenuProps {
     /** "md" (h-10) no header desktop; "sm" (h-8) no header mobile. Default: "md". */
     avatarSize?: "sm" | "md";
 }
-declare function AppUserMenu({ name, email, avatarUrl, initials, onProfile, onSettings, extraItems, apps, currentAppSlug, appsLoading, isDark, onToggleTheme, onLogout, avatarSize, }: AppUserMenuProps): React.JSX.Element;
+declare function AppUserMenu({ name, email, avatarUrl, initials, onProfile, onSettings, extraItems, apps, currentAppSlug, appsLoading, isDark, onToggleTheme, onLogout, avatarSize, }: AppUserMenuProps): React$1.JSX.Element;
 
 interface EmptyStateProps {
     icon: LucideIcon;
@@ -507,17 +507,17 @@ interface EmptyStateProps {
     actionLabel?: string;
     onAction?: () => void;
 }
-declare function EmptyState({ icon: Icon, title, description, actionLabel, onAction }: EmptyStateProps): React.JSX.Element;
+declare function EmptyState({ icon: Icon, title, description, actionLabel, onAction }: EmptyStateProps): React$1.JSX.Element;
 declare function SearchEmptyState({ query }: {
     query: string;
-}): React.JSX.Element;
+}): React$1.JSX.Element;
 
-type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
-declare const Input: React.ForwardRefExoticComponent<InputProps & React.RefAttributes<HTMLInputElement>>;
+type InputProps = React$1.InputHTMLAttributes<HTMLInputElement>;
+declare const Input: React$1.ForwardRefExoticComponent<InputProps & React$1.RefAttributes<HTMLInputElement>>;
 
 interface DateTimeFieldProps {
     id: string;
-    label?: React.ReactNode;
+    label?: React$1.ReactNode;
     /** Valor em ISO 8601 (UTC) ou null/'' (vazio). */
     value: string | null;
     /** Recebe ISO (UTC), ou null quando o campo é limpo. */
@@ -527,7 +527,7 @@ interface DateTimeFieldProps {
     max?: string | null;
     disabled?: boolean;
     /** Texto de apoio abaixo do campo. */
-    hint?: React.ReactNode;
+    hint?: React$1.ReactNode;
     className?: string;
 }
 /**
@@ -538,60 +538,60 @@ interface DateTimeFieldProps {
  * LOCAL do usuário internamente. Use em qualquer app do tema no lugar de pares
  * soltos de data + hora (menos campos, menos erro, toque amigável).
  */
-declare function DateTimeField({ id, label, value, onChange, min, max, disabled, hint, className, }: DateTimeFieldProps): React.JSX.Element;
+declare function DateTimeField({ id, label, value, onChange, min, max, disabled, hint, className, }: DateTimeFieldProps): React$1.JSX.Element;
 
-declare const Label: React.ForwardRefExoticComponent<React.LabelHTMLAttributes<HTMLLabelElement> & React.RefAttributes<HTMLLabelElement>>;
+declare const Label: React$1.ForwardRefExoticComponent<React$1.LabelHTMLAttributes<HTMLLabelElement> & React$1.RefAttributes<HTMLLabelElement>>;
 
-declare function Separator({ className, orientation, ...props }: Separator$1.Props): React.JSX.Element;
+declare function Separator({ className, orientation, ...props }: Separator$1.Props): React$1.JSX.Element;
 
-declare function TooltipProvider({ delay, ...props }: Tooltip$1.Provider.Props): React.JSX.Element;
-declare function Tooltip({ ...props }: Tooltip$1.Root.Props): React.JSX.Element;
-declare function TooltipTrigger({ ...props }: Tooltip$1.Trigger.Props): React.JSX.Element;
-declare function TooltipContent({ className, side, sideOffset, align, alignOffset, children, ...props }: Tooltip$1.Popup.Props & Pick<Tooltip$1.Positioner.Props, "align" | "alignOffset" | "side" | "sideOffset">): React.JSX.Element;
+declare function TooltipProvider({ delay, ...props }: Tooltip$1.Provider.Props): React$1.JSX.Element;
+declare function Tooltip({ ...props }: Tooltip$1.Root.Props): React$1.JSX.Element;
+declare function TooltipTrigger({ ...props }: Tooltip$1.Trigger.Props): React$1.JSX.Element;
+declare function TooltipContent({ className, side, sideOffset, align, alignOffset, children, ...props }: Tooltip$1.Popup.Props & Pick<Tooltip$1.Positioner.Props, "align" | "alignOffset" | "side" | "sideOffset">): React$1.JSX.Element;
 
-declare function DropdownMenu({ ...props }: Menu.Root.Props): React.JSX.Element;
-declare function DropdownMenuPortal({ ...props }: Menu.Portal.Props): React.JSX.Element;
-declare function DropdownMenuTrigger({ ...props }: Menu.Trigger.Props): React.JSX.Element;
-declare function DropdownMenuContent({ align, alignOffset, side, sideOffset, className, ...props }: Menu.Popup.Props & Pick<Menu.Positioner.Props, "align" | "alignOffset" | "side" | "sideOffset">): React.JSX.Element;
-declare function DropdownMenuGroup({ ...props }: Menu.Group.Props): React.JSX.Element;
+declare function DropdownMenu({ ...props }: Menu.Root.Props): React$1.JSX.Element;
+declare function DropdownMenuPortal({ ...props }: Menu.Portal.Props): React$1.JSX.Element;
+declare function DropdownMenuTrigger({ ...props }: Menu.Trigger.Props): React$1.JSX.Element;
+declare function DropdownMenuContent({ align, alignOffset, side, sideOffset, className, ...props }: Menu.Popup.Props & Pick<Menu.Positioner.Props, "align" | "alignOffset" | "side" | "sideOffset">): React$1.JSX.Element;
+declare function DropdownMenuGroup({ ...props }: Menu.Group.Props): React$1.JSX.Element;
 declare function DropdownMenuLabel({ className, inset, ...props }: Menu.GroupLabel.Props & {
     inset?: boolean;
-}): React.JSX.Element;
+}): React$1.JSX.Element;
 declare function DropdownMenuItem({ className, inset, variant, ...props }: Menu.Item.Props & {
     inset?: boolean;
     variant?: "default" | "destructive";
-}): React.JSX.Element;
-declare function DropdownMenuSub({ ...props }: Menu.SubmenuRoot.Props): React.JSX.Element;
+}): React$1.JSX.Element;
+declare function DropdownMenuSub({ ...props }: Menu.SubmenuRoot.Props): React$1.JSX.Element;
 declare function DropdownMenuSubTrigger({ className, inset, children, ...props }: Menu.SubmenuTrigger.Props & {
     inset?: boolean;
-}): React.JSX.Element;
-declare function DropdownMenuSubContent({ align, alignOffset, side, sideOffset, className, ...props }: React.ComponentProps<typeof DropdownMenuContent>): React.JSX.Element;
+}): React$1.JSX.Element;
+declare function DropdownMenuSubContent({ align, alignOffset, side, sideOffset, className, ...props }: React$1.ComponentProps<typeof DropdownMenuContent>): React$1.JSX.Element;
 declare function DropdownMenuCheckboxItem({ className, children, checked, inset, ...props }: Menu.CheckboxItem.Props & {
     inset?: boolean;
-}): React.JSX.Element;
-declare function DropdownMenuRadioGroup({ ...props }: Menu.RadioGroup.Props): React.JSX.Element;
+}): React$1.JSX.Element;
+declare function DropdownMenuRadioGroup({ ...props }: Menu.RadioGroup.Props): React$1.JSX.Element;
 declare function DropdownMenuRadioItem({ className, children, inset, ...props }: Menu.RadioItem.Props & {
     inset?: boolean;
-}): React.JSX.Element;
-declare function DropdownMenuSeparator({ className, ...props }: Menu.Separator.Props): React.JSX.Element;
-declare function DropdownMenuShortcut({ className, ...props }: React.ComponentProps<"span">): React.JSX.Element;
+}): React$1.JSX.Element;
+declare function DropdownMenuSeparator({ className, ...props }: Menu.Separator.Props): React$1.JSX.Element;
+declare function DropdownMenuShortcut({ className, ...props }: React$1.ComponentProps<"span">): React$1.JSX.Element;
 
-declare const Select: React.FC<SelectPrimitive.SelectProps>;
-declare const SelectGroup: React.ForwardRefExoticComponent<SelectPrimitive.SelectGroupProps & React.RefAttributes<HTMLDivElement>>;
-declare const SelectValue: React.ForwardRefExoticComponent<SelectPrimitive.SelectValueProps & React.RefAttributes<HTMLSpanElement>>;
-declare const SelectTrigger: React.ForwardRefExoticComponent<Omit<SelectPrimitive.SelectTriggerProps & React.RefAttributes<HTMLButtonElement>, "ref"> & React.RefAttributes<HTMLButtonElement>>;
-declare const SelectScrollUpButton: React.ForwardRefExoticComponent<Omit<SelectPrimitive.SelectScrollUpButtonProps & React.RefAttributes<HTMLDivElement>, "ref"> & React.RefAttributes<HTMLDivElement>>;
-declare const SelectScrollDownButton: React.ForwardRefExoticComponent<Omit<SelectPrimitive.SelectScrollDownButtonProps & React.RefAttributes<HTMLDivElement>, "ref"> & React.RefAttributes<HTMLDivElement>>;
-declare const SelectContent: React.ForwardRefExoticComponent<Omit<SelectPrimitive.SelectContentProps & React.RefAttributes<HTMLDivElement>, "ref"> & React.RefAttributes<HTMLDivElement>>;
-declare const SelectLabel: React.ForwardRefExoticComponent<Omit<SelectPrimitive.SelectLabelProps & React.RefAttributes<HTMLDivElement>, "ref"> & React.RefAttributes<HTMLDivElement>>;
-declare const SelectItem: React.ForwardRefExoticComponent<Omit<SelectPrimitive.SelectItemProps & React.RefAttributes<HTMLDivElement>, "ref"> & React.RefAttributes<HTMLDivElement>>;
-declare const SelectSeparator: React.ForwardRefExoticComponent<Omit<SelectPrimitive.SelectSeparatorProps & React.RefAttributes<HTMLDivElement>, "ref"> & React.RefAttributes<HTMLDivElement>>;
+declare const Select: React$1.FC<SelectPrimitive.SelectProps>;
+declare const SelectGroup: React$1.ForwardRefExoticComponent<SelectPrimitive.SelectGroupProps & React$1.RefAttributes<HTMLDivElement>>;
+declare const SelectValue: React$1.ForwardRefExoticComponent<SelectPrimitive.SelectValueProps & React$1.RefAttributes<HTMLSpanElement>>;
+declare const SelectTrigger: React$1.ForwardRefExoticComponent<Omit<SelectPrimitive.SelectTriggerProps & React$1.RefAttributes<HTMLButtonElement>, "ref"> & React$1.RefAttributes<HTMLButtonElement>>;
+declare const SelectScrollUpButton: React$1.ForwardRefExoticComponent<Omit<SelectPrimitive.SelectScrollUpButtonProps & React$1.RefAttributes<HTMLDivElement>, "ref"> & React$1.RefAttributes<HTMLDivElement>>;
+declare const SelectScrollDownButton: React$1.ForwardRefExoticComponent<Omit<SelectPrimitive.SelectScrollDownButtonProps & React$1.RefAttributes<HTMLDivElement>, "ref"> & React$1.RefAttributes<HTMLDivElement>>;
+declare const SelectContent: React$1.ForwardRefExoticComponent<Omit<SelectPrimitive.SelectContentProps & React$1.RefAttributes<HTMLDivElement>, "ref"> & React$1.RefAttributes<HTMLDivElement>>;
+declare const SelectLabel: React$1.ForwardRefExoticComponent<Omit<SelectPrimitive.SelectLabelProps & React$1.RefAttributes<HTMLDivElement>, "ref"> & React$1.RefAttributes<HTMLDivElement>>;
+declare const SelectItem: React$1.ForwardRefExoticComponent<Omit<SelectPrimitive.SelectItemProps & React$1.RefAttributes<HTMLDivElement>, "ref"> & React$1.RefAttributes<HTMLDivElement>>;
+declare const SelectSeparator: React$1.ForwardRefExoticComponent<Omit<SelectPrimitive.SelectSeparatorProps & React$1.RefAttributes<HTMLDivElement>, "ref"> & React$1.RefAttributes<HTMLDivElement>>;
 
-interface NativeSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+interface NativeSelectProps extends React$1.SelectHTMLAttributes<HTMLSelectElement> {
     /** Classe extra no wrapper (posicionamento/margem). */
     wrapperClassName?: string;
 }
-declare const NativeSelect: React.ForwardRefExoticComponent<NativeSelectProps & React.RefAttributes<HTMLSelectElement>>;
+declare const NativeSelect: React$1.ForwardRefExoticComponent<NativeSelectProps & React$1.RefAttributes<HTMLSelectElement>>;
 
 interface ConfirmDialogProps {
     open: boolean;
@@ -604,25 +604,25 @@ interface ConfirmDialogProps {
     onConfirm: () => void;
     onClose: () => void;
 }
-declare function ConfirmDialog({ open, title, description, confirmLabel, cancelLabel, destructive, loading, onConfirm, onClose, }: ConfirmDialogProps): React.JSX.Element;
+declare function ConfirmDialog({ open, title, description, confirmLabel, cancelLabel, destructive, loading, onConfirm, onClose, }: ConfirmDialogProps): React$1.JSX.Element;
 
-declare const AlertDialog: React.FC<AlertDialogPrimitive.AlertDialogProps>;
-declare const AlertDialogTrigger: React.ForwardRefExoticComponent<AlertDialogPrimitive.AlertDialogTriggerProps & React.RefAttributes<HTMLButtonElement>>;
-declare const AlertDialogPortal: React.FC<AlertDialogPrimitive.AlertDialogPortalProps>;
-declare const AlertDialogOverlay: React.ForwardRefExoticComponent<Omit<AlertDialogPrimitive.AlertDialogOverlayProps & React.RefAttributes<HTMLDivElement>, "ref"> & React.RefAttributes<HTMLDivElement>>;
-declare const AlertDialogContent: React.ForwardRefExoticComponent<Omit<AlertDialogPrimitive.AlertDialogContentProps & React.RefAttributes<HTMLDivElement>, "ref"> & React.RefAttributes<HTMLDivElement>>;
+declare const AlertDialog: React$1.FC<AlertDialogPrimitive.AlertDialogProps>;
+declare const AlertDialogTrigger: React$1.ForwardRefExoticComponent<AlertDialogPrimitive.AlertDialogTriggerProps & React$1.RefAttributes<HTMLButtonElement>>;
+declare const AlertDialogPortal: React$1.FC<AlertDialogPrimitive.AlertDialogPortalProps>;
+declare const AlertDialogOverlay: React$1.ForwardRefExoticComponent<Omit<AlertDialogPrimitive.AlertDialogOverlayProps & React$1.RefAttributes<HTMLDivElement>, "ref"> & React$1.RefAttributes<HTMLDivElement>>;
+declare const AlertDialogContent: React$1.ForwardRefExoticComponent<Omit<AlertDialogPrimitive.AlertDialogContentProps & React$1.RefAttributes<HTMLDivElement>, "ref"> & React$1.RefAttributes<HTMLDivElement>>;
 declare const AlertDialogHeader: {
-    ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>): React.JSX.Element;
+    ({ className, ...props }: React$1.HTMLAttributes<HTMLDivElement>): React$1.JSX.Element;
     displayName: string;
 };
 declare const AlertDialogFooter: {
-    ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>): React.JSX.Element;
+    ({ className, ...props }: React$1.HTMLAttributes<HTMLDivElement>): React$1.JSX.Element;
     displayName: string;
 };
-declare const AlertDialogTitle: React.ForwardRefExoticComponent<Omit<AlertDialogPrimitive.AlertDialogTitleProps & React.RefAttributes<HTMLHeadingElement>, "ref"> & React.RefAttributes<HTMLHeadingElement>>;
-declare const AlertDialogDescription: React.ForwardRefExoticComponent<Omit<AlertDialogPrimitive.AlertDialogDescriptionProps & React.RefAttributes<HTMLParagraphElement>, "ref"> & React.RefAttributes<HTMLParagraphElement>>;
-declare const AlertDialogAction: React.ForwardRefExoticComponent<Omit<AlertDialogPrimitive.AlertDialogActionProps & React.RefAttributes<HTMLButtonElement>, "ref"> & React.RefAttributes<HTMLButtonElement>>;
-declare const AlertDialogCancel: React.ForwardRefExoticComponent<Omit<AlertDialogPrimitive.AlertDialogCancelProps & React.RefAttributes<HTMLButtonElement>, "ref"> & React.RefAttributes<HTMLButtonElement>>;
+declare const AlertDialogTitle: React$1.ForwardRefExoticComponent<Omit<AlertDialogPrimitive.AlertDialogTitleProps & React$1.RefAttributes<HTMLHeadingElement>, "ref"> & React$1.RefAttributes<HTMLHeadingElement>>;
+declare const AlertDialogDescription: React$1.ForwardRefExoticComponent<Omit<AlertDialogPrimitive.AlertDialogDescriptionProps & React$1.RefAttributes<HTMLParagraphElement>, "ref"> & React$1.RefAttributes<HTMLParagraphElement>>;
+declare const AlertDialogAction: React$1.ForwardRefExoticComponent<Omit<AlertDialogPrimitive.AlertDialogActionProps & React$1.RefAttributes<HTMLButtonElement>, "ref"> & React$1.RefAttributes<HTMLButtonElement>>;
+declare const AlertDialogCancel: React$1.ForwardRefExoticComponent<Omit<AlertDialogPrimitive.AlertDialogCancelProps & React$1.RefAttributes<HTMLButtonElement>, "ref"> & React$1.RefAttributes<HTMLButtonElement>>;
 
 declare function cn(...inputs: ClassValue[]): string;
 
@@ -653,6 +653,27 @@ declare const BOOT_THEME_DARK_VALUE = "dark";
  */
 declare const BOOT_LOGO_PATH = "M247.26,29.65C67.56,37.31-33.89,241.82,72.17,388.72c104.35,144.53,327.7,117.1,394.22-47.79C527.76,188.81,410.5,22.69,247.26,29.65ZM179.39,365.5c-33.69,1.47-64.42-21.23-76.28-52.12-.85-2.2-4.64-12.97-4.64-14.47v-95.8c32.69-.77,63.54,21.36,75.31,51.4,1.43,3.64,5.61,16.95,5.61,20.24v90.75ZM286.15,296.11c0,2.68-3.87,14.28-5.05,17.43-11.34,30.28-43.02,53.37-75.87,51.97v-173.91c0-2.38,3.44-13.47,4.48-16.31,11.01-30.16,43.87-54.03,76.43-52.53v173.35ZM391.79,365.5c-31.67,1.6-63.55-20.91-75.16-49.86-1.27-3.18-5.75-16.86-5.75-19.53v-92.15c2.97-1.55,8.55-.67,12.01-.21,28.96,3.85,54.16,24.92,64.26,52.05.93,2.5,4.64,13.68,4.64,15.59v94.12Z";
 
+/** Lê o cookie de tema. `null` se ausente — nunca lança fora do browser (SSR/teste sem DOM). */
+declare function getThemeCookie(): string | null;
+/**
+ * Grava o cookie de tema no domínio pai. `Domain=.jetooh.com` só quando o host
+ * é o domínio real (produção) — em `localhost`/preview o browser REJEITA um
+ * cookie com esse `Domain` (host não é subdomínio dele), então lá o cookie vira
+ * host-only automaticamente (mesmo efeito local, sem cross-subdomain — não há
+ * subdomínio para atravessar em dev). `Secure` só em HTTPS, pelo mesmo motivo.
+ */
+declare function setThemeCookie(value: string): void;
+
+type Theme = 'light' | 'dark';
+interface ThemeContextValue {
+    theme: Theme;
+    setTheme: (theme: Theme) => void;
+}
+declare function ThemeProvider({ children }: {
+    children: React.ReactNode;
+}): React$1.JSX.Element;
+declare function useTheme(): ThemeContextValue;
+
 interface SectionCardProps {
     /** Ícone semântico da seção (mesma coisa → mesmo ícone). */
     icon?: LucideIcon;
@@ -664,7 +685,7 @@ interface SectionCardProps {
     /** Respiro do corpo. Omitido = corpo rente (tabelas/listas cuidam do próprio). */
     bodyClassName?: string;
 }
-declare function SectionCard({ icon: Icon, title, action, children, className, bodyClassName }: SectionCardProps): React.JSX.Element;
+declare function SectionCard({ icon: Icon, title, action, children, className, bodyClassName }: SectionCardProps): React$1.JSX.Element;
 
 interface SegmentedTabItem<T extends string = string> {
     id: T;
@@ -680,7 +701,7 @@ interface SegmentedTabsProps<T extends string> {
     className?: string;
     ariaLabel?: string;
 }
-declare function SegmentedTabs<T extends string>({ items, value, onChange, className, ariaLabel, }: SegmentedTabsProps<T>): React.JSX.Element;
+declare function SegmentedTabs<T extends string>({ items, value, onChange, className, ariaLabel, }: SegmentedTabsProps<T>): React$1.JSX.Element;
 
 interface DetailHeaderProps {
     onBack: () => void;
@@ -696,7 +717,7 @@ interface DetailHeaderProps {
     /** Ação à direita (ex.: bloquear/inativar). */
     action?: ReactNode;
 }
-declare function DetailHeader({ onBack, backLabel, title, titleAdornment, status, action }: DetailHeaderProps): React.JSX.Element;
+declare function DetailHeader({ onBack, backLabel, title, titleAdornment, status, action }: DetailHeaderProps): React$1.JSX.Element;
 
 interface SearchFilterOption {
     key: string;
@@ -739,6 +760,6 @@ interface AppGlobalSearchProps {
     labels?: AppGlobalSearchLabels;
     className?: string;
 }
-declare const AppGlobalSearch: React.NamedExoticComponent<AppGlobalSearchProps>;
+declare const AppGlobalSearch: React$1.NamedExoticComponent<AppGlobalSearchProps>;
 
-export { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, AppBottomNav, type AppBottomNavProps, AppFooter, AppGlobalSearch, type AppGlobalSearchLabels, type AppGlobalSearchProps, AppMobileHeader, type AppMobileHeaderProps, AppRail, type AppRailProps, AppSecondarySidebar, type AppSecondarySidebarProps, AppSubNav, type AppSubNavProps, AppUserMenu, type AppUserMenuProps, Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, BOOT_COLORS, BOOT_LOGO_PATH, BOOT_THEME_DARK_VALUE, BOOT_THEME_STORAGE_KEY, Badge, type BottomNavItem, BrandLoading, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, type Compare, ConfirmDialog, type ConfirmDialogProps, ContentHeader, type ContentHeaderProps, DateRangePicker, type DateRangePickerProps, DateTimeField, type DateTimeFieldProps, DetailHeader, type DetailHeaderProps, type DeviceStatus, DeviceStatusBadge, type DeviceStatusBadgeProps, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, EmptyState, type EmptyStateProps, Input, type InputProps, KpiCard, type KpiCardProps, KpiGrid, KpiHeroPanel, type KpiHeroPanelProps, Label, Loading, Modal, type ModalProps, NativeSelect, type NativeSelectProps, PRESETS, PageFrame, type PageFrameProps, type RailItem, type RangeValue, SearchEmptyState, type SearchFilterOption, type SearchResultItem, SectionCard, type SectionCardProps, type SegmentedTabItem, SegmentedTabs, type SegmentedTabsProps, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, Separator, type SidebarNavItem, type SidebarSection, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, StatusBadge, type StatusBadgeProps, StatusDot, type StatusDotProps, type StatusVariant, Switch, type SwitchProps, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type ToastOptions, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, USER_MENU_PROFILE_LABEL, USER_MENU_SETTINGS_LABEL, UserMenu, type UserMenuItem, type UserMenuProps, badgeVariants, buttonVariants, cn, comparisonRange, computePreset, defaultRange, deviceStatusMeta, toast, useToast };
+export { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, AppBottomNav, type AppBottomNavProps, AppFooter, AppGlobalSearch, type AppGlobalSearchLabels, type AppGlobalSearchProps, AppMobileHeader, type AppMobileHeaderProps, AppRail, type AppRailProps, AppSecondarySidebar, type AppSecondarySidebarProps, AppSubNav, type AppSubNavProps, AppUserMenu, type AppUserMenuProps, Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, BOOT_COLORS, BOOT_LOGO_PATH, BOOT_THEME_DARK_VALUE, BOOT_THEME_STORAGE_KEY, Badge, type BottomNavItem, BrandLoading, Button, Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, type Compare, ConfirmDialog, type ConfirmDialogProps, ContentHeader, type ContentHeaderProps, DateRangePicker, type DateRangePickerProps, DateTimeField, type DateTimeFieldProps, DetailHeader, type DetailHeaderProps, type DeviceStatus, DeviceStatusBadge, type DeviceStatusBadgeProps, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger, EmptyState, type EmptyStateProps, Input, type InputProps, KpiCard, type KpiCardProps, KpiGrid, KpiHeroPanel, type KpiHeroPanelProps, Label, Loading, Modal, type ModalProps, NativeSelect, type NativeSelectProps, PRESETS, PageFrame, type PageFrameProps, type RailItem, type RangeValue, SearchEmptyState, type SearchFilterOption, type SearchResultItem, SectionCard, type SectionCardProps, type SegmentedTabItem, SegmentedTabs, type SegmentedTabsProps, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue, Separator, type SidebarNavItem, type SidebarSection, Skeleton, SkeletonKpiCard, SkeletonPage, SkeletonTable, SkeletonTableRow, StatusBadge, type StatusBadgeProps, StatusDot, type StatusDotProps, type StatusVariant, Switch, type SwitchProps, TabLoading, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, type Theme, ThemeProvider, type ToastOptions, Toaster, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, USER_MENU_PROFILE_LABEL, USER_MENU_SETTINGS_LABEL, UserMenu, type UserMenuItem, type UserMenuProps, badgeVariants, buttonVariants, cn, comparisonRange, computePreset, defaultRange, deviceStatusMeta, getThemeCookie, setThemeCookie, toast, useTheme, useToast };

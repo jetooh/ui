@@ -130,15 +130,20 @@ describe('camada de boot: um valor, um arquivo', () => {
 
 describe('theme-init.js: aplica o modo antes do primeiro paint', () => {
   const rodar = () => new Function(themeInit)();
+  const limparCookie = () => {
+    document.cookie = `${BOOT_THEME_STORAGE_KEY}=; Path=/; Max-Age=0`;
+  };
 
   beforeEach(() => {
     document.documentElement.classList.remove('dark');
     localStorage.clear();
+    limparCookie();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
     localStorage.clear();
+    limparCookie();
   });
 
   it('aplica .dark quando a preferência guardada é escura', () => {
@@ -156,6 +161,19 @@ describe('theme-init.js: aplica o modo antes do primeiro paint', () => {
     localStorage.setItem(BOOT_THEME_STORAGE_KEY, 'light');
     rodar();
     expect(document.documentElement.classList.contains('dark')).toBe(false);
+  });
+
+  it('JET-265: cookie do domínio pai tem prioridade sobre o localStorage', () => {
+    document.cookie = `${BOOT_THEME_STORAGE_KEY}=${BOOT_THEME_DARK_VALUE}; Path=/`;
+    localStorage.setItem(BOOT_THEME_STORAGE_KEY, 'light');
+    rodar();
+    expect(document.documentElement.classList.contains('dark')).toBe(true);
+  });
+
+  it('JET-265: sem cookie, cai para o localStorage (fallback de quem escolheu antes)', () => {
+    localStorage.setItem(BOOT_THEME_STORAGE_KEY, BOOT_THEME_DARK_VALUE);
+    rodar();
+    expect(document.documentElement.classList.contains('dark')).toBe(true);
   });
 
   it('só ADICIONA: não tira o .dark que a app já tenha posto', () => {
@@ -179,6 +197,14 @@ describe('theme-init.js: aplica o modo antes do primeiro paint', () => {
     // flash de tema de volta, sem erro nenhum no console.
     expect(themeInit).toContain(`localStorage.getItem('${BOOT_THEME_STORAGE_KEY}')`);
     expect(themeInit).toContain(`=== '${BOOT_THEME_DARK_VALUE}'`);
+  });
+
+  it('JET-265: lê document.cookie ANTES do localStorage (cookie é a fonte cross-subdomínio)', () => {
+    const idxCookie = themeInit.indexOf('document.cookie');
+    const idxLocalStorage = themeInit.indexOf('localStorage.getItem');
+    expect(idxCookie).toBeGreaterThan(-1);
+    expect(idxLocalStorage).toBeGreaterThan(-1);
+    expect(idxCookie).toBeLessThan(idxLocalStorage);
   });
 
   it('é JS clássico sem dependência: roda cru, servido pela app', () => {

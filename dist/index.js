@@ -2580,23 +2580,88 @@ var AlertDialogCancel = React6.forwardRef(({ className, ...props }, ref) => /* @
 ));
 AlertDialogCancel.displayName = AlertDialogPrimitive.Cancel.displayName;
 
+// src/themes/theme-cookie.ts
+var COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
+function isJetoohDomain(hostname) {
+  return hostname === "jetooh.com" || hostname.endsWith(".jetooh.com");
+}
+function getThemeCookie() {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(new RegExp(`(?:^|; )${BOOT_THEME_STORAGE_KEY}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+function setThemeCookie(value) {
+  if (typeof document === "undefined") return;
+  const { hostname, protocol } = window.location;
+  const domain = isJetoohDomain(hostname) ? "; Domain=.jetooh.com" : "";
+  const secure = protocol === "https:" ? "; Secure" : "";
+  document.cookie = `${BOOT_THEME_STORAGE_KEY}=${encodeURIComponent(value)}; Path=/; Max-Age=${COOKIE_MAX_AGE_SECONDS}; SameSite=Lax${domain}${secure}`;
+}
+
+// src/components/ThemeProvider.tsx
+import { createContext, useCallback, useContext, useEffect as useEffect5, useMemo, useState as useState4 } from "react";
+import { jsx as jsx35 } from "react/jsx-runtime";
+var ThemeContext = createContext(void 0);
+function isValidTheme(value) {
+  return value === BOOT_THEME_DARK_VALUE || value === "light";
+}
+function readInitialTheme() {
+  if (typeof document === "undefined") return "light";
+  const fromCookie = getThemeCookie();
+  if (isValidTheme(fromCookie)) return fromCookie;
+  try {
+    const fromStorage = localStorage.getItem(BOOT_THEME_STORAGE_KEY);
+    if (isValidTheme(fromStorage)) {
+      setThemeCookie(fromStorage);
+      return fromStorage;
+    }
+  } catch {
+  }
+  return "light";
+}
+function applyTheme(theme) {
+  document.documentElement.classList.toggle("dark", theme === BOOT_THEME_DARK_VALUE);
+}
+function ThemeProvider({ children }) {
+  const [theme, setThemeState] = useState4(() => readInitialTheme());
+  useEffect5(() => {
+    applyTheme(theme);
+  }, []);
+  const setTheme = useCallback((next) => {
+    setThemeState(next);
+    applyTheme(next);
+    setThemeCookie(next);
+    try {
+      localStorage.setItem(BOOT_THEME_STORAGE_KEY, next);
+    } catch {
+    }
+  }, []);
+  const value = useMemo(() => ({ theme, setTheme }), [theme, setTheme]);
+  return /* @__PURE__ */ jsx35(ThemeContext.Provider, { value, children });
+}
+function useTheme() {
+  const ctx = useContext(ThemeContext);
+  if (!ctx) throw new Error("useTheme must be used within a ThemeProvider");
+  return ctx;
+}
+
 // src/components/SectionCard.tsx
-import { jsx as jsx35, jsxs as jsxs25 } from "react/jsx-runtime";
+import { jsx as jsx36, jsxs as jsxs25 } from "react/jsx-runtime";
 function SectionCard({ icon: Icon2, title, action, children, className, bodyClassName }) {
   return /* @__PURE__ */ jsxs25(Card, { className: cn("gap-0 overflow-hidden p-0", className), children: [
     /* @__PURE__ */ jsxs25(CardHeader, { className: "items-center border-b border-gray-100 py-4", children: [
       /* @__PURE__ */ jsxs25(CardTitle, { className: "flex items-center gap-2 text-preto", children: [
-        Icon2 && /* @__PURE__ */ jsx35(Icon2, { size: 16, strokeWidth: 1.5, className: "text-muted-foreground" }),
+        Icon2 && /* @__PURE__ */ jsx36(Icon2, { size: 16, strokeWidth: 1.5, className: "text-muted-foreground" }),
         title
       ] }),
-      action && /* @__PURE__ */ jsx35(CardAction, { className: "self-center", children: action })
+      action && /* @__PURE__ */ jsx36(CardAction, { className: "self-center", children: action })
     ] }),
-    bodyClassName ? /* @__PURE__ */ jsx35("div", { className: bodyClassName, children }) : children
+    bodyClassName ? /* @__PURE__ */ jsx36("div", { className: bodyClassName, children }) : children
   ] });
 }
 
 // src/components/SegmentedTabs.tsx
-import { jsx as jsx36, jsxs as jsxs26 } from "react/jsx-runtime";
+import { jsx as jsx37, jsxs as jsxs26 } from "react/jsx-runtime";
 function SegmentedTabs({
   items: items2,
   value,
@@ -2604,7 +2669,7 @@ function SegmentedTabs({
   className,
   ariaLabel
 }) {
-  return /* @__PURE__ */ jsx36(
+  return /* @__PURE__ */ jsx37(
     "div",
     {
       role: "tablist",
@@ -2632,9 +2697,9 @@ function SegmentedTabs({
               active ? "bg-preto/5 text-preto" : "text-gray-500 hover:text-preto"
             ),
             children: [
-              Icon2 && /* @__PURE__ */ jsx36(Icon2, { size: 15, strokeWidth: 1.5 }),
+              Icon2 && /* @__PURE__ */ jsx37(Icon2, { size: 15, strokeWidth: 1.5 }),
               it.label,
-              it.badge !== void 0 && it.badge !== 0 && it.badge !== "" && /* @__PURE__ */ jsx36(
+              it.badge !== void 0 && it.badge !== 0 && it.badge !== "" && /* @__PURE__ */ jsx37(
                 "span",
                 {
                   className: cn(
@@ -2655,7 +2720,7 @@ function SegmentedTabs({
 
 // src/components/DetailHeader.tsx
 import { ArrowLeft } from "lucide-react";
-import { jsx as jsx37, jsxs as jsxs27 } from "react/jsx-runtime";
+import { jsx as jsx38, jsxs as jsxs27 } from "react/jsx-runtime";
 function DetailHeader({ onBack, backLabel = "Voltar", title, titleAdornment, status, action }) {
   return (
     // `flex-wrap` + `min-w-0`: nome longo de entidade + status + ação não cabem
@@ -2663,7 +2728,7 @@ function DetailHeader({ onBack, backLabel = "Voltar", title, titleAdornment, sta
     // linhas. A ação ocupa linha própria no mobile (`w-full`) e volta à direita
     // a partir de `sm`.
     /* @__PURE__ */ jsxs27("div", { className: "flex flex-wrap items-center gap-x-3 gap-y-2", children: [
-      /* @__PURE__ */ jsx37(
+      /* @__PURE__ */ jsx38(
         Button,
         {
           variant: "outline",
@@ -2671,21 +2736,21 @@ function DetailHeader({ onBack, backLabel = "Voltar", title, titleAdornment, sta
           "aria-label": backLabel,
           className: "h-8 w-8 shrink-0 border-borda-controle pointer-coarse:h-10 pointer-coarse:w-10",
           onClick: onBack,
-          children: /* @__PURE__ */ jsx37(ArrowLeft, { size: 16, strokeWidth: 1.5 })
+          children: /* @__PURE__ */ jsx38(ArrowLeft, { size: 16, strokeWidth: 1.5 })
         }
       ),
-      /* @__PURE__ */ jsx37("h2", { className: "min-w-0 break-words text-base font-bold text-preto", children: title }),
+      /* @__PURE__ */ jsx38("h2", { className: "min-w-0 break-words text-base font-bold text-preto", children: title }),
       titleAdornment,
-      status && /* @__PURE__ */ jsx37(StatusBadge, { label: status.label, variant: status.variant }),
-      action && /* @__PURE__ */ jsx37("div", { className: "w-full sm:ml-auto sm:w-auto", children: action })
+      status && /* @__PURE__ */ jsx38(StatusBadge, { label: status.label, variant: status.variant }),
+      action && /* @__PURE__ */ jsx38("div", { className: "w-full sm:ml-auto sm:w-auto", children: action })
     ] })
   );
 }
 
 // src/components/AppGlobalSearch.tsx
-import { useEffect as useEffect5, useRef as useRef3, memo as memo5 } from "react";
+import { useEffect as useEffect6, useRef as useRef3, memo as memo5 } from "react";
 import { Search, X as X4, ArrowRight } from "lucide-react";
-import { Fragment as Fragment4, jsx as jsx38, jsxs as jsxs28 } from "react/jsx-runtime";
+import { Fragment as Fragment4, jsx as jsx39, jsxs as jsxs28 } from "react/jsx-runtime";
 var DEFAULT_LABELS = {
   placeholder: "Buscar...",
   filterBy: "Filtrar por",
@@ -2706,12 +2771,12 @@ function ResultRow({ item, onClose }) {
       },
       className: "flex items-center gap-3 rounded-lg px-2.5 py-2.5 text-left transition-colors hover:bg-gray-50",
       children: [
-        /* @__PURE__ */ jsx38("div", { className: "flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-600", children: /* @__PURE__ */ jsx38(item.icon, { size: 15, strokeWidth: 1.5 }) }),
+        /* @__PURE__ */ jsx39("div", { className: "flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-600", children: /* @__PURE__ */ jsx39(item.icon, { size: 15, strokeWidth: 1.5 }) }),
         /* @__PURE__ */ jsxs28("div", { className: "min-w-0 flex-1", children: [
-          /* @__PURE__ */ jsx38("p", { className: "truncate text-[13px] font-medium text-preto", children: item.label }),
-          /* @__PURE__ */ jsx38("p", { className: "text-[11px] text-gray-500", children: item.category })
+          /* @__PURE__ */ jsx39("p", { className: "truncate text-[13px] font-medium text-preto", children: item.label }),
+          /* @__PURE__ */ jsx39("p", { className: "text-[11px] text-gray-500", children: item.category })
         ] }),
-        /* @__PURE__ */ jsx38(ArrowRight, { size: 14, strokeWidth: 1.5, className: "shrink-0 text-gray-300" })
+        /* @__PURE__ */ jsx39(ArrowRight, { size: 14, strokeWidth: 1.5, className: "shrink-0 text-gray-300" })
       ]
     }
   );
@@ -2733,10 +2798,10 @@ var AppGlobalSearch = memo5(function AppGlobalSearch2({
 }) {
   const t = { ...DEFAULT_LABELS, ...labels };
   const inputRef = useRef3(null);
-  useEffect5(() => {
+  useEffect6(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 50);
   }, [open]);
-  useEffect5(() => {
+  useEffect6(() => {
     if (!open) return;
     const handleKeyDown = (e) => {
       if (e.key === "Escape") onClose();
@@ -2748,11 +2813,11 @@ var AppGlobalSearch = memo5(function AppGlobalSearch2({
   const showEmptyQuery = query === "";
   const showQuickActions = showEmptyQuery && activeFilter === "all" && quickActions.length > 0;
   return /* @__PURE__ */ jsxs28("div", { className: cn("fixed inset-0 z-[100] flex items-start justify-center pt-[5vh] sm:pt-[10vh]", className), children: [
-    /* @__PURE__ */ jsx38("div", { className: "absolute inset-0 bg-preto/50 backdrop-blur-sm", onClick: onClose }),
-    /* @__PURE__ */ jsx38("div", { className: "relative mx-3 w-full max-w-[780px] animate-in fade-in zoom-in-95 duration-150 sm:mx-4", children: /* @__PURE__ */ jsxs28("div", { className: "overflow-hidden rounded-xl border border-gray-200 bg-branco sm:rounded-2xl", children: [
+    /* @__PURE__ */ jsx39("div", { className: "absolute inset-0 bg-preto/50 backdrop-blur-sm", onClick: onClose }),
+    /* @__PURE__ */ jsx39("div", { className: "relative mx-3 w-full max-w-[780px] animate-in fade-in zoom-in-95 duration-150 sm:mx-4", children: /* @__PURE__ */ jsxs28("div", { className: "overflow-hidden rounded-xl border border-gray-200 bg-branco sm:rounded-2xl", children: [
       /* @__PURE__ */ jsxs28("div", { className: "flex items-center gap-3 px-5 py-4", children: [
-        /* @__PURE__ */ jsx38(Search, { size: 20, strokeWidth: 1.5, className: "shrink-0 text-gray-500" }),
-        /* @__PURE__ */ jsx38(
+        /* @__PURE__ */ jsx39(Search, { size: 20, strokeWidth: 1.5, className: "shrink-0 text-gray-500" }),
+        /* @__PURE__ */ jsx39(
           "input",
           {
             ref: inputRef,
@@ -2765,21 +2830,21 @@ var AppGlobalSearch = memo5(function AppGlobalSearch2({
           }
         ),
         /* @__PURE__ */ jsxs28("div", { className: "flex items-center gap-2", children: [
-          /* @__PURE__ */ jsx38("kbd", { className: "hidden rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 font-mono text-[10px] text-gray-500 sm:inline-flex", children: "\u2318K" }),
-          /* @__PURE__ */ jsx38(
+          /* @__PURE__ */ jsx39("kbd", { className: "hidden rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 font-mono text-[10px] text-gray-500 sm:inline-flex", children: "\u2318K" }),
+          /* @__PURE__ */ jsx39(
             "button",
             {
               onClick: onClose,
               className: "flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-600",
-              children: /* @__PURE__ */ jsx38(X4, { size: 12, strokeWidth: 2 })
+              children: /* @__PURE__ */ jsx39(X4, { size: 12, strokeWidth: 2 })
             }
           )
         ] })
       ] }),
-      /* @__PURE__ */ jsx38("div", { className: "border-t border-gray-100" }),
+      /* @__PURE__ */ jsx39("div", { className: "border-t border-gray-100" }),
       /* @__PURE__ */ jsxs28("div", { className: "flex flex-col sm:flex-row sm:min-h-[420px]", children: [
         filters.length > 0 && /* @__PURE__ */ jsxs28(Fragment4, { children: [
-          /* @__PURE__ */ jsx38("div", { className: "flex gap-1.5 overflow-x-auto border-b border-gray-100 px-4 py-2.5 sm:hidden", children: filters.map((filter) => /* @__PURE__ */ jsxs28(
+          /* @__PURE__ */ jsx39("div", { className: "flex gap-1.5 overflow-x-auto border-b border-gray-100 px-4 py-2.5 sm:hidden", children: filters.map((filter) => /* @__PURE__ */ jsxs28(
             "button",
             {
               onClick: () => onFilterChange?.(filter.key),
@@ -2788,15 +2853,15 @@ var AppGlobalSearch = memo5(function AppGlobalSearch2({
                 activeFilter === filter.key ? "bg-roxo text-branco" : "bg-gray-50 text-gray-500 hover:bg-gray-100"
               ),
               children: [
-                /* @__PURE__ */ jsx38(filter.icon, { size: 13, strokeWidth: 1.5 }),
+                /* @__PURE__ */ jsx39(filter.icon, { size: 13, strokeWidth: 1.5 }),
                 filter.label
               ]
             },
             filter.key
           )) }),
           /* @__PURE__ */ jsxs28("div", { className: "hidden w-[180px] shrink-0 border-r border-gray-100 bg-gray-50/50 p-2 sm:block", children: [
-            /* @__PURE__ */ jsx38("p", { className: "mb-1.5 px-2.5 pt-1 text-[10px] font-semibold uppercase tracking-widest text-gray-500", children: t.filterBy }),
-            /* @__PURE__ */ jsx38("nav", { className: "flex flex-col gap-0.5", children: filters.map((filter) => /* @__PURE__ */ jsxs28(
+            /* @__PURE__ */ jsx39("p", { className: "mb-1.5 px-2.5 pt-1 text-[10px] font-semibold uppercase tracking-widest text-gray-500", children: t.filterBy }),
+            /* @__PURE__ */ jsx39("nav", { className: "flex flex-col gap-0.5", children: filters.map((filter) => /* @__PURE__ */ jsxs28(
               "button",
               {
                 onClick: () => onFilterChange?.(filter.key),
@@ -2805,7 +2870,7 @@ var AppGlobalSearch = memo5(function AppGlobalSearch2({
                   activeFilter === filter.key ? "bg-branco font-medium text-roxo" : "text-gray-500 hover:bg-branco/60 hover:text-gray-600"
                 ),
                 children: [
-                  /* @__PURE__ */ jsx38(
+                  /* @__PURE__ */ jsx39(
                     filter.icon,
                     {
                       size: 15,
@@ -2820,28 +2885,28 @@ var AppGlobalSearch = memo5(function AppGlobalSearch2({
             )) })
           ] })
         ] }),
-        /* @__PURE__ */ jsx38("div", { className: "flex-1 overflow-y-auto", children: showEmptyQuery ? /* @__PURE__ */ jsxs28(Fragment4, { children: [
+        /* @__PURE__ */ jsx39("div", { className: "flex-1 overflow-y-auto", children: showEmptyQuery ? /* @__PURE__ */ jsxs28(Fragment4, { children: [
           recentItems.length > 0 && /* @__PURE__ */ jsxs28("div", { className: "p-3", children: [
-            /* @__PURE__ */ jsx38("p", { className: "mb-1.5 px-2 text-[10px] font-semibold uppercase tracking-widest text-gray-500", children: t.recentSearches }),
-            /* @__PURE__ */ jsx38("div", { className: "flex flex-col gap-0.5", children: recentItems.map((item) => /* @__PURE__ */ jsx38(ResultRow, { item, onClose }, item.id)) })
+            /* @__PURE__ */ jsx39("p", { className: "mb-1.5 px-2 text-[10px] font-semibold uppercase tracking-widest text-gray-500", children: t.recentSearches }),
+            /* @__PURE__ */ jsx39("div", { className: "flex flex-col gap-0.5", children: recentItems.map((item) => /* @__PURE__ */ jsx39(ResultRow, { item, onClose }, item.id)) })
           ] }),
           showQuickActions && /* @__PURE__ */ jsxs28("div", { className: "border-t border-gray-50 p-3", children: [
-            /* @__PURE__ */ jsx38("p", { className: "mb-1.5 px-2 text-[10px] font-semibold uppercase tracking-widest text-gray-500", children: t.quickActions }),
-            /* @__PURE__ */ jsx38("div", { className: "flex flex-col gap-0.5", children: quickActions.map((item) => /* @__PURE__ */ jsx38(ResultRow, { item, onClose }, item.id)) })
+            /* @__PURE__ */ jsx39("p", { className: "mb-1.5 px-2 text-[10px] font-semibold uppercase tracking-widest text-gray-500", children: t.quickActions }),
+            /* @__PURE__ */ jsx39("div", { className: "flex flex-col gap-0.5", children: quickActions.map((item) => /* @__PURE__ */ jsx39(ResultRow, { item, onClose }, item.id)) })
           ] }),
           recentItems.length === 0 && !showQuickActions && /* @__PURE__ */ jsxs28("div", { className: "flex flex-col items-center justify-center py-16 text-center", children: [
-            /* @__PURE__ */ jsx38(Search, { size: 28, strokeWidth: 1, className: "mb-2 text-gray-200" }),
-            /* @__PURE__ */ jsx38("p", { className: "text-sm text-gray-500", children: t.noResults })
+            /* @__PURE__ */ jsx39(Search, { size: 28, strokeWidth: 1, className: "mb-2 text-gray-200" }),
+            /* @__PURE__ */ jsx39("p", { className: "text-sm text-gray-500", children: t.noResults })
           ] })
-        ] }) : isLoading ? /* @__PURE__ */ jsx38("div", { className: "flex flex-col items-center justify-center py-16 text-center", children: /* @__PURE__ */ jsx38(
+        ] }) : isLoading ? /* @__PURE__ */ jsx39("div", { className: "flex flex-col items-center justify-center py-16 text-center", children: /* @__PURE__ */ jsx39(
           "div",
           {
             className: "h-6 w-6 animate-spin rounded-full border-[2.5px] border-transparent",
             style: { borderTopColor: "#8B47FF", borderRightColor: "rgba(139,71,255,0.3)" }
           }
-        ) }) : results.length > 0 ? /* @__PURE__ */ jsx38("div", { className: "p-3", children: /* @__PURE__ */ jsx38("div", { className: "flex flex-col gap-0.5", children: results.map((item) => /* @__PURE__ */ jsx38(ResultRow, { item, onClose }, item.id)) }) }) : /* @__PURE__ */ jsxs28("div", { className: "flex flex-col items-center justify-center py-16 text-center", children: [
-          /* @__PURE__ */ jsx38(Search, { size: 28, strokeWidth: 1, className: "mb-2 text-gray-200" }),
-          /* @__PURE__ */ jsx38("p", { className: "text-sm text-gray-500", children: t.noResults }),
+        ) }) : results.length > 0 ? /* @__PURE__ */ jsx39("div", { className: "p-3", children: /* @__PURE__ */ jsx39("div", { className: "flex flex-col gap-0.5", children: results.map((item) => /* @__PURE__ */ jsx39(ResultRow, { item, onClose }, item.id)) }) }) : /* @__PURE__ */ jsxs28("div", { className: "flex flex-col items-center justify-center py-16 text-center", children: [
+          /* @__PURE__ */ jsx39(Search, { size: 28, strokeWidth: 1, className: "mb-2 text-gray-200" }),
+          /* @__PURE__ */ jsx39("p", { className: "text-sm text-gray-500", children: t.noResults }),
           /* @__PURE__ */ jsxs28("p", { className: "mt-1 text-xs text-gray-300", children: [
             '"',
             query,
@@ -2849,17 +2914,17 @@ var AppGlobalSearch = memo5(function AppGlobalSearch2({
           ] })
         ] }) })
       ] }),
-      /* @__PURE__ */ jsx38("div", { className: "flex items-center justify-end border-t border-gray-100 px-4 py-2", children: /* @__PURE__ */ jsxs28("div", { className: "flex items-center gap-3 text-[11px] text-gray-500", children: [
+      /* @__PURE__ */ jsx39("div", { className: "flex items-center justify-end border-t border-gray-100 px-4 py-2", children: /* @__PURE__ */ jsxs28("div", { className: "flex items-center gap-3 text-[11px] text-gray-500", children: [
         /* @__PURE__ */ jsxs28("span", { className: "flex items-center gap-1.5", children: [
-          /* @__PURE__ */ jsx38("kbd", { className: "rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 font-mono text-[10px] text-gray-500", children: "ESC" }),
+          /* @__PURE__ */ jsx39("kbd", { className: "rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 font-mono text-[10px] text-gray-500", children: "ESC" }),
           t.close
         ] }),
         /* @__PURE__ */ jsxs28("span", { className: "flex items-center gap-1.5", children: [
-          /* @__PURE__ */ jsx38("kbd", { className: "rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 font-mono text-[10px] text-gray-500", children: "\u2191\u2193" }),
+          /* @__PURE__ */ jsx39("kbd", { className: "rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 font-mono text-[10px] text-gray-500", children: "\u2191\u2193" }),
           t.navigate
         ] }),
         /* @__PURE__ */ jsxs28("span", { className: "flex items-center gap-1.5", children: [
-          /* @__PURE__ */ jsx38("kbd", { className: "rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 font-mono text-[10px] text-gray-500", children: "\u21B5" }),
+          /* @__PURE__ */ jsx39("kbd", { className: "rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 font-mono text-[10px] text-gray-500", children: "\u21B5" }),
           t.open
         ] })
       ] }) })
@@ -2969,6 +3034,7 @@ export {
   TableHead,
   TableHeader,
   TableRow,
+  ThemeProvider,
   Toaster,
   Tooltip,
   TooltipContent,
@@ -2984,6 +3050,9 @@ export {
   computePreset,
   defaultRange,
   deviceStatusMeta,
+  getThemeCookie,
+  setThemeCookie,
   toast,
+  useTheme,
   useToast
 };

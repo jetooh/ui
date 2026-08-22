@@ -87,6 +87,13 @@ export { cn } from './lib/cn';
 export {
   BOOT_COLORS, BOOT_LOGO_PATH, BOOT_THEME_STORAGE_KEY, BOOT_THEME_DARK_VALUE,
 } from './themes/boot';
+// Persistência cross-subdomínio do tema (JET-265) — cookie no domínio pai.
+export { getThemeCookie, setThemeCookie } from './themes/theme-cookie';
+// ThemeProvider/useTheme ÚNICOS do ecossistema (JET-265) — fonte única do tema
+// claro/escuro. Substitui as 4 cópias divergentes que existiam em admin,
+// devices, platform e templates.
+export { ThemeProvider, useTheme } from './components/ThemeProvider';
+export type { Theme } from './components/ThemeProvider';
 export { SectionCard } from './components/SectionCard';
 export type { SectionCardProps } from './components/SectionCard';
 export { SegmentedTabs } from './components/SegmentedTabs';
